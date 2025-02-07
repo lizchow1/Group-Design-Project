@@ -4,26 +4,20 @@ This is a React + Vite application styled with Tailwind CSS and uses React Route
 
 ## Installation
 
-### 1. Clone the Repository
+### 1. Navigate to frontend folder and install Dependencies
 
 ```sh
-git clone <repository-url>
-cd let-me-cook
-```
-
-### 2. Install Dependencies
-
-```sh
+cd frontend
 npm install
 ```
 
-### 3. Install Additional Dependencies
+### 2. Install Additional Dependencies
 
 ```sh
 npm install react-router-dom tailwindcss postcss autoprefixer
 ```
 
-### 4. Initialize Tailwind CSS
+### 4. Initialize Tailwind CSS (optional)
 
 ```sh
 npx tailwindcss init -p
@@ -38,18 +32,3 @@ npm run dev
 ```
 
 This will launch the app on a local development server.
-
-## Building for Production
-
-To create an optimized production build, use:
-
-```sh
-npm run build
-```
-
-## Preview Production Build
-
-To preview the production build locally, run:
-
-```sh
-npm run preview
