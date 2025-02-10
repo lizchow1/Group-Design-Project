@@ -9,7 +9,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 const Navbar = () => {
   return (
     <div>
-      <div className="flex montserrat-font ml-5">
+      <div className="fixed montserrat-font ml-5 top-4">
         <div className="flex flex-col space-y-12 mb-16">
           <div>
           <Link to="/" className="group relative flex items-center">

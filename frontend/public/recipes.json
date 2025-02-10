@@ -1,0 +1,11 @@
+[
+    {
+      "id": 1,
+      "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
+      "name": "Vegan Cobb Salad",
+      "username": "chef123",
+      "tags": ["15 mins", "vegan", "easy"],
+      "isBookmarked": false
+    }
+  ]
+  
