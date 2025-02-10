@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+
+.montserrat-font {
+    font-family: "Montserrat", serif;
+    font-optical-sizing: auto;
+    font-weight: 335;
+    font-style: normal;
+  }
