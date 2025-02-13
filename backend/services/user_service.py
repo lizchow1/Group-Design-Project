@@ -8,13 +8,12 @@ class UserService:
 
     @staticmethod
     def create_user(data):
-        """创建用户时，校验数据"""
         name = data.get("name")
         age = data.get("age")
         email = data.get("email")
 
         if not name or not age or not email:
-            return {"error": "缺少必要字段"}, 400
+            return {"error": "Lack of necessary parameters"}, 400
         
         user = UserMapper.create_user(name, age, email)
         return user.to_dict()

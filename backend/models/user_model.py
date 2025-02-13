@@ -11,7 +11,6 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """将对象转换为字典，方便返回 JSON"""
         return {
             "id": self.id,
             "name": self.name,
