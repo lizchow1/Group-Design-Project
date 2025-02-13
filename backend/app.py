@@ -1,19 +1,15 @@
-# app.py
 from flask import Flask
-from flask_cors import CORS
-from controller.user_controller import users_bp
+from db import db, init_db
+from flask_migrate import Migrate
+from controllers.user_controller import user_bp
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+app.config.from_object("config")
 
-app.register_blueprint(users_bp, url_prefix='/api')
+init_db(app)
 
-@app.route('/helloworld')
-def hello_world():
-    return "Hello, World!"
+app.register_blueprint(user_bp, url_prefix="/api")
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
-
-
+if __name__ == "__main__":
+    app.run(debug=True)
 
