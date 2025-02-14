@@ -1,26 +1,55 @@
-# controllers/recipe_controller.py
-
 from flask import Blueprint, jsonify, request
 from services.recipe_service import RecipeService
 
-recipe_bp = Blueprint("recipe_bp", __name__)
+recipe_bp = Blueprint("recipe", __name__)
 
-# The front end can generate a POST to set dummy data
-@recipe_bp.route("/recipes/seed", methods=["POST"])
-def seed_data():
-    RecipeService.seed_dummy_data()
-    return jsonify({"message": "Dummy recipes seeded"}), 201
-
-# return all recipes
+# Get All Recipes
 @recipe_bp.route("/recipes", methods=["GET"])
 def get_all_recipes():
     recipes = RecipeService.get_all_recipes()
-    return jsonify([r.to_dict() for r in recipes]), 200
+    return jsonify(recipes), 200
 
-# get the recipe by id
+# Set Seed Dummy Data
+@recipe_bp.route("/recipes/seed", methods=["POST"])
+def seed_dummy_data():
+    RecipeService.seed_dummy_data()
+    return jsonify({"message": "Dummy data seeded successfully"}), 200
+
+# Get Recipe By ID
 @recipe_bp.route("/recipes/<int:recipe_id>", methods=["GET"])
-def get_recipe(recipe_id):
+def get_recipe_by_id(recipe_id):
     recipe = RecipeService.get_recipe_by_id(recipe_id)
-    if not recipe:
-        return jsonify({"error": "Recipe not found"}), 404
-    return jsonify(recipe.to_dict()), 200
+    if recipe:
+        return jsonify(recipe), 200
+    return jsonify({"error": "Recipe not found"}), 404
+
+# Create Recipe
+@recipe_bp.route("/recipes", methods=["POST"])
+def create_recipe():
+    data = request.get_json()
+    new_recipe = RecipeService.create_recipe(data)
+    return jsonify(new_recipe), 201
+
+# Delete Recipe By ID
+@recipe_bp.route("/recipes/delete/<int:recipe_id>", methods=["DELETE"])
+def delete_recipe(recipe_id):
+    success = RecipeService.delete_recipe_by_id(recipe_id)
+    if success:
+        return jsonify({"message": "Recipe deleted successfully"}), 200
+    return jsonify({"error": "Recipe not found"}), 404
+
+# Delete All Recipes
+@recipe_bp.route("/recipes/deleteAll", methods=["DELETE"])
+def delete_all_recipe():
+    deleted_count = RecipeService.delete_all_recipe()
+
+    if deleted_count > 0:
+        return jsonify({
+            "message": "All recipes deleted successfully",
+            "deleted_count": deleted_count
+        }), 200
+    
+    return jsonify({
+            "message": "No recipes found",
+            "deleted_count": deleted_count    
+        }), 200

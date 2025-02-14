@@ -1,9 +1,8 @@
-# services/recipe_service.py
-
 from db import db
 from models.recipe_model import Recipe
+from mappers.recipe_mapper import RecipeMapper
 
-# 这里就是你给出的前端模拟数据
+# dummy recipes for testing
 DUMMY_RECIPES = [
     {
         "id": 1,
@@ -59,13 +58,13 @@ class RecipeService:
 
     @staticmethod
     def seed_dummy_data():
-        """
-        把 DUMMY_RECIPES 插入数据库。
-        如果想避免重复插入，可以先检查表里是否已有数据，或者检查重复ID。
-        """
-        if Recipe.query.count() == 0:
-            for item in DUMMY_RECIPES:
-                # 把 tags 数组转成逗号分隔的字符串，用于存储数据库
+        # get recipe 'name' from database (Avoid double insertion)
+        existing_names = {recipe.name for recipe in Recipe.query.with_entities(Recipe.name).all()}
+
+        new_recipes = []
+
+        for item in DUMMY_RECIPES:
+            if item["name"] not in existing_names:
                 tags_str = ",".join(item["tags"])
                 recipe = Recipe(
                     image=item["image"],
@@ -74,29 +73,30 @@ class RecipeService:
                     tags=tags_str,
                     isBookmarked=item["isBookmarked"],
                 )
-                # 如果想固定设置主键ID为 item["id"]，需要手动赋值
-                # 注意自增主键一般不手动赋值，但这里是示例：
-                recipe.id = item["id"]
+                new_recipes.append(recipe)
 
-                db.session.add(recipe)
+        if new_recipes:
+            db.session.add_all(new_recipes)
             db.session.commit()
 
     @staticmethod
     def get_all_recipes():
-        """查询所有菜谱返回列表。"""
-        return Recipe.query.all()
+        return RecipeMapper.getAllRecipes()
 
     @staticmethod
     def get_recipe_by_id(recipe_id):
-        """根据ID查询单个菜谱。"""
-        return Recipe.query.get(recipe_id)
+        return RecipeMapper.getRecipeByID(recipe_id)
 
     @staticmethod
-    def update_bookmark(recipe_id, is_bookmarked):
-        """更新某个菜谱的收藏状态。"""
-        recipe = Recipe.query.get(recipe_id)
-        if recipe:
-            recipe.isBookmarked = is_bookmarked
-            db.session.commit()
-            return True
-        return False
+    def create_recipe(data):
+        return RecipeMapper.createRecipe(data)
+
+    @staticmethod
+    def delete_recipe_by_id(recipe_id):
+        return RecipeMapper.deleteRecipeByID(recipe_id)
+    
+    @staticmethod
+    def delete_all_recipe():
+        deleted_count = RecipeMapper.deleteAllRecipes()
+        return deleted_count
+
