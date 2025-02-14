@@ -12,6 +12,7 @@
         "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
         "isBookmarked": false,
         "name": "Vegan Cobb Salad",
+        "text": "Lorem ipsum",
         "tags": [
             "15 mins",
             "vegan",
@@ -24,6 +25,7 @@
         "image": "https://www.recipetineats.com/tachyon/2018/04/Chicken-Tikka-Masala_0-SQ.jpg",
         "isBookmarked": false,
         "name": "Tikki Masala",
+        "text": "Lorem ipsum",
         "tags": [
             "60 mins",
             "indian"
@@ -53,6 +55,7 @@
     "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
     "isBookmarked": false,
     "name": "Vegan Cobb Salad",
+    "text": "Lorem ipsum",
     "tags": [
         "15 mins",
         "vegan",
@@ -74,6 +77,7 @@
 {
     "image": "https://example.com/images/salad.jpg",
     "name": "Mediterranean Salad",
+    "text": "Lorem ipsum",
     "username": "chef_mark",
     "tags": ["10 mins", "healthy", "vegetarian"],
     "isBookmarked": true
@@ -86,6 +90,7 @@
     "image": "https://example.com/images/salad.jpg",
     "isBookmarked": true,
     "name": "Mediterranean Salad",
+    "text": "Lorem ipsum",
     "tags": [
         "10 mins",
         "healthy",
