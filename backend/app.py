@@ -9,6 +9,8 @@ app = Flask(__name__)
 CORS(app)
 app.config.from_object("config")
 
+CORS(app)
+
 init_db(app)
 
 app.register_blueprint(user_bp, url_prefix="/api")
