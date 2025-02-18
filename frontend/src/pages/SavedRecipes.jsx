@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
+import { getRecipes } from "../utils/api";
 
 const SavedRecipes = () => {
   const [recipes, setRecipes] = useState([]);
@@ -9,9 +10,7 @@ const SavedRecipes = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch("/recipes.json");
-        if (!response.ok) throw new Error("Failed to load recipes");
-        const data = await response.json();
+        const data = await getRecipes();
         setRecipes(data);
       } catch (err) {
         setError(err.message);
