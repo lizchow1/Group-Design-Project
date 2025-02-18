@@ -5,17 +5,14 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
+import Checkbox from '@mui/material/Checkbox';
 import Autocomplete from '@mui/material/Autocomplete';
-import Stack from '@mui/material/Stack';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const AddRecipeCard = () => {
     const tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
@@ -23,12 +20,12 @@ const AddRecipeCard = () => {
     const green = {
         '& .MuiOutlinedInput-root': {
           '&.Mui-focused fieldset': {
-            borderColor: 'green', // Change border color to green when focused
+            borderColor: 'green',
           },
         },
         '& .MuiInputLabel-root': {
     '&.Mui-focused': {
-      color: 'green', // Change label color to green when focused
+      color: 'green',
     },
   },
       };
@@ -37,12 +34,59 @@ const AddRecipeCard = () => {
       setMinutes(event.target.value);
     };
 
-    
+    const [text, setText] = React.useState("• ");
+
+    const handle_Change = (event) => {
+      const newText = event.target.value;
+  
+
+      const lines = newText.split("\n").map((line) => line.trimStart());
+  
+      const formattedLines = lines.map((line, index) => {
+        if (line.startsWith("•") && !line.startsWith("• ")) {
+          return "• "; 
+        }
+        return line;
+      });
+  
+      if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
+        setText("• ");
+      } else {
+        setText(formattedLines.join("\n"));
+      }
+    };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      const lines = text.split("\n");
+      const lastLine = lines[lines.length - 1].trim();
+
+      if (lastLine.length > 1) {
+        setText((prevText) => prevText + "\n• ");
+      }
+    }
+
+    if (event.key === "Backspace") {
+      const lines = text.split("\n");
+
+      if (lines.length === 1 && lines[0] === "• ") {
+        event.preventDefault();
+        return;
+      }
+
+      if (lines[lines.length - 1] === "• ") {
+        event.preventDefault();
+        setText(lines.slice(0, -1).join("\n"));
+      }
+    }
+    };
   
 
 
     return (
-        <div class="ml-36 -mt-56 flex flex-col">
+      <div class="ml-44 flex flex-col">
         <div>
           <Box
             component="form"
@@ -78,15 +122,16 @@ const AddRecipeCard = () => {
           <MenuItem value={90}>90 min or more</MenuItem>
         </Select>
       </FormControl>
-        </div>
         
-        <div>
+        </div>
+        <div class="w-14">
         <Autocomplete
       multiple
       id="checkboxes-tags-demo"
-      options={top100Films}
+      options={tags}
+      sx = {green}
       disableCloseOnSelect
-      getOptionLabel={(option) => option.title}
+      getOptionLabel={(option) => option}
       renderOption={(props, option, { selected }) => {
         const { key, ...optionProps } = props;
         return (
@@ -97,18 +142,54 @@ const AddRecipeCard = () => {
               style={{ marginRight: 8 }}
               checked={selected}
             />
-            {option.title}
+            {option}
           </li>
         );
       }}
       style={{ width: 500 }}
       renderInput={(params) => (
-        <TextField {...params} label="Checkboxes" placeholder="Favorites" />
+        <TextField {...params} label="Tags" />
       )}
     />
     </div>
 
+    <div class="mt-4">
+    <Box sx={{ width: 1000 }}>
+      <TextField
+        label="Ingredients"
+        id="fullWidth"
+        multiline
+        rows={6}
+        variant="outlined"
+        value={text}
+        onChange={handle_Change}
+        onKeyDown={handleKeyDown}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": { borderColor: "green" },
+          },
+          "& .MuiInputLabel-root": { "&.Mui-focused": { color: "green" } },
+        }}
+      />
+    </Box>
+
+    </div>
+
+    <div class="mt-4">
+    <Box sx={{  maxWidth: 3000}}>
+    <TextField
+          id="outlined-multiline-static"
+          label="Description"
+          multiline
+          rows={4}
+          defaultValue=""
+        />
+    </Box>
+    </div>
+    
+
         </div>
+
       );
 };
 
