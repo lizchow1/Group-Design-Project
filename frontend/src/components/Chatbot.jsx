@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./Header";
+import MessageList from "./MessageList";
 
 const Chatbot = () => {
   const [input, setInput] = useState("");
@@ -40,17 +41,7 @@ const Chatbot = () => {
     <div className="flex flex-col h-screen bg-gray-100 p-4">
       <Header className="text-2xl font-bold text-center mb-4">Gordon RamsAI</Header>
       <div className="flex-1 overflow-y-auto p-4 bg-white shadow-md rounded-lg space-y-3">
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex ${msg.sender === "User" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`p-3 max-w-xs md:max-w-md rounded-lg shadow-sm ${
-                msg.sender === "User" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-900"
-              }`}
-            >
-              <strong>{msg.sender}:</strong> {msg.text}
-            </div>
-          </div>
-        ))}
+        <MessageList messages={messages} chatEndRef={chatEndRef} />
         {loading && (
           <div className="flex justify-start">
             <div className="p-3 bg-gray-200 text-gray-900 rounded-lg animate-pulse">Typing...</div>
