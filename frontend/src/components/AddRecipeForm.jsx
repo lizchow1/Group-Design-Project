@@ -17,6 +17,8 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 const AddRecipeCard = () => {
     const tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
     const [minutes, setMinutes] = React.useState('');
+    const [fileName, setFileName] = React.useState(null);
+    const [text, setText] = React.useState("• ");
     const green = {
         '& .MuiOutlinedInput-root': {
           '&.Mui-focused fieldset': {
@@ -34,7 +36,6 @@ const AddRecipeCard = () => {
       setMinutes(event.target.value);
     };
 
-    const [text, setText] = React.useState("• ");
 
     const handle_Change = (event) => {
       const newText = event.target.value;
@@ -82,15 +83,25 @@ const AddRecipeCard = () => {
       }
     }
     };
+
+    const handleFileChange = (event) => {
+      if (event.target.files.length > 0) {
+          setFileName(event.target.files[0].name);
+      } else {
+          setFileName(null);
+      }
+  };
   
 
 
     return (
-      <div class="ml-44 flex flex-col">
+      <div class="flex flex-col">
+      <div class="flex flex-row ml-60">
+      <div class="flex flex-col">
         <div>
           <Box
             component="form"
-            sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
+            sx={{ '& .MuiTextField-root': { m: 1, width: '23ch' } }}
             noValidate
             autoComplete="off"
           >
@@ -104,7 +115,7 @@ const AddRecipeCard = () => {
           </Box>
         </div>
 
-        <div>
+        <div class="mt-6">
         <FormControl required sx={{ m: 1, minWidth: 170, ...green }}>
         <InputLabel id="demo-simple-select-required-label">Cooking time</InputLabel>
         <Select
@@ -124,12 +135,55 @@ const AddRecipeCard = () => {
       </FormControl>
         
         </div>
-        <div class="w-14">
+
+
+    <div class="flex flex-row ml-2 mt-8">
+    <Box>
+      <TextField
+        required
+        label="Ingredients"
+        id="fullWidth"
+        multiline
+        rows={6}
+        variant="outlined"
+        value={text}
+        onChange={handle_Change}
+        onKeyDown={handleKeyDown}
+        sx={green }
+        
+      />
+    </Box>
+
+    
+
+    <div class="ml-10">
+    <Box>
+    <TextField
+          sx={green}
+          required
+          id="outlined-multiline-static"
+          label="Description"
+          multiline
+          rows={6}
+          defaultValue=""
+        />
+    </Box>
+    </div>
+
+    </div>
+    
+
+    <div class="mt-10 ml-2">
         <Autocomplete
       multiple
       id="checkboxes-tags-demo"
       options={tags}
-      sx = {green}
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          "&.Mui-focused fieldset": { borderColor: "green" },
+        },
+        "& .MuiInputLabel-root": { "&.Mui-focused": { color: "green" }},
+      }}
       disableCloseOnSelect
       getOptionLabel={(option) => option}
       renderOption={(props, option, { selected }) => {
@@ -141,6 +195,7 @@ const AddRecipeCard = () => {
               checkedIcon={checkedIcon}
               style={{ marginRight: 8 }}
               checked={selected}
+              
             />
             {option}
           </li>
@@ -152,43 +207,37 @@ const AddRecipeCard = () => {
       )}
     />
     </div>
-
-    <div class="mt-4">
-    <Box sx={{ width: 1000 }}>
-      <TextField
-        label="Ingredients"
-        id="fullWidth"
-        multiline
-        rows={6}
-        variant="outlined"
-        value={text}
-        onChange={handle_Change}
-        onKeyDown={handleKeyDown}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            "&.Mui-focused fieldset": { borderColor: "green" },
-          },
-          "& .MuiInputLabel-root": { "&.Mui-focused": { color: "green" } },
-        }}
-      />
-    </Box>
-
     </div>
 
-    <div class="mt-4">
-    <Box sx={{  maxWidth: 3000}}>
-    <TextField
-          id="outlined-multiline-static"
-          label="Description"
-          multiline
-          rows={4}
-          defaultValue=""
+    <div 
+        className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col cursor-pointer"
+        onClick={() => document.getElementById("fileInput").click()}
+      >
+
+        <div className="font-bold">Add an image</div>
+        <div className="text-gray-500">
+          {fileName ? fileName : "Drag and drop a file here"}
+        </div>
+
+        <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800" 
+
+        >
+                  <input 
+          type="file" 
+          id="fileInput" 
+          className="hidden" 
+          onChange={handleFileChange} 
         />
-    </Box>
+          Browse Files
+        </div>
     </div>
+
     
 
         </div>
+
+        </div>
+        
 
       );
 };
