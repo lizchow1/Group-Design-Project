@@ -1,11 +1,15 @@
 from db import db
 from models.recipe_model import Recipe
+from sqlalchemy import text
 
 class RecipeMapper:
 
     @staticmethod
     def getAllRecipes():
-        recipes = Recipe.query.all()
+        sql = text("SELECT id, image, name, username, tags, isBookmarked FROM recipes")
+        result = db.session.execute(sql)
+        recipes = result.fetchall()
+        
         return [
             {
                 "id": recipe.id,

@@ -2,19 +2,24 @@ from db import db
 from datetime import datetime
 
 class User(db.Model):
-    __tablename__ = "users"
-
+    __tablename__ = 'users'
+    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
-    age = db.Column(db.Integer, nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
+    firebase_uid = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    username = db.Column(db.String(100), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    
+    def __init__(self, firebase_uid, email, username):
+        self.firebase_uid = firebase_uid
+        self.email = email
+        self.username = username
+        
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
-            "age": self.age,
+            "firebase_uid": self.firebase_uid,
             "email": self.email,
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            "username": self.username,
+            "created_at": self.created_at.isoformat()
         }
