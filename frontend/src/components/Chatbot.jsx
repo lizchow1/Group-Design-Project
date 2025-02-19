@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Header from "./Header";
 import MessageList from "./MessageList";
 import InputBox from "./InputBox";
+import Loader from "./Loader";
 
 const Chatbot = () => {
   const [input, setInput] = useState("");
@@ -43,11 +44,7 @@ const Chatbot = () => {
       <Header className="text-2xl font-bold text-center mb-4">Gordon RamsAI</Header>
       <div className="flex-1 overflow-y-auto p-4 bg-white shadow-md rounded-lg space-y-3">
         <MessageList messages={messages} chatEndRef={chatEndRef} />
-        {loading && (
-          <div className="flex justify-start">
-            <div className="p-3 bg-gray-200 text-gray-900 rounded-lg animate-pulse">Typing...</div>
-          </div>
-        )}
+        {loading && <Loader />}
         <div ref={chatEndRef}></div>
       </div>
       <div className="mt-4 flex items-center bg-white p-3 shadow-md rounded-lg">
