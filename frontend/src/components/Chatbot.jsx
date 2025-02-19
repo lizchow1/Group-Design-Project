@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./Header";
 import MessageList from "./MessageList";
+import InputBox from "./InputBox";
 
 const Chatbot = () => {
   const [input, setInput] = useState("");
@@ -50,20 +51,7 @@ const Chatbot = () => {
         <div ref={chatEndRef}></div>
       </div>
       <div className="mt-4 flex items-center bg-white p-3 shadow-md rounded-lg">
-        <input
-          type="text"
-          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none"
-          placeholder="Ask for a recipe..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button
-          onClick={sendMessage}
-          className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        >
-          Send
-        </button>
+        <InputBox input={input} setInput={setInput} sendMessage={sendMessage} />
       </div>
     </div>
   );
