@@ -3,6 +3,7 @@ import Header from "./Header";
 import MessageList from "./MessageList";
 import InputBox from "./InputBox";
 import Loader from "./Loader";
+import ResetButton from "./ResetButton";
 
 const Chatbot = () => {
   const [input, setInput] = useState("");
@@ -35,6 +36,11 @@ const Chatbot = () => {
     setLoading(false);
   };
 
+  const resetChat = () => {
+  setMessages([]); // Clear the chat messages
+  setInput(""); // Clear the input box
+    };
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -50,6 +56,7 @@ const Chatbot = () => {
       <div className="mt-4 flex items-center bg-white p-3 shadow-md rounded-lg">
         <InputBox input={input} setInput={setInput} sendMessage={sendMessage} />
       </div>
+      <ResetButton onReset={resetChat} />
     </div>
   );
 };
