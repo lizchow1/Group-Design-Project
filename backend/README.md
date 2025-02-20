@@ -132,6 +132,37 @@
     "deleted_count": 0,
     "message": "No recipes found"
 }
+
+
+```
+
+### Get Recipes By Tags
+1. URL: `/api/recipes/filter`
+2. Method: `GET`
+3. Request format: Query parameters with `tags` (can include multiple tags)
+   Example: `/api/recipes/filter?tags=vegan&tags=easy`
+4. Response format
+```json
+[
+    {
+        "id": 1,
+        "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
+        "isBookmarked": false,
+        "name": "Vegan Cobb Salad",
+        "text": "Lorem ipsum",
+        "tags": [
+            "15 mins",
+            "vegan",
+            "easy"
+        ],
+        "username": "chef123"
+    }
+]
+```
+```json
+{
+    "error": "No tags provided"
+}
 ```
 
 
