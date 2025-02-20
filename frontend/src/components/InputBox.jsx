@@ -1,3 +1,5 @@
+import React from 'react';
+
 const InputBox = ({ input, setInput, sendMessage }) => {
   return (
     <div className="mt-4 flex items-center bg-white p-3 shadow-md rounded-lg">

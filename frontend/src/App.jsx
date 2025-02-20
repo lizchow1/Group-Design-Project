@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SavedRecipes from "./pages/SavedRecipes";
 import ChatbotPage from "./pages/ChatbotPage";
+import "./index.css";
 
 const App = () => {
   return (

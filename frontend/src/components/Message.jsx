@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Message = ({ sender, text }) => {
   return (
     <div className={`flex ${sender === "User" ? "justify-end" : "justify-start"}`}>
