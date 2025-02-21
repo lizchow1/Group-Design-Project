@@ -100,3 +100,21 @@ class RecipeService:
         deleted_count = RecipeMapper.deleteAllRecipes()
         return deleted_count
 
+    @staticmethod
+    def get_recipes_by_tags(tags):
+        all_recipes = Recipe.query.all()
+        filtered_recipes = []
+        
+        for recipe in all_recipes:
+            if not recipe.tags:
+                continue
+            
+            recipe_tags = set(recipe.tags.lower().split(','))
+            search_tags = set(tag.lower() for tag in tags)
+            
+            # Check if all search tags are present in recipe tags
+            if search_tags.issubset(recipe_tags):
+                filtered_recipes.append(recipe.to_dict())
+        
+        return filtered_recipes
+
