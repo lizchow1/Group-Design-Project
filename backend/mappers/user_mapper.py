@@ -1,3 +1,5 @@
+# mappers/user_mapper.py
+
 from db import db
 from models.user_model import User
 from sqlalchemy import text
@@ -31,3 +33,14 @@ class UserMapper:
         if user:
             return user.to_dict()
         return None
+    
+    @staticmethod
+    def updateUserProfile(firebase_uid, email, username):
+        user = User.query.filter_by(firebase_uid=firebase_uid).first()
+        if user:
+            user.email = email
+            user.username = username
+            db.session.commit()
+            return user.to_dict()
+        return None
+

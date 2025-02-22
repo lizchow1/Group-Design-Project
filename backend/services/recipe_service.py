@@ -99,4 +99,9 @@ class RecipeService:
     def delete_all_recipe():
         deleted_count = RecipeMapper.deleteAllRecipes()
         return deleted_count
+    
+    @staticmethod
+    def update_recipe(recipe_id, data):
+        return RecipeMapper.updateRecipe(recipe_id, data)
+
 

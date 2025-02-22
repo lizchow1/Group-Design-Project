@@ -1,3 +1,5 @@
+# models/user_model.py
+
 from db import db
 from datetime import datetime
 

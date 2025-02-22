@@ -1,5 +1,3 @@
-# models/recipe_model.py
-
 from db import db
 from datetime import datetime
 
@@ -12,13 +10,23 @@ class Recipe(db.Model):
     username = db.Column(db.String, nullable=False)
     tags = db.Column(db.String, nullable=True)
     isBookmarked = db.Column(db.Boolean, default=False)
+    cooking_time = db.Column(db.String, nullable=False)
+    ingredients = db.Column(db.Text, nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    create_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    update_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    def __init__(self, image, name, username, tags, isBookmarked=False):
+    def __init__(self, image, name, username, tags, cooking_time, ingredients, description, isBookmarked=False):
         self.image = image
         self.name = name
         self.username = username
         self.tags = tags
+        self.cooking_time = cooking_time
+        self.ingredients = ingredients
+        self.description = description
         self.isBookmarked = isBookmarked
+        self.create_time = datetime.utcnow()
+        self.update_time = datetime.utcnow()
 
     def to_dict(self):
         return {
@@ -27,5 +35,11 @@ class Recipe(db.Model):
             "name": self.name,
             "username": self.username,
             "tags": self.tags.split(',') if self.tags else [],
+            "cooking_time": self.cooking_time,
+            "create_time": self.create_time.isoformat() if self.create_time else None,
+            "ingredients": self.ingredients,
+            "description": self.description,
+            "update_time": self.update_time.isoformat() if self.update_time else None,
             "isBookmarked": self.isBookmarked
         }
+

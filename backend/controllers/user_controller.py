@@ -1,3 +1,5 @@
+# controllers/user_controller.py
+
 from flask import Blueprint, jsonify, request
 from services.user_service import UserService
 
@@ -46,3 +48,11 @@ def get_user_by_username(username):
         return jsonify(user), 200
     return jsonify({"error": "User not found"}), 404
 
+# Update User Profile
+@user_bp.route("/users/profile", methods=["PUT"])
+def update_user_profile():
+    data = request.get_json()
+    result = UserService.update_user_profile(data)
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result), 200

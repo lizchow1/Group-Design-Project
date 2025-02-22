@@ -9,6 +9,8 @@ app = Flask(__name__)
 CORS(app)
 app.config.from_object("config")
 
+print("Database SCHEMA_VERSION:", app.config.get("SCHEMA_VERSION"))
+
 init_db(app)
 
 app.register_blueprint(user_bp, url_prefix="/api")

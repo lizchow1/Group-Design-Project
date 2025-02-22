@@ -48,7 +48,7 @@
 }
 ```
 
-#### User Registration
+#### User Login
 1. URL: `/api/users/login`
 2. Method: `POST`
 3. Request format: 
