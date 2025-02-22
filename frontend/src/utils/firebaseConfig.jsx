@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC2RZOAiSc8LvXd-q1_DbcDrCjMcX5h7V4",
+  apiKey: "YOUR-API-KEY",
   authDomain: "group-design-project-79e91.firebaseapp.com",
   projectId: "group-design-project-79e91",
   storageBucket: "group-design-project-79e91.appspot.com", 
