@@ -1,6 +1,9 @@
 flask
 flask-cors
 mysql-connector-python
+flask_migrate
+flask-sqlalchemy
+
 sqlalchemy
 firebase-admin
 flask_migrate
