@@ -1,25 +1,42 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SavedRecipes from "./pages/SavedRecipes";
 import ChatbotPage from "./pages/ChatbotPage";
 import AddRecipe from "./pages/AddRecipe";
+import SignIn from "./pages/SignIn";
+import { auth } from "./utils/firebaseConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const App = () => {
+  const [user] = useAuthState(auth);
+
+  useEffect(() => {
+    auth.signOut(); // Sign out user when app loads
+  }, []);
+
   return (
     <Router>
-      <div className="flex w-full">
-        <Navbar />
-        <div className="flex-1 p-4">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/saved-recipes" element={<SavedRecipes />} />
+      {user ? (
+        <div className="flex w-full">
+          <Navbar />
+          <div className="flex-1 p-4">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/saved-recipes" element={<SavedRecipes />} />
             <Route path="/add-recipe" element={<AddRecipe />} />
-            <Route path="/chatbot" element={<ChatbotPage />} />
-          </Routes>
+              <Route path="/chatbot" element={<ChatbotPage />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
         </div>
-      </div>
+      ) : (
+        <Routes>
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="*" element={<Navigate to="/sign-in" />} />
+        </Routes>
+      )}
     </Router>
   );
 };
