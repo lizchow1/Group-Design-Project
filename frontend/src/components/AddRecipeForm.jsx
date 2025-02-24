@@ -95,8 +95,8 @@ const AddRecipeCard = () => {
 
 
     return (
-      <div class="flex flex-col">
-      <div class="flex flex-row ml-60">
+      <div class="flex flex-col items-center justify-center w-full">
+      <div class="flex flex-row">
       <div class="flex flex-col">
         <div>
           <Box
@@ -231,10 +231,13 @@ const AddRecipeCard = () => {
           Browse Files
         </div>
     </div>
-
     
 
         </div>
+        <div className="bg-green-700 text-white font-bold text-xl p-2 mt-20 rounded-[5px] hover:bg-green-800 w-fit items-center"> 
+
+Upload recipe
+</div>
 
         </div>
         

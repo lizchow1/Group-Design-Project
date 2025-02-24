@@ -9,7 +9,7 @@ import AddRecipe from "./pages/AddRecipe";
 const App = () => {
   return (
     <Router>
-      <div className="flex">
+      <div className="flex w-full">
         <Navbar />
         <div className="flex-1 p-4">
           <Routes>
