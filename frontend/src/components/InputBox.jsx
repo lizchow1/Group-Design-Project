@@ -2,10 +2,10 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
-const InputBox = ({ input, setInput, sendMessage }) => {
+const InputBox = ({ input, setInput, sendMessage, isLoading }) => {
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault(); // Prevent page refresh
+    if (e.key === "Enter" && !isLoading) {
+      e.preventDefault();
       sendMessage();
     }
   };
@@ -26,11 +26,13 @@ const InputBox = ({ input, setInput, sendMessage }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={isLoading}
           sx={{ width: '100%' }}
         />
       </Box>
       <button
         onClick={sendMessage}
+        disabled={isLoading} 
         className="ml-2 bg-blue-500 text-black px-4 py-2 rounded-lg hover:bg-blue-600 transition"
       >
         Send
