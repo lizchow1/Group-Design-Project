@@ -1,5 +1,19 @@
 1. run `pip install -r requirements.txt` to install all requirements
 
+### 2. Chatbot Instantiation
+
+First, download and run Ollama
+
+```sh
+https://ollama.com/download
+```
+
+Second, run the following in backend:
+
+```sh
+ollama run llama3.2
+```
+
 #### Get All Recipes
 1. URL: `/api/recipes`
 2. Method: `GET`

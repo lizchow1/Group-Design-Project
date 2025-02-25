@@ -17,30 +17,10 @@ npm install
 npm install react-router-dom tailwindcss postcss autoprefixer
 ```
 
-### 4. Initialize Tailwind CSS (optional)
+### 3. Initialize Tailwind CSS (optional)
 
 ```sh
 npx tailwindcss init -p
-```
-
-### 5. Chatbot Instantiation
-
-First, download and run Ollama
-
-```sh
-https://ollama.com/download
-```
-
-Second, run the following in backend:
-
-```sh
-ollama run llama3.2
-```
-
-Make sure all everything is installed from the following file:
-
-```sh
-requirements.txt
 ```
 
 ## Running the Application
