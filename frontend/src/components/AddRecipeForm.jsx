@@ -99,13 +99,15 @@ const AddRecipeCard = ({ handleSubmit }) => {
       }
       };
 
-    const handleFileChange = (event) => {
-      if (event.target.files.length > 0) {
-          setFileName(event.target.files[0].name);
-      } else {
+      const handleFileChange = (event) => {
+        const imagePath = event.target.value;
+        
+        if (imagePath.trim()) {
+          setFileName(imagePath);
+        } else {
           setFileName(null);
-      }
-  };
+        }
+      };
 
   const handleSubmitForm = () => {
     if (!isFormValid || isSubmitting) return;
@@ -231,17 +233,28 @@ const AddRecipeCard = ({ handleSubmit }) => {
           </div>
 
           <div 
-              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col cursor-pointer"
-              onClick={() => document.getElementById("fileInput").click()}
+              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col"
+              
             >
 
             <div className="font-bold">Add an image</div>
-
+            <div>
+              <input
+                type="text" // this should be "text" if you're expecting a string path
+                className="border-2 border-green-700 p-2 rounded-md w-full focus:outline-none"
+                onChange={handleFileChange}
+                placeholder="Enter image path here"
+              />
+            </div>
+              {/*
             <div className="text-gray-500">
               {fileName ? fileName : "Drag and drop a file here"}
             </div>
-
-            <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800">
+              
+            <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800 cursor-pointer"
+            onClick={() => document.getElementById("fileInput").click()}
+            >
+              
               <input 
                 type="file" 
                 id="fileInput" 
@@ -250,6 +263,7 @@ const AddRecipeCard = ({ handleSubmit }) => {
             />
               Browse Files
             </div>
+            */}
           </div>
         </div>
 
