@@ -8,11 +8,54 @@ DUMMY_RECIPES = [
         "id": 1,
         "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
         "name": "Vegan Cobb Salad",
+        "text": "Mix ingredients together",
         "username": "chef123",
         "tags": ["15 mins", "vegan", "easy"],
-        "cooking_time": "15 mins",  # 新增
-        "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-        "description": "A healthy vegan salad",  # 示例
+        "isBookmarked": False
+    },
+    {
+        "id": 2,
+        "image": "https://www.recipetineats.com/tachyon/2018/04/Chicken-Tikka-Masala_0-SQ.jpg",
+        "name": "Tikki Masala",
+        "text": "Lorem ipsum",
+        "username": "chef124",
+        "tags": ["60 mins", "indian"],
+        "isBookmarked": False
+    },
+    {
+        "id": 3,
+        "image": "https://eu.ooni.com/cdn/shop/articles/pepperoni-pizza_6ac5fa40-65b7-4e3b-a8b9-7ca5ccc05dfd.jpg",
+        "name": "Gluten free pizza",
+        "text": "Lorem ipsum",
+        "username": "chef125",
+        "tags": ["30 mins", "italian", "comfort food", "easy"],
+        "isBookmarked": False
+    },
+    {
+        "id": 4,
+        "image": "https://static01.nyt.com/images/2024/01/10/multimedia/ND-Shoyu-Ramen-qflv/ND-Shoyu-Ramen-qflv-mediumSquareAt3X.jpg",
+        "name": "Ramen",
+        "text": "Lorem ipsum",
+        "username": "chef126",
+        "tags": ["45 mins", "asian", "comfort food"],
+        "isBookmarked": False
+    },
+    {
+        "id": 5,
+        "image": "https://images.ctfassets.net/uexfe9h31g3m/6QtnhruEFi8qgEyYAICkyS/6e36729731887703608f28e92f10cb49/Spaghetti_bolognese_4x3_V2_LOW_RES.jpg",
+        "name": "Vegan Spaghetti bolognese",
+        "text": "Lorem ipsum",
+        "username": "chef127",
+        "tags": ["30 mins", "healthy", "vegan"],
+        "isBookmarked": False
+    },
+    {
+        "id": 6,
+        "image": "https://thebigmansworld.com/wp-content/uploads/2024/06/salmon-poke-bowl-recipe.jpg",
+        "name": "Poke bowl",
+        "text": "Lorem ipsum",
+        "username": "chef128",
+        "tags": ["25 mins", "healthy", "easy"],
         "isBookmarked": False
     }
 ]
@@ -32,6 +75,7 @@ class RecipeService:
                 recipe = Recipe(
                     image=item["image"],
                     name=item["name"],
+                    text=item["text"],
                     username=item["username"],
                     tags=tags_str,
                     isBookmarked=item["isBookmarked"],
@@ -62,27 +106,4 @@ class RecipeService:
     def delete_all_recipe():
         deleted_count = RecipeMapper.deleteAllRecipes()
         return deleted_count
-    
-    @staticmethod
-    def update_recipe(recipe_id, data):
-        return RecipeMapper.updateRecipe(recipe_id, data)
-
-
-    @staticmethod
-    def get_recipes_by_tags(tags):
-        all_recipes = Recipe.query.all()
-        filtered_recipes = []
-        
-        for recipe in all_recipes:
-            if not recipe.tags:
-                continue
-            
-            recipe_tags = set(recipe.tags.lower().split(','))
-            search_tags = set(tag.lower() for tag in tags)
-            
-            # Check if all search tags are present in recipe tags
-            if search_tags.issubset(recipe_tags):
-                filtered_recipes.append(recipe.to_dict())
-        
-        return filtered_recipes
 
