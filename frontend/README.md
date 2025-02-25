@@ -17,7 +17,7 @@ npm install
 npm install react-router-dom tailwindcss postcss autoprefixer
 ```
 
-### 4. Initialize Tailwind CSS (optional)
+### 3. Initialize Tailwind CSS (optional)
 
 ```sh
 npx tailwindcss init -p

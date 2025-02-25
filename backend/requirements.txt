@@ -3,3 +3,4 @@ flask-cors
 mysql-connector-python
 flask_migrate
 flask-sqlalchemy
+langchain~=0.3.17
