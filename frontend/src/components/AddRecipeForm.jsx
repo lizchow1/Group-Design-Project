@@ -14,11 +14,16 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const AddRecipeCard = () => {
-    const tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
+const AddRecipeCard = ({ handleSubmit }) => {
+    const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
     const [minutes, setMinutes] = React.useState('');
     const [fileName, setFileName] = React.useState(null);
     const [text, setText] = React.useState("• ");
+    const [name, setName] = React.useState('');
+    const [description, setDescription] = React.useState('');
+    const [tags, setTags] = React.useState([]);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
     const green = {
         '& .MuiOutlinedInput-root': {
           '&.Mui-focused fieldset': {
@@ -32,11 +37,24 @@ const AddRecipeCard = () => {
   },
       };
 
-    const handleChange = (event) => {
+    const handleMinutesChange = (event) => {
       setMinutes(event.target.value);
     };
 
-    const handle_Change = (event) => {
+    const handleNameChange = (event) => {
+      setName(event.target.value);
+  };
+
+  const handleDescriptionChange = (event) => {
+      setDescription(event.target.value);
+  };
+
+  const handleTagsChange = (event, newValue) => {
+    setTags(newValue);
+  };
+  
+
+    const handleIngredientsChange = (event) => {
       const newText = event.target.value;
       const lines = newText.split("\n").map((line) => line.trimStart());
   
@@ -81,15 +99,31 @@ const AddRecipeCard = () => {
       }
       };
 
-    const handleFileChange = (event) => {
-      if (event.target.files.length > 0) {
-          setFileName(event.target.files[0].name);
-      } else {
+      const handleFileChange = (event) => {
+        const imagePath = event.target.value;
+        
+        if (imagePath.trim()) {
+          setFileName(imagePath);
+        } else {
           setFileName(null);
-      }
+        }
+      };
+
+  const handleSubmitForm = () => {
+    if (!isFormValid || isSubmitting) return;
+    
+    handleSubmit({
+      name,
+      description,
+      text,
+      minutes,
+      tags,
+      fileName
+    });
+  
   };
   
-
+    const isFormValid = name.trim() !== '' && description.trim() !== '' && minutes !== '';
 
     return (
       <div class="flex flex-col items-center justify-center w-full">
@@ -106,7 +140,8 @@ const AddRecipeCard = () => {
                   required
                   id="outlined-required"
                   label="Name"
-                  defaultValue=""
+                  value={name}
+                  onChange={handleNameChange}
                   sx={green}
                 />
               </Box>
@@ -120,7 +155,7 @@ const AddRecipeCard = () => {
                     id="demo-simple-select-required"
                     value={minutes}
                     label="Cooking time*"
-                    onChange={handleChange}
+                    onChange={handleMinutesChange}
                   >
                       <MenuItem value={15}>15 min</MenuItem>
                       <MenuItem value={30}>30 min</MenuItem>
@@ -141,12 +176,12 @@ const AddRecipeCard = () => {
                   rows={6}
                   variant="outlined"
                   value={text}
-                  onChange={handle_Change}
+                  onChange={handleIngredientsChange}
                   onKeyDown={handleKeyDown}
                   sx={green }
                 />
               </Box>
-
+              
               <div class="ml-10">
                 <Box>
                   <TextField
@@ -154,9 +189,10 @@ const AddRecipeCard = () => {
                         required
                         id="outlined-multiline-static"
                         label="Description"
+                        value={description}
+                        onChange={handleDescriptionChange}
                         multiline
                         rows={6}
-                        defaultValue=""
                       />
                 </Box>
               </div>
@@ -166,10 +202,11 @@ const AddRecipeCard = () => {
               <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
-                options={tags}
+                options={available_tags}
                 sx={green}
                 disableCloseOnSelect
                 getOptionLabel={(option) => option}
+                onChange={handleTagsChange}
                 renderOption={(props, option, { selected }) => {
                   const { key, ...optionProps } = props;
                   return (
@@ -179,7 +216,6 @@ const AddRecipeCard = () => {
                         checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
                         checked={selected}
-                        
                       />
                       {option}
                     </li>
@@ -187,24 +223,38 @@ const AddRecipeCard = () => {
                 }}
                 style={{ width: 500 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Tags" />
+                  <TextField 
+                  {...params} 
+                  label="Tags"
+                   />
                 )}
               />
             </div>
           </div>
 
           <div 
-              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col cursor-pointer"
-              onClick={() => document.getElementById("fileInput").click()}
+              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col"
+              
             >
 
             <div className="font-bold">Add an image</div>
-
+            <div>
+              <input
+                type="text" // this should be "text" if you're expecting a string path
+                className="border-2 border-green-700 p-2 rounded-md w-full focus:outline-none"
+                onChange={handleFileChange}
+                placeholder="Enter image path here"
+              />
+            </div>
+              {/*
             <div className="text-gray-500">
               {fileName ? fileName : "Drag and drop a file here"}
             </div>
-
-            <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800">
+              
+            <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800 cursor-pointer"
+            onClick={() => document.getElementById("fileInput").click()}
+            >
+              
               <input 
                 type="file" 
                 id="fileInput" 
@@ -213,12 +263,19 @@ const AddRecipeCard = () => {
             />
               Browse Files
             </div>
+            */}
           </div>
         </div>
 
-        <div className="bg-green-700 text-white font-bold text-xl p-2 mt-20 rounded-[5px] hover:bg-green-800 w-fit items-center"> 
+        <div
+          className={`font-bold text-xl p-2 mt-20 rounded-[5px] w-fit items-center ${
+            isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : 'bg-gray-400 text-white cursor-not-allowed'
+          }`}
+          onClick={isFormValid && !isSubmitting ? handleSubmitForm : null}
+        >
           Upload recipe
-        </div>
+      </div>
+
       </div>
         
 
