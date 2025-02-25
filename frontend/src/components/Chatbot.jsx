@@ -46,19 +46,18 @@ const Chatbot = () => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 p-4">
-      <Header className="text-2xl font-bold text-center mb-4">Gordon RamsAI</Header>
-      <div className="flex-1 overflow-y-auto p-4 bg-white shadow-md rounded-lg space-y-3">
-        <MessageList messages={messages} chatEndRef={chatEndRef} />
-        {loading && <Loader />}
-        <div ref={chatEndRef}></div>
-      </div>
-      <div className="mt-4 flex items-center bg-white p-3 shadow-md rounded-lg">
-        <InputBox input={input} setInput={setInput} sendMessage={sendMessage} />
-      </div>
+  <div className="flex flex-col items-center justify-center h-screen space-y-4">
+    <Header className="text-2xl font-bold text-center">Gordon RamsAI</Header>
+    <div className="flex flex-col items-center space-y-4">
+      <MessageList messages={messages} chatEndRef={chatEndRef} />
+      {loading && <Loader />}
+      <div ref={chatEndRef}></div>
+      <InputBox input={input} setInput={setInput} sendMessage={sendMessage} />
       <ResetButton onReset={resetChat} />
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Chatbot;

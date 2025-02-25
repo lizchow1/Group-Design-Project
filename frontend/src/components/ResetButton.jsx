@@ -19,7 +19,7 @@ const ResetButton = ({ onReset }) => {
   return (
     <button
       onClick={handleReset}
-      className="mt-4 p-2 bg-red-500 text-white rounded-lg"
+      className="mt-4 p-2 bg-red-500 text-black shadow-lg rounded-lg"
     >
       Reset Chat
     </button>
