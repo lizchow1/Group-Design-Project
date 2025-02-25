@@ -6,9 +6,9 @@ const AddRecipe = () => {
 
   return (
     <div className="montserrat-font flex flex-col justify-center items-center w-full"> 
-      <div class="text-5xl font-bold text-green-800 mb-12 text-center">
+      <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
         Add recipe
-      </div>
+      </h1>
 
       <div>
         <AddRecipeForm/>
