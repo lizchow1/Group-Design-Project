@@ -3,6 +3,7 @@
 from db import db
 from datetime import datetime
 
+
 class Recipe(db.Model):
     __tablename__ = 'recipes'
 
