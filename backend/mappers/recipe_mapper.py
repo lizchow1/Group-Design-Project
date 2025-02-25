@@ -7,7 +7,7 @@ class RecipeMapper:
 
     @staticmethod
     def getAllRecipes():
-        sql = text("SELECT id, image, name, username, tags, isBookmarked FROM recipes")
+        sql = text("SELECT id, image, name, username, tags, cooking_time, isBookmarked FROM recipes")
         result = db.session.execute(sql)
         recipes = result.fetchall()
         
@@ -18,6 +18,7 @@ class RecipeMapper:
                 "name": recipe.name,
                 "username": recipe.username,
                 "tags": recipe.tags.split(","),
+                "cooking_time": recipe.cooking_time,
                 "isBookmarked": recipe.isBookmarked,
             }
             for recipe in recipes
@@ -27,14 +28,7 @@ class RecipeMapper:
     def getRecipeByID(recipe_id):
         recipe = Recipe.query.get(recipe_id)
         if recipe:
-            return {
-                "id": recipe.id,
-                "image": recipe.image,
-                "name": recipe.name,
-                "username": recipe.username,
-                "tags": recipe.tags.split(","),
-                "isBookmarked": recipe.isBookmarked,
-            }
+            return recipe.to_dict()
         return None
 
     @staticmethod
@@ -43,19 +37,16 @@ class RecipeMapper:
             image=data["image"],
             name=data["name"],
             username=data["username"],
-            tags=",".join(data["tags"]),
+            tags=",".join(data["tags"]) if "tags" in data else "",
+            cooking_time=data["cooking_time"],
+            ingredients=data.get("ingredients", ""),
+            description=data.get("description", ""),
             isBookmarked=data.get("isBookmarked", False),
         )
         db.session.add(new_recipe)
         db.session.commit()
-        return {
-            "id": new_recipe.id,
-            "image": new_recipe.image,
-            "name": new_recipe.name,
-            "username": new_recipe.username,
-            "tags": new_recipe.tags.split(","),
-            "isBookmarked": new_recipe.isBookmarked,
-        }
+        return new_recipe.to_dict()
+
 
     @staticmethod
     def deleteRecipeByID(recipe_id):
