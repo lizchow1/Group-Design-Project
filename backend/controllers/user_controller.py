@@ -32,10 +32,10 @@ def login_user():
         return jsonify(result), 400
     return jsonify(result), 200
 
-# Get User By ID
-@user_bp.route("/users/<int:user_id>", methods=["GET"])
-def get_user_by_id(user_id):
-    user = UserService.get_user_by_id(user_id)
+# Get User By Firebase UID
+@user_bp.route("/users/firebase/<string:firebase_uid>", methods=["GET"])
+def get_user_by_firebase_uid(firebase_uid):
+    user = UserService.get_user_by_firebase_uid(firebase_uid)
     if user:
         return jsonify(user), 200
     return jsonify({"error": "User not found"}), 404

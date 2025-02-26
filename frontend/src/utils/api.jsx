@@ -56,3 +56,8 @@ export const loginUser = async (firebaseToken) => {
     });
     return response.json();
 };
+
+export const getUserByFirebaseUID = async (firebase_uid) => {
+    const response = await fetch(`${BASE_URL}/users/firebase/${firebase_uid}`);
+    return response.json();
+};

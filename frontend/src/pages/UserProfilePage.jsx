@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, CircularProgress } from "@mui/material";
+import { Typography, Box, CircularProgress, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
 import UserDetailsForm from "../components/UserDetailsForm";
 import RecipeCard from "../components/RecipeCard";
 import { getRecipes } from "../utils/api"; 
 
-const UserProfilePage = () => {
-  const [user, setUser] = useState({
-    email: "chef@example.com",
-    password: "password",
-    username: "ChefMaster",
-  });
-
+const UserProfilePage = ({ user }) => {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const auth = getAuth();
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -30,20 +28,38 @@ const UserProfilePage = () => {
     fetchRecipes();
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/signin"); 
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
-      <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
+      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
         User Profile
       </h1>
 
       <div className="flex flex-row gap-8 w-full max-w-7xl mt-16">
-        <div className="w-1/3 p-6 bg-white rounded-lg">
+        <div className="w-1/3 p-6 bg-white rounded-lg shadow-md flex flex-col items-center">
           <Typography variant="h5" gutterBottom align="center" className="text-green-800">
             Edit Profile
           </Typography>
-          <Box sx={{ mt: 3 }}>
-            <UserDetailsForm user={user} setUser={setUser} />
+          <Box sx={{ mt: 3, width: "100%" }}>
+            <UserDetailsForm user={user} />
           </Box>
+
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleLogout}
+            sx={{ mt: 4, width: "100%" }} 
+          >
+            Logout
+          </Button>
         </div>
 
         <div className="w-2/3 flex flex-col items-center">
@@ -62,9 +78,9 @@ const UserProfilePage = () => {
           ) : recipes.length === 0 ? (
             <p className="text-gray-500">No recipes found.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {recipes.map((recipe, index) => (
-                <RecipeCard key={index} {...recipe} />
+                <RecipeCard key={index} {...recipe} small />
               ))}
             </div>
           )}

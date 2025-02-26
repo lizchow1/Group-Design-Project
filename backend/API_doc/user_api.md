@@ -68,8 +68,8 @@
 }
 ```
 
-#### Get User By ID
-1. URL: `/api/users/<int:user_id>`
+#### Get User By firebase_uid
+1. URL: `/api/users/<string:firebase_uid>`
 2. Method: `GET`
 3. Request format: `null`
 4. Response format:

@@ -59,7 +59,7 @@ const AuthBox = ({ title, isSignUp }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded text-black border">
+        <button type="submit" className="w-full bg-gray-600 hover:bg-gray-500 text-black py-2 rounded border">
           {title}
         </button>
       </form>
