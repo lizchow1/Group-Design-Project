@@ -7,6 +7,7 @@ import ChatbotPage from "./pages/ChatbotPage";
 import SignIn from "./pages/SignIn";
 import { auth } from "./utils/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const App = () => {
   const [user] = useAuthState(auth);
@@ -25,8 +26,9 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/saved-recipes" element={<SavedRecipes />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
+              <Route path="/user-profile" element={<UserProfilePage />} />
               <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
+          </Routes>
           </div>
         </div>
       ) : (
