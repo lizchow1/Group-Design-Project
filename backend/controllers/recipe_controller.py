@@ -53,7 +53,6 @@ def delete_all_recipe():
             "message": "No recipes found",
             "deleted_count": deleted_count    
         }), 200
-<<<<<<< HEAD
     
 # Update Recipe By Recipe Creator
 @recipe_bp.route("/recipes/update/<int:recipe_id>", methods=["PUT"])
@@ -63,7 +62,6 @@ def update_recipe(recipe_id):
     if updated_recipe:
         return jsonify(updated_recipe), 200
     return jsonify({"error": "Recipe not found or update failed"}), 404
-=======
 
 # Get Recipes By Tags
 @recipe_bp.route("/recipes/filter", methods=["GET"])
@@ -74,4 +72,3 @@ def get_recipes_by_tags():
     
     filtered_recipes = RecipeService.get_recipes_by_tags(tags)
     return jsonify(filtered_recipes), 200
->>>>>>> main

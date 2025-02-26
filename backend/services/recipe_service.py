@@ -35,6 +35,9 @@ class RecipeService:
                     username=item["username"],
                     tags=tags_str,
                     isBookmarked=item["isBookmarked"],
+                    cooking_time=item["cooking_time"],  
+                    ingredients=item["ingredients"],    
+                    description=item["description"]
                 )
                 new_recipes.append(recipe)
 
