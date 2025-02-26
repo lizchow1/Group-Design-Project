@@ -32,7 +32,7 @@ const UserProfilePage = () => {
 
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
-      <h1 className="text-3xl font-bold mt-6 absolute top-6 text-green-800 z-20">
+      <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
         User Profile
       </h1>
 

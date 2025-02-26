@@ -46,8 +46,10 @@ const Chatbot = () => {
   }, [messages]);
 
   return (
-  <div className="flex flex-col items-center justify-center h-screen space-y-4">
-    <Header className="text-2xl font-bold text-center">Gordon RamsAI</Header>
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24 pt-24"> 
+      <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
+        Gordon RamsAI
+      </h1>
     <div className="flex flex-col items-center space-y-4">
       <MessageList messages={messages} chatEndRef={chatEndRef} />
       {loading && <Loader />}

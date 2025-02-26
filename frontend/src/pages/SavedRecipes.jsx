@@ -23,9 +23,10 @@ const SavedRecipes = () => {
   }, []);
 
   return (
-    <div className='flex flex-wrap gap-8 ml-20 mt-16 mb-16'
-
-    >
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24 pt-24"> 
+      <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
+        Your Saved Recipes
+      </h1>
         {recipes.map((recipe) => (
  
             <RecipeCard

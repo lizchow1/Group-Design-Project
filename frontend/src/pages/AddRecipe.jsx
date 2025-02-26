@@ -46,7 +46,7 @@ const AddRecipe = () => {
   }, [isSubmitting]);
   
   return (
-    <div className="montserrat-font flex flex-col justify-center items-center w-full"> 
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24 pt-24"> 
       <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
         Add recipe
       </h1>
