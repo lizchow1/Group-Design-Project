@@ -1,4 +1,5 @@
-1. run `pip install -r requirements.txt` to install all requirements
+### Step 1
+run `pip install -r requirements.txt` to install all requirements
 
 I added firebase. Here are the instructions.
 1. Go to `Firebase`, right click `settings`, choose `Service Account`. Then generate a new private key.
@@ -9,6 +10,20 @@ I added firebase. Here are the instructions.
 4. Check if the environment variable is set properly
 
 Go to terminal, enter `echo $FIREBASE_CREDENTIALS`. If there is a return path, you set the environment variable properly.
+
+### Step 2
+Chatbot Instantiation
+
+First, download and run Ollama
+
+```sh
+https://ollama.com/download
+```
+
+Second, run the following in backend:
+
+```sh
+ollama run llama3.2
 
 **For Windows users, please ask ChatGPT! Sorry about that!**
 #### Get All Recipes
