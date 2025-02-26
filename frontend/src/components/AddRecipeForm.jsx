@@ -237,11 +237,11 @@ const AddRecipeCard = ({ handleSubmit }) => {
               
             >
 
-            <div className="font-bold">Add an image</div>
+            <div className="font-bold text-gray-500">Add an image</div>
             <div>
               <input
                 type="text" // this should be "text" if you're expecting a string path
-                className="border-2 border-green-700 p-2 rounded-md w-full focus:outline-none"
+                className="border-2 border-gray-500 p-2 rounded-md w-full focus:outline-none text-black"
                 onChange={handleFileChange}
                 placeholder="Enter image path here"
               />

@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 app.config.from_object("config")
 
-print("Database SCHEMA_VERSION:", app.config.get("SCHEMA_VERSION"))
+CORS(app)
 
 init_db(app)
 CORS(app)  # Enable CORS for frontend requests

@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import AddRecipeCard from "../components/AddRecipeForm";
 
 
-const AddRecipe = () => {
+const AddRecipe = ({user}) => {
  
   const isSubmitting = useState(false);
 
 
   const handleSubmit = async ({ name, description, text, minutes, tags, fileName }) => {
+    if (!user) {
+      alert("User not found. Please log in.");
+      return;
+    }
   
     const recipeData = {
       image: fileName || "",
       name,
-      username: "defaultUser",
+      username: user.username,
       tags: tags.join(","),
       cooking_time: minutes,
       ingredients: text,
@@ -46,8 +50,8 @@ const AddRecipe = () => {
   }, [isSubmitting]);
   
   return (
-    <div className="montserrat-font flex flex-col justify-center items-center w-full"> 
-      <h1 class="text-3xl font-bold mt-6 top-6 text-black z-20 text-center mb-12">
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24 pt-24"> 
+      <h1 class="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
         Add recipe
       </h1>
 

@@ -89,8 +89,8 @@ class UserService:
         return user
     
     @staticmethod
-    def get_user_by_id(user_id):
-        return UserMapper.getUserByID(user_id)
+    def get_user_by_firebase_uid(firebase_uid):
+        return UserMapper.getUserByFirebaseUID(firebase_uid)
     
     @staticmethod
     def get_user_by_username(username):

@@ -4,16 +4,74 @@ from mappers.recipe_mapper import RecipeMapper
 
 # dummy recipes for testing
 DUMMY_RECIPES = [
+        {
+      "id": 1,
+      "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
+      "name": "Vegan Cobb Salad",
+      "username": "chef123",
+      "tags": ["15 mins", "vegan", "easy"],
+      "cooking_time": "15 mins",  # 新增
+      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
+      "description": "A healthy vegan salad",  # 示例
+      "isBookmarked": False
+    },
     {
-        "id": 1,
-        "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
-        "name": "Vegan Cobb Salad",
-        "username": "chef123",
-        "tags": ["15 mins", "vegan", "easy"],
-        "cooking_time": "15 mins",  # 新增
-        "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-        "description": "A healthy vegan salad",  # 示例
-        "isBookmarked": False
+      "id": 2,
+      "image": "https://www.recipetineats.com/tachyon/2018/04/Chicken-Tikka-Masala_0-SQ.jpg",
+      "name": "Tikki Masala",
+      "username": "chef124",
+      "tags": ["60 mins", "indian"],
+      "cooking_time": "15 mins",  # 新增
+      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
+      "description": "A healthy vegan salad",  # 示例
+      "isBookmarked": False
+    },
+    {
+      "id": 3,
+      "image": "https://eu.ooni.com/cdn/shop/articles/pepperoni-pizza_6ac5fa40-65b7-4e3b-a8b9-7ca5ccc05dfd.jpg?crop=center&height=800&v=1737105987&width=800",
+      "name": "Gluten free pizza",
+      "username": "chef125",
+      "tags": ["30 mins", "italian", "comfort food", "easy"],
+      "cooking_time": "15 mins",  # 新增
+      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
+      "description": "A healthy vegan salad",  # 示例
+      "isBookmarked": False
+    },
+
+    {
+      "id": 4,
+      "image": "https://static01.nyt.com/images/2024/01/10/multimedia/ND-Shoyu-Ramen-qflv/ND-Shoyu-Ramen-qflv-mediumSquareAt3X.jpg",
+      "name": "Ramen",
+      "username": "chef126",
+      "tags": ["45 mins", "asian", "comfort food"],
+      "cooking_time": "15 mins",  # 新增
+      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
+      "description": "A healthy vegan salad",  # 示例
+      "isBookmarked": False
+    },
+
+    {
+      "id": 5,
+      "image": "https://images.ctfassets.net/uexfe9h31g3m/6QtnhruEFi8qgEyYAICkyS/6e36729731887703608f28e92f10cb49/Spaghetti_bolognese_4x3_V2_LOW_RES.jpg?w=768&h=512&fm=webp&fit=thumb&q=90",
+      "name": "Vegan Spaghetti bolognese",
+      "username": "chef127",
+      "tags": ["30 mins", "healthy", "vegan"],
+      "cooking_time": "15 mins",  # 新增
+      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
+      "description": "A healthy vegan salad",  # 示例
+      "isBookmarked": False
+    },
+
+    {
+      "id": 6,
+      "image": "https://thebigmansworld.com/wp-content/uploads/2024/06/salmon-poke-bowl-recipe.jpg",
+      "name": "Poke bowl",
+      "username": "chef128",
+      "tags": ["25 mins", "healthy", "easy"],
+      "cooking_time": "15 mins",  # 新增
+      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
+      "description": "A healthy vegan salad",  # 示例
+      "isBookmarked": False
     }
 ]
 

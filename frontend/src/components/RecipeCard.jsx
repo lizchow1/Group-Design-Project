@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 
-const RecipeCard = ({ image, video, name, username, tags }) => {
+const RecipeCard = ({ image, video, name, username, tags, small }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleBookmarkToggle = () => {
@@ -10,7 +10,7 @@ const RecipeCard = ({ image, video, name, username, tags }) => {
   };
 
   return (
-    <div className="relative bg-white rounded-2xl shadow-lg border border-gray-200 w-[500px] min-w-[400px] mx-auto bg-gray-100">
+    <div className={`relative bg-white rounded-2xl shadow-lg border border-gray-200 ${small ? "w-[400px] min-w-[350px]" : "w-[500px] min-w-[400px]"} mx-auto bg-gray-100`}>
       <div className="relative overflow-hidden rounded-t-2xl">
         {video ? (
           <video src={video} className="w-full h-[300px] object-cover" controls />
