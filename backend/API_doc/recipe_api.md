@@ -1,26 +1,3 @@
-1. run `pip install -r requirements.txt` to install all requirements
-
-I added firebase. Here are the instructions.
-1. Go to `Firebase`, right click `settings`, choose `Service Account`. Then generate a new private key.
-![alt text](<src/img/截屏2025-02-19 18.15.57.png>)
-2. Download the key. It will be a `.json` file.
-3. Set the environment variable permanently
-![alt text](<src/img/截屏2025-02-19 18.18.46.png>)
-4. Check if the environment variable is set properly
-### 2. Chatbot Instantiation
-
-First, download and run Ollama
-
-```sh
-https://ollama.com/download
-```
-
-Second, run the following in backend:
-
-```sh
-ollama run llama3.2
-```
-
 #### Get All Recipes
 1. URL: `/api/recipes`
 2. Method: `GET`
@@ -31,9 +8,8 @@ ollama run llama3.2
     {
         "id": 1,
         "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
-        "isBookmarked": false,
+        "isBookmarked": 0,
         "name": "Vegan Cobb Salad",
-        "text": "Lorem ipsum",
         "tags": [
             "15 mins",
             "vegan",
@@ -44,9 +20,8 @@ ollama run llama3.2
     {
         "id": 2,
         "image": "https://www.recipetineats.com/tachyon/2018/04/Chicken-Tikka-Masala_0-SQ.jpg",
-        "isBookmarked": false,
+        "isBookmarked": 0,
         "name": "Tikki Masala",
-        "text": "Lorem ipsum",
         "tags": [
             "60 mins",
             "indian"
@@ -76,7 +51,6 @@ ollama run llama3.2
     "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
     "isBookmarked": false,
     "name": "Vegan Cobb Salad",
-    "text": "Lorem ipsum",
     "tags": [
         "15 mins",
         "vegan",
@@ -98,7 +72,6 @@ ollama run llama3.2
 {
     "image": "https://example.com/images/salad.jpg",
     "name": "Mediterranean Salad",
-    "text": "Lorem ipsum",
     "username": "chef_mark",
     "tags": ["10 mins", "healthy", "vegetarian"],
     "isBookmarked": true
@@ -111,7 +84,6 @@ ollama run llama3.2
     "image": "https://example.com/images/salad.jpg",
     "isBookmarked": true,
     "name": "Mediterranean Salad",
-    "text": "Lorem ipsum",
     "tags": [
         "10 mins",
         "healthy",
@@ -153,39 +125,4 @@ ollama run llama3.2
     "deleted_count": 0,
     "message": "No recipes found"
 }
-
-
 ```
-
-### Get Recipes By Tags
-1. URL: `/api/recipes/filter`
-2. Method: `GET`
-3. Request format: Query parameters with `tags` (can include multiple tags)
-   Example: `/api/recipes/filter?tags=vegan&tags=easy`
-4. Response format
-```json
-[
-    {
-        "id": 1,
-        "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
-        "isBookmarked": false,
-        "name": "Vegan Cobb Salad",
-        "text": "Lorem ipsum",
-        "tags": [
-            "15 mins",
-            "vegan",
-            "easy"
-        ],
-        "username": "chef123"
-    }
-]
-```
-```json
-{
-    "error": "No tags provided"
-}
-```
-
-Go to terminal, enter `echo $FIREBASE_CREDENTIALS`. If there is a return path, you set the environment variable properly.
-
-**For Windows users, please ask ChatGPT! Sorry about that!**

@@ -1,6 +1,11 @@
 flask
 flask-cors
 mysql-connector-python
+<<<<<<< HEAD
+sqlalchemy
+firebase-admin
+=======
 flask_migrate
 flask-sqlalchemy
 langchain~=0.3.17
+>>>>>>> main

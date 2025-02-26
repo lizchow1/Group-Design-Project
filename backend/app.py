@@ -4,15 +4,19 @@ from flask_migrate import Migrate
 from db import db, init_db
 from controllers.user_controller import user_bp
 from controllers.recipe_controller import recipe_bp
+from flask_cors import CORS
 from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaLLM
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 app.config.from_object("config")
 
+print("Database SCHEMA_VERSION:", app.config.get("SCHEMA_VERSION"))
+
+init_db(app)
 CORS(app)  # Enable CORS for frontend requests
-init_db(app)  # Initialize database
 
 # Register blueprints
 app.register_blueprint(user_bp, url_prefix="/api")
