@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "fire
 import { useNavigate } from "react-router-dom";
 import { registerUser, loginUser } from "../utils/api";
 import { auth } from "../utils/firebaseConfig.jsx";
-
+import { getUserByFirebaseUID } from "../utils/api"; 
 
 const AuthBox = ({ title, isSignUp }) => {
   const [email, setEmail] = useState("");
@@ -22,6 +22,7 @@ const AuthBox = ({ title, isSignUp }) => {
         } else {
             userCredential = await signInWithEmailAndPassword(auth, email, password);
         }
+
         const firebaseToken = await userCredential.user.getIdToken();
         let response;
         if (isSignUp) {
@@ -30,12 +31,20 @@ const AuthBox = ({ title, isSignUp }) => {
             response = await loginUser(firebaseToken);
         }
 
+        console.log("Register/Login Response:", response); // Debugging log
+
+        // Fetch user data after login/register
+        const userData = await getUserByFirebaseUID(userCredential.user.uid);
+        console.log("Fetched user data:", userData);
+
         navigate("/");
     } catch (err) {
         console.error("Auth Error:", err);
         setError(err.message || "Authentication failed. Please check your credentials.");
     }
 };
+
+
 
 
   return (

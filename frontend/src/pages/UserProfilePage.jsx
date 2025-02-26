@@ -4,25 +4,31 @@ import { useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import UserDetailsForm from "../components/UserDetailsForm";
 import RecipeCard from "../components/RecipeCard";
-import { getRecipes } from "../utils/api"; 
+import { getUserRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api"; 
 
-const UserProfilePage = ({ user }) => {
+const UserProfilePage = ({ user: initialUser }) => {  
+  const [user, setUser] = useState(initialUser);  
   const [recipes, setRecipes] = useState([]);
+  const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const auth = getAuth();
 
   useEffect(() => {
-    if(!user) {
+    if (!user) {
       navigate("/signin");
       return;
     }
 
-    const fetchRecipes = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getRecipes();
-        setRecipes(data);
+        const userRecipes = await getUserRecipes(user.username);
+        setRecipes(userRecipes);
+
+        const bookmarkedData = await getBookmarkedRecipes(user.username);
+        setBookmarkedRecipes(new Set(bookmarkedData.map((r) => r.id)));
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -30,8 +36,35 @@ const UserProfilePage = ({ user }) => {
       }
     };
 
-    fetchRecipes();
-  }, []);
+    fetchData();
+  }, [user]);
+
+  const handleToggleBookmark = async (recipeId) => {
+    if (!user) {
+      console.error("User not logged in");
+      return;
+    }
+
+    try {
+      const result = await toggleBookmark(recipeId, user.username);
+
+      if (!result.error) {
+        setBookmarkedRecipes((prevBookmarks) => {
+          const updatedBookmarks = new Set(prevBookmarks);
+          if (result.isBookmarked) {
+            updatedBookmarks.add(recipeId);
+          } else {
+            updatedBookmarks.delete(recipeId);
+          }
+          return updatedBookmarks;
+        });
+      } else {
+        console.error("Toggle bookmark error: ", result.error);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark: ", error);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -54,7 +87,7 @@ const UserProfilePage = ({ user }) => {
             Edit Profile
           </Typography>
           <Box sx={{ mt: 3, width: "100%" }}>
-            <UserDetailsForm user={user} />
+            <UserDetailsForm user={user} setUser={setUser} />  
           </Box>
 
           <Button
@@ -81,11 +114,21 @@ const UserProfilePage = ({ user }) => {
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : recipes.length === 0 ? (
-            <p className="text-gray-500">No recipes found.</p>
+            <p className="text-gray-500">You haven't created any recipes yet.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-              {recipes.map((recipe, index) => (
-                <RecipeCard key={index} {...recipe} small />
+              {recipes.map((recipe) => (
+                <RecipeCard
+                  key={recipe.id}
+                  image={recipe.image}
+                  video={recipe.video}
+                  name={recipe.name}
+                  username={recipe.username}
+                  tags={recipe.tags}
+                  isBookmarked={bookmarkedRecipes.has(recipe.id)} 
+                  onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+                  small
+                />
               ))}
             </div>
           )}

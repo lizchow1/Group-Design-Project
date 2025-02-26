@@ -2,12 +2,17 @@ from db import db
 from models.recipe_model import Recipe
 from datetime import datetime
 from sqlalchemy import text
+from models.bookmark_model import Bookmark
 
 class RecipeMapper:
 
     @staticmethod
     def getAllRecipes():
-        sql = text("SELECT id, image, name, username, tags, cooking_time, isBookmarked FROM recipes")
+        sql = text("""
+            SELECT r.id, r.image, r.name, r.username, r.tags, r.cooking_time, 
+                   r.isBookmarked, r.ingredients, r.description
+            FROM recipes r
+        """)
         result = db.session.execute(sql)
         recipes = result.fetchall()
         
@@ -17,8 +22,10 @@ class RecipeMapper:
                 "image": recipe.image,
                 "name": recipe.name,
                 "username": recipe.username,
-                "tags": recipe.tags.split(","),
+                "tags": recipe.tags.split(",") if recipe.tags else [],
                 "cooking_time": recipe.cooking_time,
+                "ingredients": recipe.ingredients,
+                "description": recipe.description,
                 "isBookmarked": recipe.isBookmarked,
             }
             for recipe in recipes
@@ -89,3 +96,43 @@ class RecipeMapper:
             db.session.commit()
             return recipe.to_dict()
         return None
+
+    @staticmethod
+    def toggleBookmark(username, recipe_id):
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            return {"error": "Recipe not found"}
+
+        existing_bookmark = Bookmark.query.filter_by(
+            username=username,
+            recipe_id=recipe_id
+        ).first()
+
+        if existing_bookmark:
+            # Remove bookmark
+            db.session.delete(existing_bookmark)
+            db.session.commit()
+            return {"message": "Bookmark removed", "isBookmarked": False}
+        else:
+            # Add bookmark
+            new_bookmark = Bookmark(username=username, recipe_id=recipe_id)
+            db.session.add(new_bookmark)
+            db.session.commit()
+            return {"message": "Bookmark added", "isBookmarked": True}
+
+    @staticmethod
+    def getUserBookmarks(username):
+        # Get all bookmarked recipes for a user
+        bookmarked_recipes = db.session.query(Recipe).join(
+            Bookmark, Recipe.id == Bookmark.recipe_id
+        ).filter(
+            Bookmark.username == username
+        ).all()
+
+        return [recipe.to_dict() for recipe in bookmarked_recipes]
+
+    @staticmethod
+    def getUserRecipes(username):
+        # Get all recipes created by the user
+        recipes = Recipe.query.filter_by(username=username).all()
+        return [recipe.to_dict() for recipe in recipes]

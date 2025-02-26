@@ -61,3 +61,36 @@ export const getUserByFirebaseUID = async (firebase_uid) => {
     const response = await fetch(`${BASE_URL}/users/firebase/${firebase_uid}`);
     return response.json();
 };
+
+export const toggleBookmark = async (recipeId, username) => {
+    const response = await fetch(`${BASE_URL}/recipes/${recipeId}/bookmark`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+    });
+
+    return response.json();
+};
+
+export const getBookmarkedRecipes = async (username) => {
+    const response = await fetch(`${BASE_URL}/recipes/bookmarks/${username}`);
+    return response.json();
+  };
+  
+  export const getUserRecipes = async (username) => {
+    const response = await fetch(`${BASE_URL}/recipes/user/${username}`);
+    return response.json();
+  };
+  
+  export const updateUserProfile = async (firebaseToken, email, username) => {
+    const response = await fetch(`${BASE_URL}/users/profile`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ firebaseToken, email, username }),
+    });
+    return response.json();
+};

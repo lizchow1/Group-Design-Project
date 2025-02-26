@@ -27,11 +27,19 @@ const App = () => {
 
   const fetchUserData = async (firebase_uid) => {
     try {
-        const response = await getUserByFirebaseUID(firebase_uid);
+        let response = await getUserByFirebaseUID(firebase_uid);
+        
+        // If user not found, wait 1 second and retry
         if (response.error) {
-            console.error("Error fetching user:", response.error);
+            console.warn("User data not found, retrying in 1 second...");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            response = await getUserByFirebaseUID(firebase_uid);
+        }
+
+        if (response.error) {
+            console.error("Error fetching user after retry:", response.error);
         } else {
-            setUserData(response); // Set the user details in the frontend state
+            setUserData(response); // Set user data in state
         }
     } catch (error) {
         console.error("Failed to fetch user details", error);
@@ -46,9 +54,9 @@ const App = () => {
           <Navbar />
           <div className="flex-1 p-4">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home user={userData} />} />
               <Route path="/add-recipe" element={<AddRecipe user={userData} />} />
-              <Route path="/saved-recipes" element={<SavedRecipes />} />
+              <Route path="/saved-recipes" element={<SavedRecipes user={userData} />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
               <Route path="*" element={<Navigate to="/" />} />

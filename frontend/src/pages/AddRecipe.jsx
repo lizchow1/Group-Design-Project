@@ -44,7 +44,7 @@ const AddRecipe = ({user}) => {
 
   useEffect(() => {
     if (isSubmitting) {
-      // Trigger API call when isSubmitting is true
+
       handleSubmit();
     }
   }, [isSubmitting]);
