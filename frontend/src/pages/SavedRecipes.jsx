@@ -23,8 +23,8 @@ const SavedRecipes = () => {
   }, []);
 
   return (
-    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen px-24 pt-24">
-      <h1 className="text-3xl font-bold text-green-600 z-20 text-center mb-12">
+    <div className="relative montserrat-font">
+      <h1 className="text-3xl font-bold text-green-600 z-20 text-center mb-12 px-24 pt-24">
         Your Saved Recipes
       </h1>
       <div className='flex flex-wrap gap-8 ml-20 mt-16 mb-16'>
