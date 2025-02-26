@@ -30,19 +30,19 @@ Let Me Cook is an application to help users discover, share, and personalise rec
    npx tailwindcss init -p
    ```
 
-4. Firebase Backend Setup:
+4. Firebase Frontend Setup:
     - Go to [Firebase Console](https://console.firebase.google.com/)
     - Click `Settings` > `General` > `Your apps`
     - Add the following to the file firebaseConfig.jsx in file `frontend/src/utils/firebaseConfig.jsx`:
        ```javascript
        const firebaseConfig = {
-         apiKey: "AIzaSyC2RZOAiSc8LvXd-q1_DbcDrCjMcX5h7V4",
-         authDomain: "group-design-project-79e91.firebaseapp.com",
-         projectId: "group-design-project-79e91",
-         storageBucket: "group-design-project-79e91.firebasestorage.app",
-         messagingSenderId: "915209196163",
-         appId: "1:915209196163:web:889c48e3d81e4d4eb4c1b6",
-         measurementId: "G-JDXDDYGQSQ"
+         apiKey: "API-KEY",
+         authDomain: "AUTH-DOMAIN",
+         projectId: "PROJECT-ID",
+         storageBucket: "STORAGE-BUCKET",
+         messagingSenderId: "MESSAGING-SENDER-ID",
+         appId: "APP-ID",
+         measurementId: "MEASUREMENT-ID"
        };
         ```
 
