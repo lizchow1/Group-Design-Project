@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Home = ({ user }) => {
   const [recipes, setRecipes] = useState([]);
@@ -42,7 +43,11 @@ const Home = ({ user }) => {
       (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting && !loading) {
-          setPage((prevPage) => prevPage + 1);
+          setLoading(true); 
+          setTimeout(() => {
+            setPage((prevPage) => prevPage + 1);
+            setLoading(false); 
+          }, 1000); 
         }
       },
       { rootMargin: "100px" }
@@ -89,14 +94,14 @@ const Home = ({ user }) => {
   };
 
   return (
-    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen pl-24 pt-24">
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen pl-24 pt-24"> 
       <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
         Let Me Cook
       </h1>
 
       {loading && !error && (
-        <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-10">
-          <div className="text-green-600 text-xl">Loading...</div>
+        <div className="flex items-center justify-center w-full py-6 mt-8">
+          <CircularProgress />
         </div>
       )}
 
@@ -115,8 +120,8 @@ const Home = ({ user }) => {
         ))}
       </div>
 
-      <div ref={loader} className="text-center">
-        {loading && !error && <p>Loading more recipes...</p>}
+      <div ref={loader} className="text-center mb-8">
+        {loading && !error && <CircularProgress />}
       </div>
     </div>
   );
