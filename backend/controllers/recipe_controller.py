@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from services.recipe_service import RecipeService
+from services.user_service import UserService
 
 recipe_bp = Blueprint("recipe", __name__)
 
@@ -72,3 +73,23 @@ def get_recipes_by_tags():
     
     filtered_recipes = RecipeService.get_recipes_by_tags(tags)
     return jsonify(filtered_recipes), 200
+
+# Toggle recipe bookmark
+@recipe_bp.route("/recipes/<int:recipe_id>/bookmark", methods=["POST"])
+def toggle_bookmark(recipe_id):
+    data = request.get_json()
+    username = data.get("username")
+    
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+    
+    result = RecipeService.toggle_bookmark(username, recipe_id)
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result), 200
+
+# Get user's bookmarked recipes
+@recipe_bp.route("/recipes/bookmarks/<string:username>", methods=["GET"])
+def get_bookmarked_recipes(username):
+    bookmarked_recipes = RecipeService.get_user_bookmarks(username)
+    return jsonify(bookmarked_recipes), 200
