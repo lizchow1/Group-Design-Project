@@ -79,3 +79,8 @@ export const getBookmarkedRecipes = async (username) => {
     return response.json();
   };
   
+  export const getUserRecipes = async (username) => {
+    const response = await fetch(`${BASE_URL}/recipes/user/${username}`);
+    return response.json();
+  };
+  
