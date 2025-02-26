@@ -27,11 +27,19 @@ const App = () => {
 
   const fetchUserData = async (firebase_uid) => {
     try {
-        const response = await getUserByFirebaseUID(firebase_uid);
+        let response = await getUserByFirebaseUID(firebase_uid);
+        
+        // If user not found, wait 1 second and retry
         if (response.error) {
-            console.error("Error fetching user:", response.error);
+            console.warn("User data not found, retrying in 1 second...");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            response = await getUserByFirebaseUID(firebase_uid);
+        }
+
+        if (response.error) {
+            console.error("Error fetching user after retry:", response.error);
         } else {
-            setUserData(response); // Set the user details in the frontend state
+            setUserData(response); // Set user data in state
         }
     } catch (error) {
         console.error("Failed to fetch user details", error);
