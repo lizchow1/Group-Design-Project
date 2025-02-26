@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 
-const RecipeCard = ({ image, video, name, username, tags, small }) => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
-
-  const handleBookmarkToggle = () => {
-    setIsBookmarked((prev) => !prev);
-  };
-
+const RecipeCard = ({ image, video, name, username, tags, small, isBookmarked, onToggleBookmark }) => {
   return (
     <div className={`relative bg-white rounded-2xl shadow-lg border border-gray-200 ${small ? "w-[400px] min-w-[350px]" : "w-[500px] min-w-[400px]"} mx-auto bg-gray-100`}>
       <div className="relative overflow-hidden rounded-t-2xl">
@@ -35,7 +29,7 @@ const RecipeCard = ({ image, video, name, username, tags, small }) => {
       </div>
 
       <button
-        onClick={handleBookmarkToggle}
+        onClick={onToggleBookmark} 
         className="absolute bottom-6 right-6 text-gray-600 hover:text-green-600 transition"
         style={{
           background: "none",

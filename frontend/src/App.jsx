@@ -46,9 +46,9 @@ const App = () => {
           <Navbar />
           <div className="flex-1 p-4">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home user={userData} />} />
               <Route path="/add-recipe" element={<AddRecipe user={userData} />} />
-              <Route path="/saved-recipes" element={<SavedRecipes />} />
+              <Route path="/saved-recipes" element={<SavedRecipes user={userData} />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
               <Route path="*" element={<Navigate to="/" />} />

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import RecipeCard from "../components/RecipeCard";
-import { getRecipes } from "../utils/api";
+import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 
-const Home = () => {
+const Home = ({ user }) => {
   const [recipes, setRecipes] = useState([]);
+  const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [visibleRecipes, setVisibleRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,22 +12,31 @@ const Home = () => {
   const recipesPerPage = 2;
   const loader = useRef(null);
 
-  const fetchRecipes = async () => {
-    setLoading(true);
-    try {
-      const data = await getRecipes();
-      setRecipes(data);
-      setVisibleRecipes(data.slice(0, recipesPerPage));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchRecipes();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getRecipes();
+        setRecipes(data);
+
+        // Fetch bookmarked recipes if user is logged in
+        let bookmarkedSet = new Set();
+        if (user) {
+          const bookmarkedData = await getBookmarkedRecipes(user.username);
+          bookmarkedSet = new Set(bookmarkedData.map((r) => r.id));
+        }
+
+        setBookmarkedRecipes(bookmarkedSet);
+        setVisibleRecipes(data.slice(0, recipesPerPage)); // Ensure recipes load AFTER bookmarks
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,14 +58,40 @@ const Home = () => {
 
   useEffect(() => {
     if (recipes.length > 0) {
-      const nextRecipes = recipes.slice(0, page * recipesPerPage);
-      setVisibleRecipes(nextRecipes);
+      setVisibleRecipes(recipes.slice(0, page * recipesPerPage));
     }
   }, [page, recipes]);
 
+  const handleToggleBookmark = async (recipeId) => {
+    if (!user) {
+      console.error("User not logged in");
+      return;
+    }
+
+    try {
+      const result = await toggleBookmark(recipeId, user.username);
+
+      if (!result.error) {
+        setBookmarkedRecipes((prevBookmarks) => {
+          const updatedBookmarks = new Set(prevBookmarks);
+          if (result.isBookmarked) {
+            updatedBookmarks.add(recipeId);
+          } else {
+            updatedBookmarks.delete(recipeId);
+          }
+          return updatedBookmarks;
+        });
+      } else {
+        console.error("Toggle bookmark error: ", result.error);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark: ", error);
+    }
+  };
+
   return (
-    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen pl-24 pt-24"> 
-      <h1 class="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen pl-24 pt-24">
+      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
         Let Me Cook
       </h1>
 
@@ -70,10 +106,12 @@ const Home = () => {
           <RecipeCard
             key={recipe.id}
             image={recipe.image}
+            video={recipe.video}
             name={recipe.name}
             username={recipe.username}
             tags={recipe.tags}
-            isBookmarked={recipe.isBookmarked}
+            isBookmarked={bookmarkedRecipes.has(recipe.id)} // Ensures persistence
+            onToggleBookmark={() => handleToggleBookmark(recipe.id)}
           />
         ))}
       </div>
