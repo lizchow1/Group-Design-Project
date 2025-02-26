@@ -37,7 +37,6 @@ const SavedRecipes = ({ user }) => {
       const result = await toggleBookmark(recipeId, user.username);
 
       if (!result.error) {
-        // Remove the recipe from state since it is unbookmarked
         setRecipes((prevRecipes) =>
           prevRecipes.filter((recipe) => recipe.id !== recipeId)
         );
@@ -60,7 +59,7 @@ const SavedRecipes = ({ user }) => {
       )}
       {error && <div className="text-center text-red-500">{error}</div>}
 
-      <div className="flex flex-wrap gap-8 ml-20 mt-16 mb-16">
+      <div className="flex flex-wrap gap-8 ml-12 pr-12 mt-16 mb-16">
         {recipes.length === 0 && !loading && !error && (
           <p className="text-lg text-gray-600 text-center w-full">
             You haven't saved any recipes yet.
@@ -76,7 +75,7 @@ const SavedRecipes = ({ user }) => {
             username={recipe.username}
             tags={recipe.tags}
             isBookmarked={true} 
-            onToggleBookmark={() => handleUnbookmark(recipe.id)} // Call API to unbookmark
+            onToggleBookmark={() => handleUnbookmark(recipe.id)} 
           />
         ))}
       </div>

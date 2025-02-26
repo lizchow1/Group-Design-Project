@@ -6,7 +6,8 @@ import UserDetailsForm from "../components/UserDetailsForm";
 import RecipeCard from "../components/RecipeCard";
 import { getUserRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api"; 
 
-const UserProfilePage = ({ user }) => {
+const UserProfilePage = ({ user: initialUser }) => {  
+  const [user, setUser] = useState(initialUser);  
   const [recipes, setRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [loading, setLoading] = useState(true);
@@ -86,7 +87,7 @@ const UserProfilePage = ({ user }) => {
             Edit Profile
           </Typography>
           <Box sx={{ mt: 3, width: "100%" }}>
-            <UserDetailsForm user={user} />
+            <UserDetailsForm user={user} setUser={setUser} />  
           </Box>
 
           <Button
@@ -124,7 +125,7 @@ const UserProfilePage = ({ user }) => {
                   name={recipe.name}
                   username={recipe.username}
                   tags={recipe.tags}
-                  isBookmarked={bookmarkedRecipes.has(recipe.id)} // Ensure bookmarks stay consistent
+                  isBookmarked={bookmarkedRecipes.has(recipe.id)} 
                   onToggleBookmark={() => handleToggleBookmark(recipe.id)}
                   small
                 />

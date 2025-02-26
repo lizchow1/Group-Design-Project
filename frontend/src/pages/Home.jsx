@@ -19,7 +19,6 @@ const Home = ({ user }) => {
         const data = await getRecipes();
         setRecipes(data);
 
-        // Fetch bookmarked recipes if user is logged in
         let bookmarkedSet = new Set();
         if (user) {
           const bookmarkedData = await getBookmarkedRecipes(user.username);
@@ -27,7 +26,7 @@ const Home = ({ user }) => {
         }
 
         setBookmarkedRecipes(bookmarkedSet);
-        setVisibleRecipes(data.slice(0, recipesPerPage)); // Ensure recipes load AFTER bookmarks
+        setVisibleRecipes(data.slice(0, recipesPerPage)); 
       } catch (err) {
         setError(err.message);
       } finally {
@@ -110,7 +109,7 @@ const Home = ({ user }) => {
             name={recipe.name}
             username={recipe.username}
             tags={recipe.tags}
-            isBookmarked={bookmarkedRecipes.has(recipe.id)} // Ensures persistence
+            isBookmarked={bookmarkedRecipes.has(recipe.id)} 
             onToggleBookmark={() => handleToggleBookmark(recipe.id)}
           />
         ))}

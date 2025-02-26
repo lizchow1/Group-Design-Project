@@ -84,3 +84,13 @@ export const getBookmarkedRecipes = async (username) => {
     return response.json();
   };
   
+  export const updateUserProfile = async (firebaseToken, email, username) => {
+    const response = await fetch(`${BASE_URL}/users/profile`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ firebaseToken, email, username }),
+    });
+    return response.json();
+};
