@@ -39,14 +39,14 @@ const AuthBox = ({ title, isSignUp }) => {
 
 
   return (
-    <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md w-96 text-center montserrat-font">
+    <div className="bg-gray-300 text-black p-6 rounded-lg shadow-md w-96 text-center montserrat-font">
       <h2 className="text-xl mb-4">{title}</h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="w-full p-2 bg-gray-200 text-black rounded focus:outline-none focus:ring-2 focus:ring-gray-300"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -54,12 +54,12 @@ const AuthBox = ({ title, isSignUp }) => {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="w-full p-2 bg-gray-200 text-black rounded focus:outline-none focus:ring-2 focus:ring-gray-300"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded">
+        <button type="submit" className="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded text-black border">
           {title}
         </button>
       </form>
