@@ -37,7 +37,7 @@ class RecipeMapper:
             image=data["image"],
             name=data["name"],
             username=data["username"],
-            tags=",".join(data["tags"]) if "tags" in data else "",
+            tags=", ".join(data["tags"]) if isinstance(data["tags"], list) else data["tags"],
             cooking_time=data["cooking_time"],
             ingredients=data.get("ingredients", ""),
             description=data.get("description", ""),

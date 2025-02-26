@@ -1,5 +1,5 @@
 import pytest
-from chatbot import app
+from backend.chatbot.chatbot import app
 
 
 @pytest.fixture
