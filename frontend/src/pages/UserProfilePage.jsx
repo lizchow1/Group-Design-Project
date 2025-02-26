@@ -14,6 +14,11 @@ const UserProfilePage = ({ user }) => {
   const auth = getAuth();
 
   useEffect(() => {
+    if(!user) {
+      navigate("/signin");
+      return;
+    }
+
     const fetchRecipes = async () => {
       try {
         const data = await getRecipes();
