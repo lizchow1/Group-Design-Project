@@ -130,3 +130,9 @@ class RecipeMapper:
         ).all()
 
         return [recipe.to_dict() for recipe in bookmarked_recipes]
+
+    @staticmethod
+    def getUserRecipes(username):
+        # Get all recipes created by the user
+        recipes = Recipe.query.filter_by(username=username).all()
+        return [recipe.to_dict() for recipe in recipes]

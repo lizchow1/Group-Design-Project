@@ -93,3 +93,9 @@ def toggle_bookmark(recipe_id):
 def get_bookmarked_recipes(username):
     bookmarked_recipes = RecipeService.get_user_bookmarks(username)
     return jsonify(bookmarked_recipes), 200
+
+# Add this new endpoint
+@recipe_bp.route("/recipes/user/<string:username>", methods=["GET"])
+def get_user_recipes(username):
+    recipes = RecipeService.get_user_recipes(username)
+    return jsonify(recipes), 200

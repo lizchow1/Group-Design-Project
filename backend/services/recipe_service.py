@@ -155,3 +155,7 @@ class RecipeService:
     def get_user_bookmarks(username):
         return RecipeMapper.getUserBookmarks(username)
 
+    @staticmethod
+    def get_user_recipes(username):
+        return RecipeMapper.getUserRecipes(username)
+
