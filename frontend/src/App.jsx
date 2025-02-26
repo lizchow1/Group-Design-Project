@@ -4,8 +4,9 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SavedRecipes from "./pages/SavedRecipes";
 import ChatbotPage from "./pages/ChatbotPage";
-import AddRecipe from "./pages/AddRecipe";
 import SignIn from "./pages/SignIn";
+import UserProfilePage from "./pages/UserProfilePage";
+import AddRecipe from "./pages/AddRecipe";
 import UserProfilePage from "./pages/UserProfilePage";
 import { auth } from "./utils/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -20,13 +21,13 @@ const App = () => {
   return (
     <Router>
       {user ? (
-        <div className="flex w-full">
+        <div className="flex">
           <Navbar />
           <div className="flex-1 p-4">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/saved-recipes" element={<SavedRecipes />} />
               <Route path="/add-recipe" element={<AddRecipe />} />
+              <Route path="/saved-recipes" element={<SavedRecipes />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage />} />
               <Route path="*" element={<Navigate to="/" />} />
