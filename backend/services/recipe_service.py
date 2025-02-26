@@ -147,3 +147,11 @@ class RecipeService:
         
         return filtered_recipes
 
+    @staticmethod
+    def toggle_bookmark(username, recipe_id):
+        return RecipeMapper.toggleBookmark(username, recipe_id)
+
+    @staticmethod
+    def get_user_bookmarks(username):
+        return RecipeMapper.getUserBookmarks(username)
+
