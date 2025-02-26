@@ -7,7 +7,6 @@ import ChatbotPage from "./pages/ChatbotPage";
 import SignIn from "./pages/SignIn";
 import UserProfilePage from "./pages/UserProfilePage";
 import AddRecipe from "./pages/AddRecipe";
-import UserProfilePage from "./pages/UserProfilePage";
 import { auth } from "./utils/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 

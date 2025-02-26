@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { registerUser, loginUser } from "../utils/api";
@@ -15,31 +12,31 @@ const AuthBox = ({ title, isSignUp }) => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      setError(null);
-      try {
-          let userCredential;
-          if (isSignUp) {
-              userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          } else {
-              userCredential = await signInWithEmailAndPassword(auth, email, password);
-          }
+    e.preventDefault();
+    setError(null);
 
-          // Get Firebase Token
-          const firebaseToken = await userCredential.user.getIdToken();
+    try {
+        let userCredential;
+        if (isSignUp) {
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+            userCredential = await signInWithEmailAndPassword(auth, email, password);
+        }
+        const firebaseToken = await userCredential.user.getIdToken();
+        let response;
+        if (isSignUp) {
+            response = await registerUser(firebaseToken, email, email.split("@")[0]);
+        } else {
+            response = await loginUser(firebaseToken);
+        }
 
-          // Send Firebase Token to Backend
-          if (isSignUp) {
-              await registerUser(firebaseToken, email, email.split("@")[0]); // Use email prefix as username
-          } else {
-              await loginUser(firebaseToken);
-          }
+        navigate("/");
+    } catch (err) {
+        console.error("Auth Error:", err);
+        setError(err.message || "Authentication failed. Please check your credentials.");
+    }
+};
 
-          navigate("/"); // Redirect after authentication
-      } catch (err) {
-          setError("Authentication failed. Please check your credentials.");
-      }
-  };
 
   return (
     <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md w-96 text-center montserrat-font">
