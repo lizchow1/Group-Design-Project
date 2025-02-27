@@ -94,7 +94,26 @@ def get_bookmarked_recipes(username):
     bookmarked_recipes = RecipeService.get_user_bookmarks(username)
     return jsonify(bookmarked_recipes), 200
 
-# Add this new endpoint
+# Toggle following a user
+@recipe_bp.route("/users/<string:username>/follow", methods=["POST"])
+def toggle_follow_user(username):
+    data = request.get_json()
+    follower_username = data.get("follower_username")
+    
+    if not follower_username:
+        return jsonify({"error": "Follower username is required"}), 400
+    
+    if follower_username == username:
+        return jsonify({"error": "Users cannot follow themselves."}), 400
+    
+    result = UserService.toggle_follow(follower_username, username)
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result), 200
+
+
+
+# Get all recipes created by a user
 @recipe_bp.route("/recipes/user/<string:username>", methods=["GET"])
 def get_user_recipes(username):
     recipes = RecipeService.get_user_recipes(username)
