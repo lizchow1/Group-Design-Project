@@ -28,6 +28,19 @@ export const deleteRecipe = async (recipeId) => {
     return response.json();
 };
 
+export const updateRecipe = async (recipeId, updatedData) => {
+    const response = await fetch(`${BASE_URL}/recipes/update/${recipeId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+    });
+
+    return response.json();
+};
+
+
 export const deleteRecipeByID = async (recipeId) => {
     const response = await fetch(`${BASE_URL}/recipes/delete/${recipeId}`, {
         method: "DELETE",

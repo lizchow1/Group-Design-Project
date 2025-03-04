@@ -75,6 +75,10 @@ const UserProfilePage = ({ user: initialUser }) => {
     }
   };
 
+  const handleRecipeClick = (recipeID) => {
+    navigate(`/app/user-profile/${recipeID}`);
+  };
+
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
       <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
@@ -86,9 +90,12 @@ const UserProfilePage = ({ user: initialUser }) => {
           <Typography variant="h5" gutterBottom align="center" className="text-green-800">
             Edit Profile
           </Typography>
+          
+          
           <Box sx={{ mt: 3, width: "100%" }}>
             <UserDetailsForm user={user} setUser={setUser} />  
           </Box>
+            
 
           <Button
             variant="contained"
@@ -118,6 +125,7 @@ const UserProfilePage = ({ user: initialUser }) => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {recipes.map((recipe) => (
+                <div key={recipe.id} onClick={() => handleRecipeClick(recipe.id)} className="cursor-pointer">
                 <RecipeCard
                   key={recipe.id}
                   image={recipe.image}
@@ -129,6 +137,7 @@ const UserProfilePage = ({ user: initialUser }) => {
                   onToggleBookmark={() => handleToggleBookmark(recipe.id)}
                   small
                 />
+                </div>
               ))}
             </div>
           )}

@@ -7,7 +7,7 @@ const AddRecipe = ({user}) => {
   const isSubmitting = useState(false);
 
 
-  const handleSubmit = async ({ name, description, text, minutes, tags, fileName }) => {
+  const handleSubmit = async ({ name, description, ingredients, minutes, tags, fileName }) => {
     if (!user) {
       alert("User not found. Please log in.");
       return;
@@ -19,7 +19,7 @@ const AddRecipe = ({user}) => {
       username: user.username,
       tags: tags.join(","),
       cooking_time: minutes,
-      ingredients: text,
+      ingredients,
       description,
       isBookmarked: false
     };
