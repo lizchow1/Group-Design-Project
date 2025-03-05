@@ -18,7 +18,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
     const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
     
   const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
-  const [fileName, setFileName] = React.useState(initialData?.image || '');
+  const [image, setImage] = React.useState(initialData?.image || '' );
   const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "• ");
   const [name, setName] = React.useState(initialData?.name || '');
   const [description, setDescription] = React.useState(initialData?.description || '');
@@ -66,9 +66,8 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
         return line;
     });
 
-    // If there are no ingredients, set default value
     if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
-      setIngredients("• ");  // Default bullet if ingredients are empty
+      setIngredients("• ");
     } else {
       setIngredients(formattedLines.join("\n"));
     }
@@ -104,11 +103,14 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
 
       const handleFileChange = (event) => {
         const imagePath = event.target.value;
+        console.log("imagepath", imagePath);
         
         if (imagePath.trim()) {
-          setFileName(imagePath);
+          console.log("ja")
+          setImage(imagePath);
         } else {
-          setFileName(null);
+          console.log("nej")
+          setImage("");
         }
       };
 
@@ -121,7 +123,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
       ingredients,
       minutes,
       tags,
-      fileName
+      image
     });
     const updatedData = {
       name,
@@ -129,9 +131,9 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
       ingredients, // ingredients
       minutes,
       tags,
-      fileName
+      image
     };
-    console.log("Submit data:", handleSubmit);
+    console.log("Submit data:", image);
   
   };
   
@@ -246,17 +248,14 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
           </div>
 
           <div 
-              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col"
-              
-            >
-
+              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
             <div className="font-bold text-gray-500">Add an image</div>
             <div>
               <input
                 type="text" // this should be "text" if you're expecting a string path
                 className="border-2 border-gray-500 p-2 rounded-md w-full focus:outline-none text-black"
                 onChange={handleFileChange}
-                value={fileName}
+                value={image}
                 placeholder="Enter image path here"
               />
             </div>

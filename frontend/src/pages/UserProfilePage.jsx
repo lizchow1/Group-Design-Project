@@ -125,7 +125,7 @@ const UserProfilePage = ({ user: initialUser }) => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {recipes.map((recipe) => (
-                <div key={recipe.id} onClick={() => handleRecipeClick(recipe.id)} className="cursor-pointer">
+                <div key={recipe.id} className="cursor-pointer">
                 <RecipeCard
                   key={recipe.id}
                   image={recipe.image}
@@ -135,6 +135,7 @@ const UserProfilePage = ({ user: initialUser }) => {
                   tags={recipe.tags}
                   isBookmarked={bookmarkedRecipes.has(recipe.id)} 
                   onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+                  onFullDetailsClick={() => handleRecipeClick(recipe.id)}
                   small
                 />
                 </div>

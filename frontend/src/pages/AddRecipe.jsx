@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import AddRecipeCard from "../components/AddRecipeForm";
+import { useNavigate } from "react-router-dom";
+
 
 
 const AddRecipe = ({user}) => {
- 
   const isSubmitting = useState(false);
+  const navigate = useNavigate();
 
 
-  const handleSubmit = async ({ name, description, ingredients, minutes, tags, fileName }) => {
+  const handleSubmit = async ({ name, description, ingredients, minutes, tags, image }) => {
     if (!user) {
       alert("User not found. Please log in.");
       return;
     }
   
     const recipeData = {
-      image: fileName || "",
+      image: image || '',
       name,
       username: user.username,
       tags: tags.join(","),
@@ -23,6 +25,7 @@ const AddRecipe = ({user}) => {
       description,
       isBookmarked: false
     };
+    console.log("recipedata", recipeData);
   
     try {
       const response = await fetch("http://127.0.0.1:5000/api/recipes", {
@@ -30,12 +33,10 @@ const AddRecipe = ({user}) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(recipeData),
       });
-      console.log(response);
   
       if (!response.ok) throw new Error("Failed to create recipe");
-  
-      alert("Recipe created successfully!");
- 
+      navigate("/user-profile");
+   
     } catch (error) {
       alert("Error creating recipe: " + error.message);
     }
