@@ -7,6 +7,7 @@ import ChatbotPage from "./pages/ChatbotPage";
 import SignIn from "./pages/SignIn";
 import UserProfilePage from "./pages/UserProfilePage";
 import AddRecipe from "./pages/AddRecipe";
+import DishDetailsPage from "./pages/DishDetailsPage";
 import { auth } from "./utils/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getUserByFirebaseUID } from "./utils/api"; // Import the new API function
@@ -14,10 +15,10 @@ import { getUserByFirebaseUID } from "./utils/api"; // Import the new API functi
 const App = () => {
   const [firebaseUser] = useAuthState(auth);
   const [userData, setUserData] = useState(null);
-
+    
     useEffect(() => {
     auth.signOut(); // Sign out user when app loads
-  }, []);
+  }, []); 
 
   useEffect(() => {
     if (firebaseUser) {
@@ -50,6 +51,7 @@ const App = () => {
   return (
     <Router>
       {firebaseUser ? (
+        
         <div className="flex">
           <Navbar />
           <div className="flex-1 p-4">
@@ -59,10 +61,12 @@ const App = () => {
               <Route path="/saved-recipes" element={<SavedRecipes user={userData} />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
+              <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
         </div>
+        
       ) : (
         <Routes>
           <Route path="/sign-in" element={<SignIn />} />

@@ -14,15 +14,16 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const AddRecipeCard = ({ handleSubmit }) => {
+const AddRecipeCard = ({ handleSubmit, initialData }) => {
     const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
-    const [minutes, setMinutes] = React.useState('');
-    const [fileName, setFileName] = React.useState(null);
-    const [text, setText] = React.useState("• ");
-    const [name, setName] = React.useState('');
-    const [description, setDescription] = React.useState('');
-    const [tags, setTags] = React.useState([]);
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    
+  const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
+  const [image, setImage] = React.useState(initialData?.image || '' );
+  const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "• ");
+  const [name, setName] = React.useState(initialData?.name || '');
+  const [description, setDescription] = React.useState(initialData?.description || '');
+  const [tags, setTags] = React.useState(initialData?.tags || []);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     const green = {
         '& .MuiOutlinedInput-root': {
@@ -54,38 +55,39 @@ const AddRecipeCard = ({ handleSubmit }) => {
   };
   
 
-    const handleIngredientsChange = (event) => {
-      const newText = event.target.value;
-      const lines = newText.split("\n").map((line) => line.trimStart());
-  
-      const formattedLines = lines.map((line, index) => {
+  const handleIngredientsChange = (event) => {
+    const newIngredient = event.target.value;
+    const lines = newIngredient.split("\n").map((line) => line.trimStart());
+
+    const formattedLines = lines.map((line, index) => {
         if (line.startsWith("•") && !line.startsWith("• ")) {
           return "• "; 
         }
         return line;
-      });
-  
-      if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
-        setText("• ");
-      } else {
-        setText(formattedLines.join("\n"));
-      }
-    };
+    });
+
+    if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
+      setIngredients("• ");
+    } else {
+      setIngredients(formattedLines.join("\n"));
+    }
+};
+
 
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
 
-        const lines = text.split("\n");
+        const lines = ingredients.split("\n");
         const lastLine = lines[lines.length - 1].trim();
 
         if (lastLine.length > 1) {
-          setText((prevText) => prevText + "\n• ");
+          setIngredients((prevIngredient) => prevIngredient + "\n• ");
         }
       }
 
       if (event.key === "Backspace") {
-        const lines = text.split("\n");
+        const lines = ingredients.split("\n");
 
         if (lines.length === 1 && lines[0] === "• ") {
           event.preventDefault();
@@ -94,7 +96,7 @@ const AddRecipeCard = ({ handleSubmit }) => {
 
         if (lines[lines.length - 1] === "• ") {
           event.preventDefault();
-          setText(lines.slice(0, -1).join("\n"));
+          setIngredients(lines.slice(0, -1).join("\n"));
         }
       }
       };
@@ -103,9 +105,9 @@ const AddRecipeCard = ({ handleSubmit }) => {
         const imagePath = event.target.value;
         
         if (imagePath.trim()) {
-          setFileName(imagePath);
+          setImage(imagePath);
         } else {
-          setFileName(null);
+          setImage("");
         }
       };
 
@@ -115,11 +117,20 @@ const AddRecipeCard = ({ handleSubmit }) => {
     handleSubmit({
       name,
       description,
-      text,
+      ingredients,
       minutes,
       tags,
-      fileName
+      image
     });
+    const updatedData = {
+      name,
+      description,
+      ingredients, // ingredients
+      minutes,
+      tags,
+      image
+    };
+    console.log("Submit data:", image);
   
   };
   
@@ -174,8 +185,8 @@ const AddRecipeCard = ({ handleSubmit }) => {
                   id="fullWidth"
                   multiline
                   rows={6}
-                  variant="outlined"
-                  value={text}
+                  variant="outlined" 
+                  value={ingredients}
                   onChange={handleIngredientsChange}
                   onKeyDown={handleKeyDown}
                   sx={green }
@@ -207,6 +218,7 @@ const AddRecipeCard = ({ handleSubmit }) => {
                 disableCloseOnSelect
                 getOptionLabel={(option) => option}
                 onChange={handleTagsChange}
+                value={tags}
                 renderOption={(props, option, { selected }) => {
                   const { key, ...optionProps } = props;
                   return (
@@ -233,16 +245,14 @@ const AddRecipeCard = ({ handleSubmit }) => {
           </div>
 
           <div 
-              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col"
-              
-            >
-
+              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
             <div className="font-bold text-gray-500">Add an image</div>
             <div>
               <input
-                type="text" // this should be "text" if you're expecting a string path
+                type="text"
                 className="border-2 border-gray-500 p-2 rounded-md w-full focus:outline-none text-black"
                 onChange={handleFileChange}
+                value={image}
                 placeholder="Enter image path here"
               />
             </div>
