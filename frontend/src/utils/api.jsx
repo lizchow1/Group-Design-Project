@@ -36,10 +36,8 @@ export const updateRecipe = async (recipeId, updatedData) => {
         },
         body: JSON.stringify(updatedData),
     });
-
     return response.json();
 };
-
 
 export const deleteRecipeByID = async (recipeId) => {
     const response = await fetch(`${BASE_URL}/recipes/delete/${recipeId}`, {

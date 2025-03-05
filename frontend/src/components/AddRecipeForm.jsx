@@ -103,13 +103,10 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
 
       const handleFileChange = (event) => {
         const imagePath = event.target.value;
-        console.log("imagepath", imagePath);
         
         if (imagePath.trim()) {
-          console.log("ja")
           setImage(imagePath);
         } else {
-          console.log("nej")
           setImage("");
         }
       };
@@ -252,7 +249,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
             <div className="font-bold text-gray-500">Add an image</div>
             <div>
               <input
-                type="text" // this should be "text" if you're expecting a string path
+                type="text"
                 className="border-2 border-gray-500 p-2 rounded-md w-full focus:outline-none text-black"
                 onChange={handleFileChange}
                 value={image}

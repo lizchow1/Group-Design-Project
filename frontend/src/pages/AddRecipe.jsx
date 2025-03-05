@@ -25,7 +25,6 @@ const AddRecipe = ({user}) => {
       description,
       isBookmarked: false
     };
-    console.log("recipedata", recipeData);
   
     try {
       const response = await fetch("http://127.0.0.1:5000/api/recipes", {

@@ -14,7 +14,7 @@ const RecipeCard = ({ image, video, name, username, tags, small, isBookmarked, o
       </div>
 
       <div className="p-6">
-        <h3 className="text-2xl font-bold text-gray-800 cursor-pointer" onClick={onFullDetailsClick}>{name}</h3>
+        <h3 className="text-2xl font-bold text-gray-800" onClick={onFullDetailsClick}>{name}</h3>
         <p className="text-lg text-gray-500 mt-2">{username}</p>
         <div className="flex flex-wrap gap-2 mt-4">
           {tags.map((tag, index) => (

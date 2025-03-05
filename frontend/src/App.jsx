@@ -15,10 +15,10 @@ import { getUserByFirebaseUID } from "./utils/api"; // Import the new API functi
 const App = () => {
   const [firebaseUser] = useAuthState(auth);
   const [userData, setUserData] = useState(null);
-    {/*
+    
     useEffect(() => {
     auth.signOut(); // Sign out user when app loads
-  }, []); */}
+  }, []); 
 
   useEffect(() => {
     if (firebaseUser) {
@@ -50,7 +50,6 @@ const App = () => {
 
   return (
     <Router>
-      {/**/}
       {firebaseUser ? (
         
         <div className="flex">
@@ -73,7 +72,7 @@ const App = () => {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="*" element={<Navigate to="/sign-in" />} />
         </Routes>
-      )} {/* */}
+      )}
     </Router>
   );
 };
