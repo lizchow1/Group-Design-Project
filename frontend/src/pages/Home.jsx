@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Home = ({ user }) => {
   const [recipes, setRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
-  const [visibleRecipes, setVisibleRecipes] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const recipesPerPage = 2;
-  const loader = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +25,6 @@ const Home = ({ user }) => {
         }
 
         setBookmarkedRecipes(bookmarkedSet);
-        setVisibleRecipes(data.slice(0, recipesPerPage));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -41,30 +38,19 @@ const Home = ({ user }) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting && !loading && visibleRecipes.length < recipes.length) {
-          setLoading(true);
-          setTimeout(() => {
-            setPage((prevPage) => prevPage + 1);
-            setLoading(false);
-          }, 1000);
+        const entry = entries.find((e) => e.isIntersecting);
+        if (entry) {
+          setCurrentIndex(Number(entry.target.dataset.index));
         }
       },
-      { rootMargin: "100px" }
+      { threshold: 0.7 } 
     );
 
-    if (loader.current) observer.observe(loader.current);
+    const elements = document.querySelectorAll(".recipe-card");
+    elements.forEach((el) => observer.observe(el));
 
-    return () => {
-      if (loader.current) observer.unobserve(loader.current);
-    };
-  }, [loading, visibleRecipes, recipes]);
-
-  useEffect(() => {
-    if (recipes.length > 0) {
-      setVisibleRecipes(recipes.slice(0, page * recipesPerPage));
-    }
-  }, [page, recipes]);
+    return () => elements.forEach((el) => observer.unobserve(el));
+  }, [recipes]);
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) {
@@ -94,13 +80,13 @@ const Home = ({ user }) => {
   };
 
   return (
-    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen pl-24 pt-24"> 
-      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
+    <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
+      <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
         Let Me Cook
       </h1>
 
       {loading && recipes.length === 0 && !error && (
-        <div className="flex items-center justify-center w-full py-6 mt-8">
+        <div className="flex items-center justify-center w-full h-full">
           <CircularProgress />
         </div>
       )}
@@ -111,23 +97,28 @@ const Home = ({ user }) => {
         </div>
       )}
 
-      <div className="space-y-6 pt-16">
-        {visibleRecipes.map((recipe) => (
-          <RecipeCard
+      <div
+        ref={scrollContainerRef}
+        className="w-screen h-full overflow-y-auto snap-y snap-mandatory"
+        style={{ scrollSnapType: "y mandatory", scrollbarWidth: "none" }}
+      >
+        {recipes.map((recipe, index) => (
+          <div
             key={recipe.id}
-            image={recipe.image}
-            video={recipe.video}
-            name={recipe.name}
-            username={recipe.username}
-            tags={recipe.tags}
-            isBookmarked={bookmarkedRecipes.has(recipe.id)}
-            onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-          />
+            data-index={index}
+            className="recipe-card w-full h-screen flex items-center justify-center snap-center"
+          >
+            <RecipeCard
+              image={recipe.image}
+              video={recipe.video}
+              name={recipe.name}
+              username={recipe.username}
+              tags={recipe.tags}
+              isBookmarked={bookmarkedRecipes.has(recipe.id)}
+              onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+            />
+          </div>
         ))}
-      </div>
-
-      <div ref={loader} className="text-center mb-8">
-        {loading && visibleRecipes.length < recipes.length && <CircularProgress />}
       </div>
     </div>
   );
