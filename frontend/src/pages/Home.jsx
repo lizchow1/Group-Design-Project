@@ -1,22 +1,28 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 
+const RECIPES_PER_LOAD = 5; 
+
 const Home = ({ user }) => {
-  const [recipes, setRecipes] = useState([]);
+  const [allRecipes, setAllRecipes] = useState([]);
+  const [visibleRecipes, setVisibleRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [loadedCount, setLoadedCount] = useState(RECIPES_PER_LOAD); 
   const scrollContainerRef = useRef(null);
+  const loaderRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const data = await getRecipes();
-        setRecipes(data);
+        setAllRecipes(data);
+        setVisibleRecipes(data.slice(0, RECIPES_PER_LOAD)); 
 
         let bookmarkedSet = new Set();
         if (user) {
@@ -43,14 +49,43 @@ const Home = ({ user }) => {
           setCurrentIndex(Number(entry.target.dataset.index));
         }
       },
-      { threshold: 0.7 } 
+      { threshold: 0.7 }
     );
 
     const elements = document.querySelectorAll(".recipe-card");
     elements.forEach((el) => observer.observe(el));
 
     return () => elements.forEach((el) => observer.unobserve(el));
-  }, [recipes]);
+  }, [visibleRecipes]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          loadMoreRecipes();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    if (loaderRef.current) observer.observe(loaderRef.current);
+
+    return () => {
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
+    };
+  }, [loading]);
+
+  const loadMoreRecipes = () => {
+    if (visibleRecipes.length >= allRecipes.length) return;
+    setLoading(true);
+    
+    setTimeout(() => {
+      const newCount = loadedCount + RECIPES_PER_LOAD;
+      setVisibleRecipes(allRecipes.slice(0, newCount));
+      setLoadedCount(newCount);
+      setLoading(false);
+    }, 1000); 
+  };
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) {
@@ -85,13 +120,13 @@ const Home = ({ user }) => {
         Let Me Cook
       </h1>
 
-      {loading && recipes.length === 0 && !error && (
+      {loading && visibleRecipes.length === 0 && !error && (
         <div className="flex items-center justify-center w-full h-full">
           <CircularProgress />
         </div>
       )}
 
-      {!loading && recipes.length === 0 && !error && (
+      {!loading && visibleRecipes.length === 0 && !error && (
         <div className="text-gray-600 text-lg text-center mt-8">
           No recipes available.
         </div>
@@ -102,7 +137,7 @@ const Home = ({ user }) => {
         className="w-screen h-full overflow-y-auto snap-y snap-mandatory"
         style={{ scrollSnapType: "y mandatory", scrollbarWidth: "none" }}
       >
-        {recipes.map((recipe, index) => (
+        {visibleRecipes.map((recipe, index) => (
           <div
             key={recipe.id}
             data-index={index}
@@ -119,6 +154,12 @@ const Home = ({ user }) => {
             />
           </div>
         ))}
+
+        {visibleRecipes.length < allRecipes.length && (
+          <div ref={loaderRef} className="flex items-center justify-center h-24">
+            <CircularProgress />
+          </div>
+        )}
       </div>
     </div>
   );
