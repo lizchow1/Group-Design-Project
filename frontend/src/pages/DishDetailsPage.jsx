@@ -79,7 +79,6 @@ const RecipeDetailsPage = () => {
   };
 
   const handleDelete = async () => {
-    console.log("id", recipeId)
     try {
       const response = await deleteRecipeByID(recipeId); // Call the delete function
       console.log("api response", response);
@@ -98,7 +97,8 @@ const RecipeDetailsPage = () => {
 
 
   return (
-    <div className="pt-24 montserrat-font flex flex-col items-center justify-center w-screen min-h-screen px-4">
+    
+    <div className="pt-24 pb-40 montserrat-font flex flex-col items-center justify-center w-screen min-h-screen px-4">
       <div className="w-full flex flex-col items-center">
         
       <h1 className="mt-6 top-6 text-green-600 text-7xl font-bold items-center">{recipe.name}</h1>
@@ -145,11 +145,22 @@ const RecipeDetailsPage = () => {
       </Menu>
     </div>
       <div className="w-[400px] md:w-[1000px]">
-        <img src={recipe.image} className="w-[400px] h-[250px] md:w-[1000px] md:h-[400px] object-cover my-4 rounded-2xl" />
-        
+      <div className="w-[400px] h-[250px] md:w-[1000px] md:h-[400px] my-4 rounded-2xl flex items-center justify-center border border-gray-400 bg-gray-100">
+      {recipe.image ? (
+        recipe.image.startsWith("data:video") ? (
+          <video controls className="w-full h-full object-cover rounded-2xl">
+            <source src={recipe.image} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <img src={recipe.image} className="w-full h-full object-cover rounded-2xl" alt="Dish" />
+        )
+      ) : (
+        <p className="text-gray-600 text-xl font-semibold">No image available</p>
+      )}
+    </div>
 
         <div className="flex flex-row w-full mt-5">
-          
           <div className="w-1/2 pr-8">
             <p className="text-2xl md:text-3xl font-bold mb-4">Ingredients</p>
             {recipe.ingredients ? (
@@ -170,35 +181,35 @@ const RecipeDetailsPage = () => {
 
           <div className="w-1/2 pl-8">
             <p className="text-2xl md:text-3xl font-bold mb-4">Description</p>
-            <div className="border-t border-gray-300 w-full"></div>
+            <div className="border-t border-gray-300 w-full"/>
             <p className="text-base md:text-lg text-left mt-4">{recipe.description}</p>
           </div>
         </div>
 
         {recipe.tags && recipe.tags.length > 0 && (
-    <div className="flex flex-wrap gap-2 mt-10 mb-6 w-full">
-      {recipe.tags.map((tag, index) => (
-        <span
-          key={index}
-          className="bg-green-200 text-green-700 px-6 py-2 rounded-full text-sm font-medium"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
+        <div className="flex flex-wrap gap-2 mt-10 mb-6 w-full">
+          {recipe.tags.map((tag, index) => (
+            <span
+              key={index}
+              className="bg-green-200 text-green-700 px-6 py-2 rounded-full text-sm font-medium"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        )}
 
       </div>
       {isEditOpen && (
         <div className="text-black flex items-center justify-center w-full h-screen fixed top-0 left-0 bg-white ">
           <div className="w-full max-w-4xl p-4 pt-24">
-          <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
-            Update Recipe
-          </h1>
-            <AddRecipeCard
-              handleSubmit={handleUpdate}
-              initialData={recipe}
-            />
+            <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
+              Update Recipe
+            </h1>
+              <AddRecipeCard
+                handleSubmit={handleUpdate}
+                initialData={recipe}
+              />
           </div>
         </div>
       )}
