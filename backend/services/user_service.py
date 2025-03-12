@@ -50,23 +50,27 @@ class UserService:
         firebase_token = data.get("firebaseToken")
         email = data.get("email")
         username = data.get("username")
-        
+
         if not firebase_token or not email or not username:
             return {"error": "Missing required fields"}
-        
-        # check Firebase Token
+
         try:
             decoded_token = firebase_auth.verify_id_token(firebase_token)
             firebase_uid = decoded_token["uid"]
         except Exception as e:
             return {"error": "Invalid firebase token"}
-        
-        # check if user already registered（according to firebase_uid）
+
+        try:
+            firebase_user = firebase_auth.get_user(firebase_uid)
+            if not firebase_user:
+                return {"error": "User does not exist in Firebase"}
+        except firebase_admin.auth.UserNotFoundError:
+            return {"error": "User does not exist in Firebase"}
+
         existing_user = UserMapper.getUserByFirebaseUID(firebase_uid)
         if existing_user:
-            return {"error": "User already registered"}
-        
-        # create new user
+            return {"error": "User already registered in the database"}
+
         user = UserMapper.createUser(firebase_uid, email, username)
         return user
     
@@ -75,17 +79,24 @@ class UserService:
         firebase_token = data.get("firebaseToken")
         if not firebase_token:
             return {"error": "Missing firebase token"}
-        
+
         try:
             decoded_token = firebase_auth.verify_id_token(firebase_token)
             firebase_uid = decoded_token["uid"]
         except Exception as e:
             return {"error": "Invalid firebase token"}
-        
-        # check if user already registered
+
+        try:
+            firebase_user = firebase_auth.get_user(firebase_uid)
+            if not firebase_user:
+                return {"error": "User does not exist in Firebase"}
+        except firebase_admin.auth.UserNotFoundError:
+            return {"error": "User does not exist in Firebase"}
+
         user = UserMapper.getUserByFirebaseUID(firebase_uid)
         if not user:
-            return {"error": "User not registered"}
+            return {"error": "User exists in Firebase but not in the database"}
+
         return user
     
     @staticmethod

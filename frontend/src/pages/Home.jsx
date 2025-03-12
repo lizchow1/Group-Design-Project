@@ -1,24 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
-import RecipeCard from "../components/RecipeCard";
+import FlipRecipeCard from "../components/FlipRecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
+
+const RECIPES_PER_LOAD = 5; 
 
 const Home = ({ user }) => {
-  const [recipes, setRecipes] = useState([]);
-  const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
+  const [allRecipes, setAllRecipes] = useState([]);
   const [visibleRecipes, setVisibleRecipes] = useState([]);
+  const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const recipesPerPage = 2;
-  const loader = useRef(null);
+  const [loadedCount, setLoadedCount] = useState(RECIPES_PER_LOAD); 
+  const scrollContainerRef = useRef(null);
+  const loaderRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const data = await getRecipes();
-        setRecipes(data);
+        setAllRecipes(data);
+        setVisibleRecipes(data.slice(0, RECIPES_PER_LOAD)); 
 
         let bookmarkedSet = new Set();
         if (user) {
@@ -27,7 +31,6 @@ const Home = ({ user }) => {
         }
 
         setBookmarkedRecipes(bookmarkedSet);
-        setVisibleRecipes(data.slice(0, recipesPerPage)); 
       } catch (err) {
         setError(err.message);
       } finally {
@@ -41,30 +44,48 @@ const Home = ({ user }) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting && !loading) {
-          setLoading(true); 
-          setTimeout(() => {
-            setPage((prevPage) => prevPage + 1);
-            setLoading(false); 
-          }, 1000); 
+        const entry = entries.find((e) => e.isIntersecting);
+        if (entry) {
+          setCurrentIndex(Number(entry.target.dataset.index));
         }
       },
-      { rootMargin: "100px" }
+      { threshold: 0.7 }
     );
 
-    if (loader.current) observer.observe(loader.current);
+    const elements = document.querySelectorAll(".recipe-card");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => elements.forEach((el) => observer.unobserve(el));
+  }, [visibleRecipes]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          loadMoreRecipes();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    if (loaderRef.current) observer.observe(loaderRef.current);
 
     return () => {
-      if (loader.current) observer.unobserve(loader.current);
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
     };
   }, [loading]);
 
-  useEffect(() => {
-    if (recipes.length > 0) {
-      setVisibleRecipes(recipes.slice(0, page * recipesPerPage));
-    }
-  }, [page, recipes]);
+  const loadMoreRecipes = () => {
+    if (visibleRecipes.length >= allRecipes.length) return;
+    setLoading(true);
+    
+    setTimeout(() => {
+      const newCount = loadedCount + RECIPES_PER_LOAD;
+      setVisibleRecipes(allRecipes.slice(0, newCount));
+      setLoadedCount(newCount);
+      setLoading(false);
+    }, 1000); 
+  };
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) {
@@ -94,34 +115,55 @@ const Home = ({ user }) => {
   };
 
   return (
-    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen pl-24 pt-24"> 
-      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
+    <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
+      <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
         Let Me Cook
       </h1>
 
-      {loading && !error && (
-        <div className="flex items-center justify-center w-full py-6 mt-8">
+      {loading && visibleRecipes.length === 0 && !error && (
+        <div className="flex items-center justify-center w-full h-full">
           <CircularProgress />
         </div>
       )}
 
-      <div className="space-y-6 pt-16">
-        {visibleRecipes.map((recipe) => (
-          <RecipeCard
+      {!loading && visibleRecipes.length === 0 && !error && (
+        <div className="text-gray-600 text-lg text-center mt-8">
+          No recipes available.
+        </div>
+      )}
+
+      <div
+        ref={scrollContainerRef}
+        className="w-screen h-full overflow-y-auto snap-y snap-mandatory"
+        style={{ scrollSnapType: "y mandatory", scrollbarWidth: "none" }}
+      >
+        {visibleRecipes.map((recipe, index) => (
+          <div
             key={recipe.id}
+            data-index={index}
+            className="recipe-card w-full h-screen flex items-center justify-center snap-center"
+          >
+          <FlipRecipeCard
             image={recipe.image}
             video={recipe.video}
             name={recipe.name}
             username={recipe.username}
             tags={recipe.tags}
-            isBookmarked={bookmarkedRecipes.has(recipe.id)} 
+            cooking_time={recipe.cooking_time}
+            ingredients={recipe.ingredients}
+            description={recipe.description}
+            isBookmarked={bookmarkedRecipes.has(recipe.id)}
             onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} // Keep function for other pages
           />
+          </div>
         ))}
-      </div>
 
-      <div ref={loader} className="text-center mb-8">
-        {loading && !error && <CircularProgress />}
+        {visibleRecipes.length < allRecipes.length && (
+          <div ref={loaderRef} className="flex items-center justify-center h-24">
+            <CircularProgress />
+          </div>
+        )}
       </div>
     </div>
   );
