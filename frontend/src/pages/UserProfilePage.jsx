@@ -125,6 +125,10 @@ const UserProfilePage = ({ user: initialUser }) => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {recipes.map((recipe) => (
+                <div 
+                key={recipe.id} 
+                className="transform transition-transform duration-300 hover:scale-102"
+              >
                 <RecipeCard
                   key={recipe.id}
                   image={recipe.image}
@@ -136,7 +140,9 @@ const UserProfilePage = ({ user: initialUser }) => {
                   onToggleBookmark={() => handleToggleBookmark(recipe.id)}
                   onFullDetailsClick={() => handleRecipeClick(recipe.id)}
                   small
+                  
                 />
+                </div>
               ))}
             </div>
           )}

@@ -9,14 +9,15 @@ import Checkbox from '@mui/material/Checkbox';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const AddRecipeCard = ({ handleSubmit, initialData }) => {
-    const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]
-    
+  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]    
   const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
   const [image, setImage] = React.useState(initialData?.image || '' );
   const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "• ");
@@ -102,15 +103,17 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
       };
 
       const handleFileChange = (event) => {
-        const imagePath = event.target.value;
-        
-        if (imagePath.trim()) {
-          setImage(imagePath);
-        } else {
-          setImage("");
-        }
-      };
-
+        const file = event.target.files[0];
+        if (!file) return;
+    
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            setImage(reader.result); 
+        };
+    };
+    
+    
   const handleSubmitForm = () => {
     if (!isFormValid || isSubmitting) return;
     
@@ -120,17 +123,8 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
       ingredients,
       minutes,
       tags,
-      image
+      image,
     });
-    const updatedData = {
-      name,
-      description,
-      ingredients, // ingredients
-      minutes,
-      tags,
-      image
-    };
-    console.log("Submit data:", image);
   
   };
   
@@ -246,20 +240,33 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
 
           <div 
               className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
-            <div className="font-bold text-gray-500">Add an image</div>
-            <div>
-              <input
-                type="text"
-                className="border-2 border-gray-500 p-2 rounded-md w-full focus:outline-none text-black"
-                onChange={handleFileChange}
-                value={image}
-                placeholder="Enter image path here"
-              />
+            <div className="font-bold text-gray-500">Add an image or video</div>
+
+            {image && image !== "" ? (
+              <div className="relative">
+              <div 
+                className="absolute top-0 right-0 m-2 cursor-pointer text-gray-300 z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setImage('');
+                }}
+              >
+                <CancelIcon />
+              </div>
+    
+              {image.startsWith("data:video") ? (
+                <video controls className="w-[200px] h-[200px] object-cover rounded-2xl">
+                  <source src={image} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img src={image} className="w-[200px] h-[200px] object-cover rounded-2xl" alt="Dish" />
+              )}
             </div>
-              {/*
-            <div className="text-gray-500">
-              {fileName ? fileName : "Drag and drop a file here"}
-            </div>
+              ) : (
+                <input type="file" className="mt-0" />
+              )}
+
               
             <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800 cursor-pointer"
             onClick={() => document.getElementById("fileInput").click()}
@@ -270,16 +277,17 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                 id="fileInput" 
                 className="hidden" 
                 onChange={handleFileChange} 
+                accept="image/*, video/*"
             />
               Browse Files
             </div>
-            */}
+            
           </div>
         </div>
 
         <div
           className={`font-bold text-xl p-2 mt-20 rounded-[5px] w-fit items-center ${
-            isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : 'bg-gray-400 text-white cursor-not-allowed'
+            isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : 'text-white cursor-not-allowed'
           }`}
           onClick={isFormValid && !isSubmitting ? handleSubmitForm : null}
         >
