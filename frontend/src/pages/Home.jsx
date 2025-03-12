@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import RecipeCard from "../components/RecipeCard";
+import FlipRecipeCard from "../components/FlipRecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -143,15 +143,19 @@ const Home = ({ user }) => {
             data-index={index}
             className="recipe-card w-full h-screen flex items-center justify-center snap-center"
           >
-            <RecipeCard
-              image={recipe.image}
-              video={recipe.video}
-              name={recipe.name}
-              username={recipe.username}
-              tags={recipe.tags}
-              isBookmarked={bookmarkedRecipes.has(recipe.id)}
-              onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-            />
+          <FlipRecipeCard
+            image={recipe.image}
+            video={recipe.video}
+            name={recipe.name}
+            username={recipe.username}
+            tags={recipe.tags}
+            cooking_time={recipe.cooking_time}
+            ingredients={recipe.ingredients}
+            description={recipe.description}
+            isBookmarked={bookmarkedRecipes.has(recipe.id)}
+            onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} // Keep function for other pages
+          />
           </div>
         ))}
 
