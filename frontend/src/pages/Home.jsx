@@ -27,7 +27,7 @@ const Home = ({ user }) => {
         }
 
         setBookmarkedRecipes(bookmarkedSet);
-        setVisibleRecipes(data.slice(0, recipesPerPage)); 
+        setVisibleRecipes(data.slice(0, recipesPerPage));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -42,12 +42,12 @@ const Home = ({ user }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry.isIntersecting && !loading) {
-          setLoading(true); 
+        if (entry.isIntersecting && !loading && visibleRecipes.length < recipes.length) {
+          setLoading(true);
           setTimeout(() => {
             setPage((prevPage) => prevPage + 1);
-            setLoading(false); 
-          }, 1000); 
+            setLoading(false);
+          }, 1000);
         }
       },
       { rootMargin: "100px" }
@@ -58,7 +58,7 @@ const Home = ({ user }) => {
     return () => {
       if (loader.current) observer.unobserve(loader.current);
     };
-  }, [loading]);
+  }, [loading, visibleRecipes, recipes]);
 
   useEffect(() => {
     if (recipes.length > 0) {
@@ -99,9 +99,15 @@ const Home = ({ user }) => {
         Let Me Cook
       </h1>
 
-      {loading && !error && (
+      {loading && recipes.length === 0 && !error && (
         <div className="flex items-center justify-center w-full py-6 mt-8">
           <CircularProgress />
+        </div>
+      )}
+
+      {!loading && recipes.length === 0 && !error && (
+        <div className="text-gray-600 text-lg text-center mt-8">
+          No recipes available.
         </div>
       )}
 
@@ -114,14 +120,14 @@ const Home = ({ user }) => {
             name={recipe.name}
             username={recipe.username}
             tags={recipe.tags}
-            isBookmarked={bookmarkedRecipes.has(recipe.id)} 
+            isBookmarked={bookmarkedRecipes.has(recipe.id)}
             onToggleBookmark={() => handleToggleBookmark(recipe.id)}
           />
         ))}
       </div>
 
       <div ref={loader} className="text-center mb-8">
-        {loading && !error && <CircularProgress />}
+        {loading && visibleRecipes.length < recipes.length && <CircularProgress />}
       </div>
     </div>
   );
