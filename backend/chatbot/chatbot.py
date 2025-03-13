@@ -61,6 +61,9 @@ def chat():
     # Generate chatbot response
     result = chain.invoke({"context": chat_context, "question": user_input})
 
+    # Replace Unicode degree symbols
+    result = result.replace('\u00b0', '°')
+
     # Update chat context
     chat_context += f"\nUser: {user_input}\nAI: {result}"
 
