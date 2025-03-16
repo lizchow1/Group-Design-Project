@@ -105,3 +105,11 @@ export const getBookmarkedRecipes = async (username) => {
     });
     return response.json();
 };
+
+export const getFriends = async () => {
+    return [
+        { id: 1, username: "Alice Johnson" },
+        { id: 2, username: "Bob Smith" },
+        { id: 3, username: "Charlie Brown" }
+    ];
+};

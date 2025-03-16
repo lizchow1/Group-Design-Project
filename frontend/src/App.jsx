@@ -8,6 +8,8 @@ import SignIn from "./pages/SignIn";
 import UserProfilePage from "./pages/UserProfilePage";
 import AddRecipe from "./pages/AddRecipe";
 import DishDetailsPage from "./pages/DishDetailsPage";
+import FriendsPage from "./pages/FriendsPage";
+import FriendProfilePage from "./pages/FriendsProfilePage";
 import { auth } from "./utils/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getUserByFirebaseUID } from "./utils/api"; // Import the new API function
@@ -62,6 +64,8 @@ const App = () => {
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
               <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage />} />
+              <Route path="/friends" element={<FriendsPage />} />
+              <Route path="/friends/:friendId" element={<FriendProfilePage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
