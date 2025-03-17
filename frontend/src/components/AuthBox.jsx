@@ -24,6 +24,8 @@ const AuthBox = ({ title, isSignUp }) => {
         }
 
         const firebaseToken = await userCredential.user.getIdToken();
+        const firebaseUID = userCredential.user.uid;
+
         let response;
         if (isSignUp) {
             response = await registerUser(firebaseToken, email, email.split("@")[0]);
@@ -31,18 +33,18 @@ const AuthBox = ({ title, isSignUp }) => {
             response = await loginUser(firebaseToken);
         }
 
-        console.log("Register/Login Response:", response); // Debugging log
-
-        // Fetch user data after login/register
-        const userData = await getUserByFirebaseUID(userCredential.user.uid);
-        console.log("Fetched user data:", userData);
+        // Ensure the user exists in the database
+        const userData = await getUserByFirebaseUID(firebaseUID);
+        if (!userData || userData.error) {
+            throw new Error("User exists in Firebase but not in the database.");
+        }
 
         navigate("/");
     } catch (err) {
         console.error("Auth Error:", err);
         setError(err.message || "Authentication failed. Please check your credentials.");
     }
-};
+  };
 
 
 
