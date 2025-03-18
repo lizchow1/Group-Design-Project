@@ -42,10 +42,6 @@ const Chatbot = () => {
     setInput("");
   };
 
-  // Find the latest RamsAI message (your recipe to save to local storage and upload)
-  const latestRecipeMessage = [...messages].reverse().find(msg => msg.sender === "RamsAI");
-  const latestRecipeText = latestRecipeMessage ? latestRecipeMessage.text : "";
-
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -55,16 +51,15 @@ const Chatbot = () => {
       <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
         Gordon RamsAI
       </h1>
-
       <div className="flex flex-col items-center space-y-4">
         <MessageList messages={messages} chatEndRef={chatEndRef} />
         {loading && <Loader />}
         <div ref={chatEndRef}></div>
         <InputBox input={input} setInput={setInput} sendMessage={sendMessage} />
-
         <div className="flex space-x-4">
           <ResetButton onReset={resetChat} />
-          <UseThisRecipeButton latestRecipe={latestRecipeText} />
+          {}
+          <UseThisRecipeButton messages={messages} />
         </div>
       </div>
     </div>
