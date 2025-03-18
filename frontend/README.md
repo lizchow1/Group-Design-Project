@@ -15,6 +15,7 @@ npm install
 
 ```sh
 npm install react-router-dom tailwindcss postcss autoprefixer
+npm install react-markdown
 ```
 
 ### 3. Initialize Tailwind CSS (optional)
