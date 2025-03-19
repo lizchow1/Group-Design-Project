@@ -20,11 +20,13 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
   const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]    
   const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
   const [image, setImage] = React.useState(initialData?.image || '' );
-  const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "• ");
+  const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "");
   const [name, setName] = React.useState(initialData?.name || '');
-  const [description, setDescription] = React.useState(initialData?.description || '');
+  const [instructions, setInstructions] = React.useState(initialData?.instructions || '');
   const [tags, setTags] = React.useState(initialData?.tags || []);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [servings, setServings] = React.useState('')
+  const [description, setDescription] = React.useState('')
 
     const green = {
         '& .MuiOutlinedInput-root': {
@@ -43,16 +45,30 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
       setMinutes(event.target.value);
     };
 
+    const handleServingsChange = (event) => {
+      setServings(event.target.value);
+    };
+
+    const handleDescriptionChange = (event) => {
+      setDescription(event.target.value);
+    };
+
     const handleNameChange = (event) => {
       setName(event.target.value);
   };
 
-  const handleDescriptionChange = (event) => {
-      setDescription(event.target.value);
+  const handleInstructionsChange = (event) => {
+      setInstructions(event.target.value);
   };
 
   const handleTagsChange = (event, newValue) => {
     setTags(newValue);
+  };
+
+  const handleIngredientsFocus = () => {
+    if (ingredients.trim() === "") {
+      setIngredients("• ");
+    }
   };
   
 
@@ -76,6 +92,27 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
 
 
     const handleKeyDown = (event) => {
+      const cursorPosition = event.target.selectionStart;
+      const lines = ingredients.split("\n");
+    
+      let total = 0;
+      let currentLineIndex = 0;
+      for (let i = 0; i < lines.length; i++) {
+        total += lines[i].length + 1;
+        if (cursorPosition <= total) {
+          currentLineIndex = i;
+          break;
+        }
+      }
+    
+      const lineStartPos = total - (lines[currentLineIndex].length + 1);
+      const cursorOffsetInLine = cursorPosition - lineStartPos;
+    
+      if (event.key === "ArrowLeft" && cursorOffsetInLine <= 2 && lines[currentLineIndex].startsWith("• ")) {
+        event.preventDefault();
+        return;
+      }
+
       if (event.key === "Enter") {
         event.preventDefault();
 
@@ -119,7 +156,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
     
     handleSubmit({
       name,
-      description,
+      instructions,
       ingredients,
       minutes,
       tags,
@@ -128,7 +165,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
   
   };
   
-    const isFormValid = name.trim() !== '' && description.trim() !== '' && minutes !== '';
+    const isFormValid = name.trim() !== '' && instructions.trim() !== '' && minutes !== '';
 
     return (
       <div class="flex flex-col items-center justify-center w-full">
@@ -152,6 +189,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               </Box>
             </div>
 
+            <div className="flex flex-row">
             <div class="mt-6">
               <FormControl required sx={{ m: 1, minWidth: 170, ...green }}>
                 <InputLabel id="demo-simple-select-required-label">Cooking time</InputLabel>
@@ -171,7 +209,27 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               </FormControl>
             </div>
 
-            <div class="flex flex-row ml-2 mt-8">
+            <div class="mt-6 ml-2">
+              <FormControl required sx={{ m: 1, minWidth: 170, ...green }}>
+                <InputLabel id="demo-simple-select-required-label">Servings</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-required-label"
+                    id="demo-simple-select-required"
+                    value={servings}
+                    label="Servings*"
+                    onChange={handleServingsChange}
+                  >
+                      <MenuItem value={15}>1</MenuItem>
+                      <MenuItem value={30}>2</MenuItem>
+                      <MenuItem value={45}>3</MenuItem>
+                      <MenuItem value={60}>4</MenuItem>
+                      <MenuItem value={90}>6 or more</MenuItem>
+                  </Select>
+              </FormControl>
+            </div>
+            </div>
+
+            <div class="flex flex-row ml-2 mt-6">
               <Box>
                 <TextField
                   required
@@ -183,6 +241,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                   value={ingredients}
                   onChange={handleIngredientsChange}
                   onKeyDown={handleKeyDown}
+                  onFocus={handleIngredientsFocus}
                   sx={green }
                 />
               </Box>
@@ -193,17 +252,33 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                         sx={green}
                         required
                         id="outlined-multiline-static"
-                        label="Description"
-                        value={description}
-                        onChange={handleDescriptionChange}
+                        label="Instructions" 
+                        value={instructions}
+                        onChange={handleInstructionsChange}
                         multiline
                         rows={6}
                       />
                 </Box>
               </div>
             </div>
+
+            <div className="mt-6">
+              <Box
+                component="form"
+                sx={{ '& .MuiTextField-root': { m: 1, width: '23ch' } }}
+                noValidate
+                autoComplete="off"
+              >
+                <TextField
+                  label="Description"
+                  value={description}
+                  onChange={handleDescriptionChange}
+                  sx={green}
+                />
+              </Box>
+            </div>
     
-            <div class="mt-10 ml-2">
+            <div class="mt-6 ml-2">
               <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
@@ -239,7 +314,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
           </div>
 
           <div 
-              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
+              className="montserrat-font p-6 border border-gray-300 rounded-[5px] h-1/2w-[400px] ml-10 flex items-center justify-center flex-col">
             <div className="font-bold text-gray-500">Add an image or video</div>
 
             {image && image !== "" ? (
@@ -286,8 +361,8 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
         </div>
 
         <div
-          className={`font-bold text-xl p-2 mt-20 rounded-[5px] w-fit items-center ${
-            isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : 'text-white cursor-not-allowed'
+          className={`font-bold text-xl p-2 mt-10 mb-8 rounded-[5px] w-fit items-center ${
+            isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : ' text-white cursor-not-allowed'
           }`}
           onClick={isFormValid && !isSubmitting ? handleSubmitForm : null}
         >
