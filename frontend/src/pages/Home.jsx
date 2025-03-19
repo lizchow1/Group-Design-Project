@@ -2,18 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import FlipRecipeCard from "../components/FlipRecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import CommentIcon from '@mui/icons-material/Comment';
+import FilterButton from "../components/FilterButton";
+
 
 
 const RECIPES_PER_LOAD = 5; 
-const tags = ["easy", "vegan", "gluten", "Nice", "healthy", "Quick"]
 
 const Home = ({ user }) => {
   const [allRecipes, setAllRecipes] = useState([]);
@@ -26,22 +19,26 @@ const Home = ({ user }) => {
   const scrollContainerRef = useRef(null);
   const loaderRef = useRef(null);
   const [checked, setChecked] = React.useState([]);
+  const [filterOpen, setFilterOpen] = useState(false);
 
+
+  
+  const filteredRecipes = visibleRecipes.filter((recipe) =>
+    checked.length === 0 || checked.every((tag) => recipe.tags.includes(tag))
+  );
+
+  const toggleFilter = () => {
+    setFilterOpen((prev) => !prev);
+};
 
   const handleToggle = (tag) => () => {
     setChecked((prevChecked) =>
-      prevChecked.includes(tag)
-        ? prevChecked.filter((t) => t !== tag) // Remove if already selected
-        : [...prevChecked, tag] // Add if not selected
+        prevChecked.includes(tag)
+            ? prevChecked.filter((t) => t !== tag) 
+            : [...prevChecked, tag]
     );
   };
   
-  // Filter recipes based on selected tags
-  const filteredRecipes = checked.length === 0 
-    ? visibleRecipes 
-    : visibleRecipes.filter((recipe) =>
-        recipe.tags.some((tag) => checked.includes(tag))
-      );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,7 +108,7 @@ const Home = ({ user }) => {
       setVisibleRecipes(allRecipes.slice(0, newCount));
       setLoadedCount(newCount);
       setLoading(false);
-    }, 1000); 
+    }, 10); 
   };
 
   const handleToggleBookmark = async (recipeId) => {
@@ -142,57 +139,18 @@ const Home = ({ user }) => {
   };
 
 
-
-
-
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
       <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
         Let Me Cook
-        <List 
-        sx={{ width: '100%', 
-        bgcolor: 'background.paper',
-        width: '100%', 
-        maxWidth: 360, 
-        maxHeight: 120, // Adjust height to fit 3 items
-        overflowY: 'scroll', // Ensures scrollbar is always present
-        '&::-webkit-scrollbar': {
-          width: '8px', // Adjust width of scrollbar
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: '#888', // Color of the draggable part
-          borderRadius: '4px',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: '#f1f1f1', // Background of the scrollbar track
-        }
-            }}>
-        {tags.map((tag) => {
-        const labelId = `checkbox-list-label-${tag}`;
 
+        <FilterButton 
+          toggleFilter={toggleFilter}
+          handleToggle={handleToggle}
+          filterOpen={filterOpen}
+          checked={checked}
+        />
 
-        return (
-          <ListItem
-            key={tag}
-            
-            disablePadding
-          >
-            <ListItemButton role={undefined} onClick={handleToggle(tag)} dense>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={checked.includes(tag)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={tag} />
-            </ListItemButton>
-          </ListItem>
-        );
-      })}
-    </List>
       </h1>
 
       {loading && visibleRecipes.length === 0 && !error && (
@@ -229,7 +187,7 @@ const Home = ({ user }) => {
             description={recipe.description}
             isBookmarked={bookmarkedRecipes.has(recipe.id)}
             onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} // Keep function for other pages
+            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} 
           />
           </div>
         ))}
