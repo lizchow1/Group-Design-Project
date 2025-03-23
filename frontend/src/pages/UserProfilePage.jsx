@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
 import RecipeCard from "../components/RecipeCard";
 import FriendsList from "../components/FriendsList";
 import { getUserRecipes, getBookmarkedRecipes, toggleBookmark, getFriends } from "../utils/api"; 
@@ -14,7 +13,6 @@ const UserProfilePage = ({ user: initialUser }) => {
   const [error, setError] = useState(null);
   const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
-  const auth = getAuth();
 
   useEffect(() => {
     if (!user) {
@@ -67,15 +65,6 @@ const UserProfilePage = ({ user: initialUser }) => {
       }
     } catch (error) {
       console.error("Error toggling bookmark: ", error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/signin"); 
-    } catch (error) {
-      console.error("Logout failed:", error);
     }
   };
 
