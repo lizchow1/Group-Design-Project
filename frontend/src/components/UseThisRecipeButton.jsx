@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 
 const UseThisRecipeButton = ({ messages }) => {
+  const navigate = useNavigate();
 
   const handleUseRecipe = () => {
     if (!messages || messages.length === 0) {
@@ -21,6 +23,7 @@ const UseThisRecipeButton = ({ messages }) => {
     if (parsedRecipe) {
       localStorage.setItem('selectedRecipe', JSON.stringify(parsedRecipe));
       console.log("Parsed recipe stored in localStorage:", parsedRecipe);
+      navigate("/add-recipe");
     } else {
       console.warn("Failed to parse recipe!");
     }
