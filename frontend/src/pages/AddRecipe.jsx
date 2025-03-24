@@ -50,7 +50,7 @@ const AddRecipe = ({user}) => {
   }, [isSubmitting]);
   
   return (
-    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24 pt-10"> 
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24"> 
       <h1 class="text-3xl font-bold top-6 text-green-600 z-20 text-center mb-12">
         Add recipe
       </h1>
