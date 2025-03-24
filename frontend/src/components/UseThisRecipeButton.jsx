@@ -30,9 +30,11 @@ const UseThisRecipeButton = ({ messages }) => {
     const recipe = {};
 
     // 1. Title: Look for the second line after the greeting (or a line after colon)
-    const titleRegex = /recipe for you:\s*(.*)/i;
+    const titleRegex = /\*\*(.*?)\*\*|<b>(.*?)<\/b>|<strong>(.*?)<\/strong>|recipe for you:\s*(.*)/i;
     const titleMatch = text.match(titleRegex);
-    recipe.title = titleMatch ? titleMatch[1].trim() : '';
+    recipe.title = titleMatch ? (titleMatch[1] || titleMatch[2] || titleMatch[3] || titleMatch[4] || '').trim() : '';
+
+
 
     // 2. Servings: Look for "Servings: X" after title
     const servingsRegex = /Servings:\s*(.*)/i;
