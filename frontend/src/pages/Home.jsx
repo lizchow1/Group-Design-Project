@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import FlipRecipeCard from "../components/FlipRecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
+import FilterButton from "../components/FilterButton";
+
+
 
 const RECIPES_PER_LOAD = 5; 
 
@@ -15,6 +18,27 @@ const Home = ({ user }) => {
   const [loadedCount, setLoadedCount] = useState(RECIPES_PER_LOAD); 
   const scrollContainerRef = useRef(null);
   const loaderRef = useRef(null);
+  const [checked, setChecked] = React.useState([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+
+  
+  const filteredRecipes = visibleRecipes.filter((recipe) =>
+    checked.length === 0 || checked.every((tag) => recipe.tags.includes(tag))
+  );
+
+  const toggleFilter = () => {
+    setFilterOpen((prev) => !prev);
+};
+
+  const handleToggle = (tag) => () => {
+    setChecked((prevChecked) =>
+        prevChecked.includes(tag)
+            ? prevChecked.filter((t) => t !== tag) 
+            : [...prevChecked, tag]
+    );
+  };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,7 +108,7 @@ const Home = ({ user }) => {
       setVisibleRecipes(allRecipes.slice(0, newCount));
       setLoadedCount(newCount);
       setLoading(false);
-    }, 1000); 
+    }, 10); 
   };
 
   const handleToggleBookmark = async (recipeId) => {
@@ -114,10 +138,19 @@ const Home = ({ user }) => {
     }
   };
 
+
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
       <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
         Let Me Cook
+
+        <FilterButton 
+          toggleFilter={toggleFilter}
+          handleToggle={handleToggle}
+          filterOpen={filterOpen}
+          checked={checked}
+        />
+
       </h1>
 
       {loading && visibleRecipes.length === 0 && !error && (
@@ -137,7 +170,7 @@ const Home = ({ user }) => {
         className="w-screen h-full overflow-y-auto snap-y snap-mandatory"
         style={{ scrollSnapType: "y mandatory", scrollbarWidth: "none" }}
       >
-        {visibleRecipes.map((recipe, index) => (
+        {filteredRecipes.map((recipe, index) => (
           <div
             key={recipe.id}
             data-index={index}
@@ -154,7 +187,7 @@ const Home = ({ user }) => {
             description={recipe.description}
             isBookmarked={bookmarkedRecipes.has(recipe.id)}
             onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} // Keep function for other pages
+            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} 
           />
           </div>
         ))}

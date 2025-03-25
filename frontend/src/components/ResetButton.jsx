@@ -9,8 +9,13 @@ const ResetButton = ({ onReset }) => {
         headers: { "Content-Type": "application/json" },
       });
 
+      // Clear the stored recipe from localStorage
+      localStorage.clear();
+
       // Call the parent onReset function to clear the local chat memory
       onReset();
+
+      console.log("Chat and recipe storage reset successfully.");
     } catch (error) {
       console.error("Error resetting chat:", error);
     }

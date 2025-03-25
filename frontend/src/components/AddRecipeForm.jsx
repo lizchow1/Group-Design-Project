@@ -16,9 +16,9 @@ import CancelIcon from '@mui/icons-material/Cancel';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const AddRecipeCard = ({ handleSubmit, initialData }) => {
-  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]    
+const AddRecipeCard = ({ handleSubmit, initialData }) => {  
   const [name, setName] = React.useState(initialData?.name || '');
+  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min", "AI-Generated"]
   const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
   const [servings, setServings] = React.useState('')
   const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "");
