@@ -12,11 +12,9 @@ from langchain_ollama import OllamaLLM
 app = Flask(__name__)
 CORS(app)
 app.config.from_object("config")
-
-CORS(app)
-
 init_db(app)
-CORS(app)  # Enable CORS for frontend requests
+
+migrate = Migrate(app, db)
 
 # Register blueprints
 app.register_blueprint(user_bp, url_prefix="/api")
