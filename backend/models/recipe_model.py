@@ -15,8 +15,12 @@ class Recipe(db.Model):
     description = db.Column(db.Text, nullable=True)
     create_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     update_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    minutes = db.Column(db.Integer, nullable=False)
+    servings = db.Column(db.Integer, nullable=False)
+    instructions = db.Column(db.Text, nullable=False)
+    tips = db.Column(db.Text)
 
-    def __init__(self, image, name, username, tags, cooking_time, ingredients, description, isBookmarked=False):
+    def __init__(self, image, name, username, tags, cooking_time, ingredients, description, minutes, servings, instructions, tips, isBookmarked=False):
         self.image = image
         self.name = name
         self.username = username
@@ -27,6 +31,10 @@ class Recipe(db.Model):
         self.isBookmarked = isBookmarked
         self.create_time = datetime.utcnow()
         self.update_time = datetime.utcnow()
+        self.minutes = minutes
+        self.servings = servings
+        self.instructions = instructions
+        self.tips = tips
 
     def to_dict(self):
         return {
@@ -40,6 +48,10 @@ class Recipe(db.Model):
             "ingredients": self.ingredients,
             "description": self.description,
             "update_time": self.update_time.isoformat() if self.update_time else None,
-            "isBookmarked": self.isBookmarked
+            "isBookmarked": self.isBookmarked,
+            "minutes": self.minutes,
+            "servings": self.servings,
+            "instructions": self.instructions,
+            "tips": self.tips
         }
 
