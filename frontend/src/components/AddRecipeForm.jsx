@@ -17,7 +17,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const AddRecipeCard = ({ handleSubmit, initialData }) => {
-  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min"]    
+  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min", "AI-Generated"]
   const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
   const [image, setImage] = React.useState(initialData?.image || '' );
   const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "• ");
