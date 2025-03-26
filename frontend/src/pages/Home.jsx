@@ -177,6 +177,7 @@ const Home = ({ user }) => {
             className="recipe-card w-full h-screen flex items-center justify-center snap-center"
           >
           <FlipRecipeCard
+            id={recipe.id}
             image={recipe.image}
             video={recipe.video}
             name={recipe.name}

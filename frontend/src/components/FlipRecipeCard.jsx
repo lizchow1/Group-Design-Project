@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { useNavigate } from "react-router-dom";
+
 
 const FlipRecipeCard = ({ 
+  id,
   image, 
   video, 
   name, 
@@ -15,6 +19,12 @@ const FlipRecipeCard = ({
   onToggleBookmark 
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRecipeClick = (recipeID) => {
+    console.log("recipeID", recipeID)
+    navigate(`/app/${recipeID}`);
+  };
 
   return (
     <div 
@@ -89,6 +99,17 @@ const FlipRecipeCard = ({
 
           <p className="text-md text-gray-600 mb-1"><strong>Description:</strong></p>
           <p className="text-gray-500 text-sm">{description}</p>
+          <div className="mt-8 flex flex-row hover:scale-105 transform transition duration-200">
+            <p>
+            <InfoOutlinedIcon/>
+            </p>
+            <p className="ml-3 text-gray-600  cursor-pointer" onClick={(e) => { 
+                e.stopPropagation();
+                handleRecipeClick(id);
+              }}>
+              Full recipe details
+            </p>
+          </div>
         </div>
 
       </div>
