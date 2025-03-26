@@ -10,7 +10,8 @@ class RecipeMapper:
     def getAllRecipes():
         sql = text("""
             SELECT r.id, r.image, r.name, r.username, r.tags, r.cooking_time, 
-                   r.isBookmarked, r.ingredients, r.description
+                   r.isBookmarked, r.ingredients, r.description, r.minutes,
+                   r.servings, r.instructions, r.tips
             FROM recipes r
         """)
         result = db.session.execute(sql)
@@ -27,6 +28,10 @@ class RecipeMapper:
                 "ingredients": recipe.ingredients,
                 "description": recipe.description,
                 "isBookmarked": recipe.isBookmarked,
+                "minutes": recipe.minutes,
+                "servings": recipe.servings,
+                "instructions": recipe.instructions,
+                "tips": recipe.tips
             }
             for recipe in recipes
         ]
@@ -49,6 +54,10 @@ class RecipeMapper:
             ingredients=data.get("ingredients", ""),
             description=data.get("description", ""),
             isBookmarked=data.get("isBookmarked", False),
+            minutes=data.get("minutes", 0),
+            servings=data.get("servings", 0),
+            instructions=data.get("instructions", ""),
+            tips=data.get("tips", "")
         )
         db.session.add(new_recipe)
         db.session.commit()
@@ -90,6 +99,14 @@ class RecipeMapper:
                 recipe.description = data["description"]
             if "isBookmarked" in data and data["isBookmarked"] is not None:
                 recipe.isBookmarked = data["isBookmarked"]
+            if "minutes" in data and data["minutes"] is not None:
+                recipe.minutes = data["minutes"]
+            if "servings" in data and data["servings"] is not None:
+                recipe.servings = data["servings"]
+            if "instructions" in data and data["instructions"] is not None:
+                recipe.instructions = data["instructions"]
+            if "tips" in data and data["tips"] is not None:
+                recipe.tips = data["tips"]
             
             # update update_time to current time
             recipe.update_time = datetime.utcnow()
