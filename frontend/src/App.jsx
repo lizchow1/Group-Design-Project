@@ -62,6 +62,7 @@ const App = () => {
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
               <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage />} />
+              <Route path="/app/:recipeId" element={<DishDetailsPage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
