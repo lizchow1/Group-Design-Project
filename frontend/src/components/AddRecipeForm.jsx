@@ -131,9 +131,9 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
     const isFormValid = name.trim() !== '' && description.trim() !== '' && minutes !== '';
 
     return (
-      <div class="flex flex-col items-center justify-center w-full">
-        <div class="flex flex-row">
-          <div class="flex flex-col">
+      <div className="flex flex-col items-center justify-center w-full">
+        <div className="flex flex-row">
+          <div className="flex flex-col">
             <div>
               <Box
                 component="form"
@@ -152,7 +152,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               </Box>
             </div>
 
-            <div class="mt-6">
+            <div className="mt-6">
               <FormControl required sx={{ m: 1, minWidth: 170, ...green }}>
                 <InputLabel id="demo-simple-select-required-label">Cooking time</InputLabel>
                   <Select
@@ -171,7 +171,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               </FormControl>
             </div>
 
-            <div class="flex flex-row ml-2 mt-8">
+            <div className="flex flex-row ml-2 mt-8">
               <Box>
                 <TextField
                   required
@@ -187,7 +187,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                 />
               </Box>
               
-              <div class="ml-10">
+              <div className="ml-10">
                 <Box>
                   <TextField
                         sx={green}
@@ -203,7 +203,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               </div>
             </div>
     
-            <div class="mt-10 ml-2">
+            <div className="mt-10 ml-2">
               <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
