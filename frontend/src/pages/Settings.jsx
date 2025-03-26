@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getAuth, deleteUser } from "firebase/auth";
 import UserDetailsForm from "../components/UserDetailsForm";
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Settings = ({ user }) => {
@@ -33,7 +34,7 @@ const Settings = ({ user }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen w-screen bg-gray-50 montserrat-font">
+    <div className="flex items-center justify-center min-h-screen w-screen montserrat-font">
       <div className="w-full max-w-xl p-6 bg-white shadow-md rounded-2xl">
         <h1 className="text-3xl font-bold text-green-600 text-center mb-8">
           Account Settings
@@ -43,13 +44,21 @@ const Settings = ({ user }) => {
     
         {error && <p className="text-red-600 text-center mt-4">{error}</p>}
     
-        <button
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{
+            mt: 2,
+            backgroundColor: "red",
+            "&:hover": {
+              backgroundColor: "darkred",
+            },
+          }}
           onClick={handleDeleteAccount}
           disabled={loadingDelete}
-          className="mt-6 w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition duration-200"
         >
           {loadingDelete ? "Deleting..." : "Delete Account"}
-        </button>
+        </Button>
       </div>
     </div>
 
