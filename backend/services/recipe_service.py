@@ -1,107 +1,68 @@
 from db import db
 from models.recipe_model import Recipe
 from mappers.recipe_mapper import RecipeMapper
-
-# dummy recipes for testing
-DUMMY_RECIPES = [
-        {
-      "id": 1,
-      "image": "https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg",
-      "name": "Vegan Cobb Salad",
-      "username": "chef123",
-      "tags": ["15 mins", "vegan", "easy"],
-      "cooking_time": "15 mins",  # 新增
-      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-      "description": "A healthy vegan salad",  # 示例
-      "isBookmarked": False
-    },
-    {
-      "id": 2,
-      "image": "https://www.recipetineats.com/tachyon/2018/04/Chicken-Tikka-Masala_0-SQ.jpg",
-      "name": "Tikki Masala",
-      "username": "chef124",
-      "tags": ["60 mins", "indian"],
-      "cooking_time": "15 mins",  # 新增
-      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-      "description": "A healthy vegan salad",  # 示例
-      "isBookmarked": False
-    },
-    {
-      "id": 3,
-      "image": "https://eu.ooni.com/cdn/shop/articles/pepperoni-pizza_6ac5fa40-65b7-4e3b-a8b9-7ca5ccc05dfd.jpg?crop=center&height=800&v=1737105987&width=800",
-      "name": "Gluten free pizza",
-      "username": "chef125",
-      "tags": ["30 mins", "italian", "comfort food", "easy"],
-      "cooking_time": "15 mins",  # 新增
-      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-      "description": "A healthy vegan salad",  # 示例
-      "isBookmarked": False
-    },
-
-    {
-      "id": 4,
-      "image": "https://static01.nyt.com/images/2024/01/10/multimedia/ND-Shoyu-Ramen-qflv/ND-Shoyu-Ramen-qflv-mediumSquareAt3X.jpg",
-      "name": "Ramen",
-      "username": "chef126",
-      "tags": ["45 mins", "asian", "comfort food"],
-      "cooking_time": "15 mins",  # 新增
-      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-      "description": "A healthy vegan salad",  # 示例
-      "isBookmarked": False
-    },
-
-    {
-      "id": 5,
-      "image": "https://images.ctfassets.net/uexfe9h31g3m/6QtnhruEFi8qgEyYAICkyS/6e36729731887703608f28e92f10cb49/Spaghetti_bolognese_4x3_V2_LOW_RES.jpg?w=768&h=512&fm=webp&fit=thumb&q=90",
-      "name": "Vegan Spaghetti bolognese",
-      "username": "chef127",
-      "tags": ["30 mins", "healthy", "vegan"],
-      "cooking_time": "15 mins",  # 新增
-      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-      "description": "A healthy vegan salad",  # 示例
-      "isBookmarked": False
-    },
-
-    {
-      "id": 6,
-      "image": "https://thebigmansworld.com/wp-content/uploads/2024/06/salmon-poke-bowl-recipe.jpg",
-      "name": "Poke bowl",
-      "username": "chef128",
-      "tags": ["25 mins", "healthy", "easy"],
-      "cooking_time": "15 mins",  # 新增
-      "ingredients": "Lettuce, Tomato, Cucumber",  # 示例
-      "description": "A healthy vegan salad",  # 示例
-      "isBookmarked": False
-    }
-]
+import requests
+import random
 
 class RecipeService:
 
     @staticmethod
     def seed_dummy_data():
-        # get recipe 'name' from database (Avoid double insertion)
-        existing_names = {recipe.name for recipe in Recipe.query.with_entities(Recipe.name).all()}
+        usernames = [
+            "chef_ava92", "cookmaster88", "gourmet_guy", "foodie_fan", "kitchenqueen",
+            "saucysarah", "grillguru", "bakingboss", "tastytim", "nourishnina",
+            "quickchef", "yumilicious", "mealmaster", "snackzilla", "theflavourist"
+        ]
 
+        response = requests.get("https://dummyjson.com/recipes?limit=100&skip=0")
+        if response.status_code != 200:
+            print("Failed to fetch recipes")
+            return
+
+        data = response.json()
+        recipes = data.get("recipes", [])
+
+        existing_names = {r.name for r in Recipe.query.with_entities(Recipe.name).all()}
         new_recipes = []
 
-        for item in DUMMY_RECIPES:
-            if item["name"] not in existing_names:
-                tags_str = ",".join(item["tags"])
-                recipe = Recipe(
-                    image=item["image"],
-                    name=item["name"],
-                    username=item["username"],
-                    tags=tags_str,
-                    isBookmarked=item["isBookmarked"],
-                    cooking_time=item["cooking_time"],  
-                    ingredients=item["ingredients"],    
-                    description=item["description"]
-                )
-                new_recipes.append(recipe)
+        for item in recipes:
+            if item["name"] in existing_names:
+                continue
+            
+            prep = item.get("prepTimeMinutes") or 0
+            cook = item.get("cookTimeMinutes") or 0
+            total_minutes = prep + cook
+            cooking_time = f"{total_minutes} mins" if total_minutes else "Unknown"
+
+            tags = ", ".join(item.get("tags", []))
+            ingredients = ", ".join(item.get("ingredients", []))
+            instructions = "\n".join(item.get("instructions", []))
+            cuisine = item.get("cuisine", "global")
+            description = f"A delicious {cuisine.lower()} dish"
+
+            new_recipe = Recipe(
+                image=item.get("image", ""),
+                name=item["name"],
+                username=random.choice(usernames),
+                tags=tags,
+                cooking_time=cooking_time,
+                minutes=total_minutes,
+                servings=item.get("servings", 0),
+                ingredients=ingredients,
+                description=description,
+                instructions=instructions,
+                tips="", 
+                isBookmarked=False
+            )
+
+            new_recipes.append(new_recipe)
 
         if new_recipes:
             db.session.add_all(new_recipes)
             db.session.commit()
+            print(f"{len(new_recipes)} recipes successfully seeded.")
+        else:
+            print("No new recipes to insert.")
 
     @staticmethod
     def get_all_recipes():
