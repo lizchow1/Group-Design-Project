@@ -56,3 +56,12 @@ def update_user_profile():
     if result.get("error"):
         return jsonify(result), 400
     return jsonify(result), 200
+
+# Delete User by Firebase UID
+@user_bp.route("/users/firebase/<string:firebase_uid>", methods=["DELETE"])
+def delete_user(firebase_uid):
+    result = UserService.delete_user(firebase_uid)
+    if result.get("error"):
+        return jsonify(result), 404
+    return jsonify(result), 200
+

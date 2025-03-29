@@ -132,4 +132,16 @@ class UserService:
         if not updated_user:
             return {"error": "Failed to update user profile"}
         return updated_user
+    
+    @staticmethod
+    def delete_user(firebase_uid):
+        user = UserMapper.getUserByFirebaseUID(firebase_uid)
+        if not user:
+            return {"error": "User not found"}
+        
+        success = UserMapper.deleteUserByFirebaseUID(firebase_uid)
+        if success:
+            return {"message": "User deleted successfully"}
+        else:
+            return {"error": "Failed to delete user"}
 

@@ -108,3 +108,19 @@
   "error": "User not found"
 }
 ```
+
+#### Delete User By Firebase UID
+1. URL: `/api/users/firebase/<string:firebase_uid>`
+2. Method: `DELETE`
+3. Request format: `null`
+4. Response format:
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+```json
+{
+  "error": "User not found"
+}
+```

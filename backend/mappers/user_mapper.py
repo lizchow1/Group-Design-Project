@@ -43,4 +43,13 @@ class UserMapper:
             db.session.commit()
             return user.to_dict()
         return None
+    
+    @staticmethod
+    def deleteUser(firebase_uid):
+        user = User.query.filter_by(firebase_uid=firebase_uid).first()
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return True
+        return False
 
