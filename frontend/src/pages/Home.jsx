@@ -162,7 +162,7 @@ const Home = ({ user }) => {
       )}
 
       {!loading && visibleRecipes.length === 0 && !error && (
-        <div className="text-gray-600 text-lg text-center mt-8">
+        <div className="text-gray-600 text-lg text-center mt-38">
           No recipes available.
         </div>
       )}
