@@ -45,7 +45,7 @@ class UserMapper:
         return None
     
     @staticmethod
-    def deleteUser(firebase_uid):
+    def deleteUserByFirebaseUID(firebase_uid):
         user = User.query.filter_by(firebase_uid=firebase_uid).first()
         if user:
             db.session.delete(user)

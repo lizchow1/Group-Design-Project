@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { getAuth, deleteUser } from "firebase/auth";
+import { getAuth, deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import UserDetailsForm from "../components/UserDetailsForm";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { deleteUserFromDB } from "../utils/api";
+
 
 const Settings = ({ user }) => {
   const [userDetails, setUserDetails] = useState(user);
@@ -10,21 +12,34 @@ const Settings = ({ user }) => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const navigate = useNavigate();
 
+
   const handleDeleteAccount = async () => {
     const auth = getAuth();
     const confirmed = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
-
     if (!confirmed) return;
-
+  
     try {
       setLoadingDelete(true);
       setError(null);
-
-      if (auth.currentUser) {
-        await deleteUser(auth.currentUser); 
-        // await deleteUserDetails(auth.currentUser.uid);
-        navigate("/sign-in");
-      }
+  
+      const user = auth.currentUser;
+      if (!user) throw new Error("No user is currently logged in.");
+  
+      const uid = user.uid; 
+  
+      const email = user.email;
+      const password = prompt("Please re-enter your password to confirm:");
+      if (!password) throw new Error("Password is required for reauthentication.");
+  
+      const credential = EmailAuthProvider.credential(email, password);
+      await reauthenticateWithCredential(user, credential);
+  
+      await deleteUser(user);
+  
+      const response = await deleteUserFromDB(uid);
+      console.log("Backend response:", response);
+  
+      navigate("/sign-in");
     } catch (err) {
       console.error("Error deleting account:", err);
       setError("Failed to delete account. Please re-authenticate and try again.");

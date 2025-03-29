@@ -105,3 +105,10 @@ export const getBookmarkedRecipes = async (username) => {
     });
     return response.json();
 };
+
+export const deleteUserFromDB = async (firebase_uid) => {
+    const response = await fetch(`${BASE_URL}/users/firebase/${firebase_uid}`, {
+        method: "DELETE",
+    });
+    return response.json();
+};
