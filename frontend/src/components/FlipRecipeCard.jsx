@@ -22,7 +22,6 @@ const FlipRecipeCard = ({
   const navigate = useNavigate();
 
   const handleRecipeClick = (recipeID) => {
-    console.log("recipeID", recipeID)
     navigate(`/app/${recipeID}`);
   };
 
