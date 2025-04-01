@@ -1,16 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
 import HomeIcon from "@mui/icons-material/Home";
 import ArchiveIcon from '@mui/icons-material/Archive';
 import GroupIcon from '@mui/icons-material/Group';
 import AssistantIcon from '@mui/icons-material/Assistant';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const auth = getAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/sign-in"); 
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
     <div>
-      <div className="fixed montserrat-font ml-5 top-4 z-50">
+      <div className="fixed montserrat-font h-screen ml-5 top-4 z-50 flex flex-col justify-between">
         <div className="flex flex-col space-y-12 mb-16">
           <div>
           <Link to="/" className="group relative flex items-center">
@@ -56,6 +70,14 @@ const Navbar = () => {
             <span className="ml-3.5 group-hover:inline-block group-hover:text-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity duration-400">Profile</span>
     
             </Link>
+          </div>
+          </div>
+
+
+        <div className="mt-auto pb-4 mb-16">
+          <div onClick={handleLogout} className="group relative flex items-center cursor-pointer">
+            <ExitToAppIcon sx={{ fontSize: 40, color: '#6a7282' }} />
+            <span className="ml-3.5 group-hover:inline-block group-hover:text-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity duration-400">Log Out</span>
           </div>
         </div>
       </div>

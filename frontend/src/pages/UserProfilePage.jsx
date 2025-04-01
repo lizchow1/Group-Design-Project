@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, CircularProgress, Button } from "@mui/material";
+import { Typography, Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
-import UserDetailsForm from "../components/UserDetailsForm";
 import RecipeCard from "../components/RecipeCard";
-import { getUserRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api"; 
+import FriendsList from "../components/FriendsList";
+import { getUserRecipes, getBookmarkedRecipes, toggleBookmark, getFriends } from "../utils/api"; 
 
 const UserProfilePage = ({ user: initialUser }) => {  
   const [user, setUser] = useState(initialUser);  
@@ -12,8 +11,8 @@ const UserProfilePage = ({ user: initialUser }) => {
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
-  const auth = getAuth();
 
   useEffect(() => {
     if (!user) {
@@ -29,6 +28,9 @@ const UserProfilePage = ({ user: initialUser }) => {
         const bookmarkedData = await getBookmarkedRecipes(user.username);
         setBookmarkedRecipes(new Set(bookmarkedData.map((r) => r.id)));
 
+        const userFriends = await getFriends(user.username);
+        setFriends(userFriends);
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -37,7 +39,7 @@ const UserProfilePage = ({ user: initialUser }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, navigate]);
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) {
@@ -66,15 +68,6 @@ const UserProfilePage = ({ user: initialUser }) => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/signin"); 
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
   const handleRecipeClick = (recipeID) => {
     navigate(`/app/user-profile/${recipeID}`);
   };
@@ -88,23 +81,18 @@ const UserProfilePage = ({ user: initialUser }) => {
       <div className="flex flex-row gap-8 w-full max-w-7xl mt-16">
         <div className="w-1/3 p-6 bg-white rounded-lg shadow-md flex flex-col items-center">
           <Typography variant="h5" gutterBottom align="center" className="text-green-800">
-            Edit Profile
+            Your Friends
           </Typography>
-          
-          
-          <Box sx={{ mt: 3, width: "100%" }}>
-            <UserDetailsForm user={user} setUser={setUser} />  
-          </Box>
-            
 
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleLogout}
-            sx={{ mt: 4, width: "100%" }} 
-          >
-            Logout
-          </Button>
+          <Box sx={{ mt: 3, width: "100%" }}>
+          {loading ? (
+            <CircularProgress color="success" />
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : (
+            <FriendsList users={friends} />
+          )}
+          </Box>
         </div>
 
         <div className="w-2/3 flex flex-col items-center">

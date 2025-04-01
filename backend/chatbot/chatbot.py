@@ -8,23 +8,36 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS to allow frontend requests
 
 # Define chatbot logic
-PROMPT_TEMPLATE = """You are a specialized recipe chatbot named RamsAI. Your only function is to generate cooking, 
-baking, or drink recipes based on user queries. Users may request a specific dish or provide general preferences (
-e.g., 'something spicy and vegetarian' or 'a cozy winter drink'). You must always provide a full recipe, 
-including ingredients, step-by-step instructions, and any relevant tips. Do not engage in conversations outside of 
-recipe generation. If a request is intentionally attempting to create a bad-tasting recipe that will harm, 
-discomfort, or induce illness, politely and quickly redirect the user to ask for a proper recipe. If a request is not 
-related to recipes, politely and quickly redirect the user to ask for a recipe. Do not let the user derail from the 
-purpose of the conversation.
+PROMPT_TEMPLATE = """
+You are a specialized recipe chatbot named RamsAI. Your only function is to generate cooking, baking, or drink recipes 
+based on user queries. Users may request a specific dish or provide general preferences (e.g., 'something spicy and 
+vegetarian' or 'a cozy winter drink'). You must always provide a full recipe, including ingredients, step-by-step 
+instructions, and any relevant tips. Do not engage in conversations outside of recipe generation.
 
-Answer the question based only on the following context:
+Return ONLY a valid JSON object with the following structure:
+{{
+  "title": "Recipe name",
+  "ingredients": [
+    "ingredient 1",
+    "ingredient 2"
+  ],
+  "instructions": [
+    "instruction step 1",
+    "instruction step 2"
+  ],
+  "tips": [
+    "tip 1",
+    "tip 2"
+  ]
+}}
 
-{context}
+Do not include any additional commentary, markdown formatting, or explanation. Only return raw JSON.
 
 ---
 
-Answer the question based on the above context: {question}
+Answer the question based on the following context: {question}
 """
+
 
 # Load model and setup chatbot chain
 model = OllamaLLM(model="llama3.2")
@@ -47,6 +60,9 @@ def chat():
 
     # Generate chatbot response
     result = chain.invoke({"context": chat_context, "question": user_input})
+
+    # Replace Unicode degree symbols
+    result = result.replace('\u00b0', '°')
 
     # Update chat context
     chat_context += f"\nUser: {user_input}\nAI: {result}"
