@@ -20,11 +20,11 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
   const [name, setName] = React.useState(initialData?.name || '');
   const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min", "AI-Generated"]
   const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
-  const [servings, setServings] = React.useState('')
+  const [servings, setServings] = React.useState(initialData?.servings || '')
   const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "");
   const [instructions, setInstructions] = React.useState(initialData?.instructions || '');
-  const [description, setDescription] = React.useState('')
-  const [tips, setTips] = React.useState('')
+  const [description, setDescription] = React.useState(initialData?.description || '')
+  const [tips, setTips] = React.useState(initialData?.tips || '')
   const [image, setImage] = React.useState(initialData?.image || '' );
   const [tags, setTags] = React.useState(initialData?.tags || []);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -228,7 +228,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
     
     
     const handleSubmitForm = () => {
-      if (!isFormValid || isSubmitting) return;
+      if (!isFormValid || isSubmitting) return;      
       
       handleSubmit({
         name,
@@ -237,6 +237,10 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
         minutes,
         tags,
         image,
+        description,
+        tips,
+        servings,
+
       });
     
     };
@@ -295,11 +299,11 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                     label="Servings*"
                     onChange={handleServingsChange}
                   >
-                      <MenuItem value={15}>1</MenuItem>
-                      <MenuItem value={30}>2</MenuItem>
-                      <MenuItem value={45}>3</MenuItem>
-                      <MenuItem value={60}>4</MenuItem>
-                      <MenuItem value={90}>6 or more</MenuItem>
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                      <MenuItem value={4}>4</MenuItem>
+                      <MenuItem value={6}>6 or more</MenuItem>
                   </Select>
               </FormControl>
             </div>

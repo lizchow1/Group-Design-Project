@@ -7,7 +7,8 @@ const AddRecipe = ({ user }) => {
   const [formData, setFormData] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async ({ name, description, ingredients, minutes, tags, image }) => {
+  const handleSubmit = async ({ name, description, ingredients, minutes, tags, image, servings, instructions, tips }) => {
+
     if (!user) {
       alert("User not found. Please log in.");
       return;
@@ -22,6 +23,9 @@ const AddRecipe = ({ user }) => {
       ingredients,
       description,
       isBookmarked: false,
+      servings,
+      instructions,
+      tips
     };
 
     try {

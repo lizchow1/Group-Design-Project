@@ -62,7 +62,8 @@ const App = () => {
               <Route path="/saved-recipes" element={<SavedRecipes user={userData} />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
-              <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage />} />
+              <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage user={userData}/>} />
+              <Route path="/app/:recipeId" element={<DishDetailsPage user={userData}/>} />
               <Route path="/settings" element={<Settings user={userData} />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
