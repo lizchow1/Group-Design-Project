@@ -4,8 +4,6 @@ import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import FilterButton from "../components/FilterButton";
 
-
-
 const RECIPES_PER_LOAD = 5; 
 
 const Home = ({ user }) => {
@@ -20,8 +18,7 @@ const Home = ({ user }) => {
   const loaderRef = useRef(null);
   const [checked, setChecked] = React.useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
-
-
+  const [followedUsers, setFollowedUsers] = useState(new Set());
   
   const filteredRecipes = visibleRecipes.filter((recipe) =>
     checked.length === 0 || checked.every((tag) => recipe.tags.includes(tag))
@@ -38,7 +35,18 @@ const Home = ({ user }) => {
             : [...prevChecked, tag]
     );
   };
-  
+
+  const handleFollow = (username) => {
+    setFollowedUsers((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(username)) {
+        newSet.delete(username);
+      } else {
+        newSet.add(username);
+      }
+      return newSet;
+    });
+  };  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -190,7 +198,8 @@ const Home = ({ user }) => {
             description={recipe.description}
             isBookmarked={bookmarkedRecipes.has(recipe.id)}
             onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-            onFullDetailsClick={() => console.log(`Clicked for full details on ${recipe.name}`)} 
+            onFollow={handleFollow}
+            isFollowing={followedUsers.has(recipe.username)}
           />
           </div>
         ))}

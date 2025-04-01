@@ -4,7 +4,6 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from "react-router-dom";
 
-
 const FlipRecipeCard = ({ 
   id,
   image, 
@@ -16,7 +15,9 @@ const FlipRecipeCard = ({
   ingredients, 
   description, 
   isBookmarked, 
-  onToggleBookmark 
+  onToggleBookmark,
+  onFollow,
+  isFollowing
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
@@ -55,10 +56,30 @@ const FlipRecipeCard = ({
             )}
           </div>
 
-          <div className="p-6">
+          <div className="flex flex-col gap-2 p-3">
             <h3 className="text-2xl font-bold text-gray-800">{name}</h3>
-            <p className="text-lg text-gray-500 mt-2">{username}</p>
-            <div className="flex flex-wrap gap-2 mt-4">
+
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-lg text-gray-500">{username}</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onFollow(username);
+                }}
+                className={`text-xs px-3 py-0.5 rounded-full border whitespace-nowrap focus:outline-none ${
+                  isFollowing
+                    ? 'bg-green-500 text-white border-green-500'
+                    : 'bg-gray-100 text-gray-600 border-gray-300'
+                } hover:shadow-md transition-colors duration-200`}
+                style={{
+                  backgroundColor: isFollowing ? '#22c55e' : '',
+                }}
+              >
+                {isFollowing ? 'Following' : 'Follow'}
+              </button>
+            </div>
+              
+            <div className="flex flex-wrap gap-2 mt-1">
               {tags.map((tag, index) => (
                 <span key={index} className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
                   {tag}
