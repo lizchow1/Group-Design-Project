@@ -2,8 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getRecipeById } from "../utils/api"; 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { updateRecipe } from "../utils/api"; 
-import { deleteRecipeByID } from "../utils/api";
+import { updateRecipe, deleteRecipeByID, getUserRecipes } from "../utils/api"; 
 import AddRecipeCard from "../components/AddRecipeForm";
 import * as React from 'react';
 import Button from '@mui/material/Button';
@@ -16,9 +15,10 @@ import { useNavigate } from "react-router-dom";
 
 
 
-const RecipeDetailsPage = () => {
+const RecipeDetailsPage = ({user}) => {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState(null);
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -52,7 +52,10 @@ const RecipeDetailsPage = () => {
       try {
         const recipeData = await getRecipeById(recipeId);
         setRecipe(recipeData);
-        console.log("recipedata", recipeData)
+
+        const userRecipes = await getUserRecipes(user.username);
+        setRecipes(userRecipes);
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -106,6 +109,7 @@ const RecipeDetailsPage = () => {
           <AccessTimeIcon className="text-gray-600" />
           <span> - {recipe.cooking_time} min</span>
         </div>
+        {recipes.some((r) => r.id === recipe.id) && (
         <div className="ml-auto mr-56">
       <Button
         id="demo-positioned-button"
@@ -144,6 +148,7 @@ const RecipeDetailsPage = () => {
         <MenuItem onClick={handleDelete}><DeleteIcon/>Delete</MenuItem>
       </Menu>
     </div>
+    )}
       <div className="w-[400px] md:w-[1000px]">
       <div className="w-[400px] h-[250px] md:w-[1000px] md:h-[400px] my-4 rounded-2xl flex items-center justify-center border border-gray-400 bg-gray-100">
       {recipe.image ? (

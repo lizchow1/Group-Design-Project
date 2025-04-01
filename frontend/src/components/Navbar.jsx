@@ -8,6 +8,7 @@ import AssistantIcon from '@mui/icons-material/Assistant';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -74,7 +75,14 @@ const Navbar = () => {
           </div>
 
 
-        <div className="mt-auto pb-4 mb-16">
+        <div className="mt-auto pb-4 mb-16 space-y-12">
+        <div>
+          <Link to="/settings" className="group relative flex items-center">
+            <SettingsOutlinedIcon sx={{ fontSize: 40, color: '#6a7282'}}/>
+            <span className="ml-3.5 group-hover:inline-block group-hover:text-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity duration-400">Settings</span>
+            </Link>
+          </div>
+
           <div onClick={handleLogout} className="group relative flex items-center cursor-pointer">
             <ExitToAppIcon sx={{ fontSize: 40, color: '#6a7282' }} />
             <span className="ml-3.5 group-hover:inline-block group-hover:text-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity duration-400">Log Out</span>

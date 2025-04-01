@@ -8,6 +8,7 @@ import SignIn from "./pages/SignIn";
 import UserProfilePage from "./pages/UserProfilePage";
 import AddRecipe from "./pages/AddRecipe";
 import DishDetailsPage from "./pages/DishDetailsPage";
+import Settings from "./pages/Settings";
 import FriendsPage from "./pages/FriendsPage";
 import FriendProfilePage from "./pages/FriendsProfilePage";
 import { auth } from "./utils/firebaseConfig";
@@ -63,7 +64,9 @@ const App = () => {
               <Route path="/saved-recipes" element={<SavedRecipes user={userData} />} />
               <Route path="/chatbot" element={<ChatbotPage />} />
               <Route path="/user-profile" element={<UserProfilePage user={userData} />} />
-              <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage />} />
+              <Route path="/app/user-profile/:recipeId" element={<DishDetailsPage user={userData}/>} />
+              <Route path="/app/:recipeId" element={<DishDetailsPage user={userData}/>} />
+              <Route path="/settings" element={<Settings user={userData} />} />
               <Route path="/friends" element={<FriendsPage />} />
               <Route path="/friends/:friendId" element={<FriendProfilePage />} />
               <Route path="*" element={<Navigate to="/" />} />

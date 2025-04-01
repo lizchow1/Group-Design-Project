@@ -7,8 +7,8 @@ import { updateUserProfile } from "../utils/api";
 const UserDetailsForm = ({ user, setUser }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: user.email,
-    username: user.username,
+    email: user?.email  || "",
+    username: user?.username  || "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -29,33 +29,34 @@ const UserDetailsForm = ({ user, setUser }) => {
     setLoading(true);
     setError(null);
     setSuccess(null);
-
+  
     try {
-      if (!auth.currentUser) {
-        throw new Error("User not authenticated.");
+      if (!user || !auth.currentUser) {
+        throw new Error("No authenticated user.");
       }
-
+  
       const firebaseToken = await auth.currentUser.getIdToken();
-
+  
       if (formData.email !== user.email) {
         await updateEmail(auth.currentUser, formData.email);
       }
-
+  
       if (formData.password) {
         await updatePassword(auth.currentUser, formData.password);
       }
-
+  
       const result = await updateUserProfile(firebaseToken, formData.email, formData.username);
-
+  
       if (result.error) {
         throw new Error(result.error);
       }
+  
       setUser((prevUser) => ({
         ...prevUser,
         email: formData.email,
         username: formData.username,
       }));
-
+  
       setSuccess("Profile updated successfully!");
     } catch (err) {
       setError(err.message);
@@ -63,6 +64,7 @@ const UserDetailsForm = ({ user, setUser }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <Card variant="outlined">
