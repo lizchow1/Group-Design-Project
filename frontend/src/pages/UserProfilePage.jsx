@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Typography, Box, CircularProgress, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import UserDetailsForm from "../components/UserDetailsForm";
 import RecipeCard from "../components/RecipeCard";
 import { getUserRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api"; 
 
@@ -86,26 +85,6 @@ const UserProfilePage = ({ user: initialUser }) => {
       </h1>
 
       <div className="flex flex-row gap-8 w-full max-w-7xl mt-16">
-        <div className="w-1/3 p-6 bg-white rounded-lg shadow-md flex flex-col items-center">
-          <Typography variant="h5" gutterBottom align="center" className="text-green-800">
-            Edit Profile
-          </Typography>
-          
-          
-          <Box sx={{ mt: 3, width: "100%" }}>
-            <UserDetailsForm user={user} setUser={setUser} />  
-          </Box>
-            
-
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleLogout}
-            sx={{ mt: 4, width: "100%" }} 
-          >
-            Logout
-          </Button>
-        </div>
 
         <div className="w-2/3 flex flex-col items-center">
           <div className="w-full flex justify-center mb-4">
