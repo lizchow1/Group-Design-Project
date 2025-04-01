@@ -21,6 +21,14 @@ const FlipRecipeCard = ({
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
+  const normalizedIngredients = typeof ingredients === 'string'
+  ? (ingredients.includes('•')
+      ? ingredients.split('•').map(item => item.trim()).filter(Boolean)
+      : ingredients.split(',').map(item => item.trim()).filter(Boolean))
+  : Array.isArray(ingredients)
+    ? ingredients
+    : [];
+
 
   const handleRecipeClick = (recipeID) => {
     navigate(`/app/${recipeID}`);
@@ -45,15 +53,17 @@ const FlipRecipeCard = ({
           style={{ backfaceVisibility: "hidden" }}
         >
           <div className="relative overflow-hidden rounded-t-2xl">
-            {video ? (
-              <video src={video} className="w-full h-[300px] object-cover" controls />
-            ) : (
-              <img 
-                src={image} 
-                alt={name} 
-                className="w-full h-[300px] object-cover cursor-pointer"
-              />
-            )}
+          {image.startsWith("data:video") ? (
+          <video 
+            controls 
+            className="w-full h-[300px] object-cover cursor-pointer"
+          >
+            <source src={image} type="video/mp4"  />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <img src={image} alt={name} className="w-full h-[300px] object-cover cursor-pointer" />
+        )}
           </div>
 
           <div className="flex flex-col gap-2 p-3">
@@ -100,7 +110,7 @@ const FlipRecipeCard = ({
         </div>
 
         <div 
-          className="absolute w-full h-full rounded-2xl shadow-lg border border-gray-200 bg-white p-6 flex flex-col items-start justify-center"
+          className="absolute w-full h-full rounded-2xl shadow-lg border border-gray-200 bg-white p-6 flex flex-col items-start justify-start overflow-hidden"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)", 
@@ -111,12 +121,16 @@ const FlipRecipeCard = ({
           <p className="text-md text-gray-600 mb-1"><strong>Cooking Time:</strong> {cooking_time}</p>
 
           <p className="text-md text-gray-600 mb-1"><strong>Ingredients:</strong></p>
-          <ul className="text-gray-500 text-sm list-disc list-inside mb-2">
-            {ingredients.split(',').map((item, idx) => (
-              <li key={idx}>{item.trim()}</li>
-            ))}
-          </ul>
-
+          <div className="mb-2">
+            <ul className="text-gray-500 text-sm list-disc list-inside max-h-24 overflow-hidden">
+              {normalizedIngredients.slice(0, 5).map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
+            </ul>
+            {normalizedIngredients.length > 5 && (
+              <p className="italic text-gray-400 text-sm mt-1">...and more</p>
+            )}
+          </div>
           <p className="text-md text-gray-600 mb-1"><strong>Description:</strong></p>
           <p className="text-gray-500 text-sm">{description}</p>
           <div className="mt-8 flex flex-row hover:scale-105 transform transition duration-200">
