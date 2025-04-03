@@ -3,10 +3,11 @@ import FlipRecipeCard from "../components/FlipRecipeCard";
 import { getRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import FilterButton from "../components/FilterButton";
+import { useUser } from "../contexts/UserContext";
 
 const RECIPES_PER_LOAD = 5; 
 
-const Home = ({ user }) => {
+const Home = () => {
   const [allRecipes, setAllRecipes] = useState([]);
   const [visibleRecipes, setVisibleRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
@@ -19,6 +20,7 @@ const Home = ({ user }) => {
   const [checked, setChecked] = React.useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [followedUsers, setFollowedUsers] = useState(new Set());
+  const { user } = useUser();
   
   const filteredRecipes = visibleRecipes.filter((recipe) =>
     checked.length === 0 || checked.every((tag) => recipe.tags.includes(tag))
@@ -150,7 +152,7 @@ const Home = ({ user }) => {
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 text-center">
-      <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
+      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
         Let Me Cook
 
         <FilterButton 

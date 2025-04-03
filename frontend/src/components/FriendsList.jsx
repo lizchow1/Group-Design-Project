@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
 function FriendsList({ users = [] }) {
   if (users.length === 0) {
@@ -7,21 +8,24 @@ function FriendsList({ users = [] }) {
 
   return (
     <div className="max-w-sm mx-auto p-4 bg-white shadow rounded">
-      <h2 className="text-lg font-semibold mb-4">Your Followers</h2>
-
       <div className="space-y-3">
         {users.map((user) => (
-          <div 
-            key={user.id} 
-            className="flex items-center space-x-3 border-b last:border-b-0 pb-2"
+          <Link
+            to={`/friends/${user.username}`}
+            key={user.id}
+            className="flex items-center gap-3 mb-4 hover:bg-gray-100 p-2 rounded transition"
           >
-            <img 
-              src={user.avatar} 
-              alt={user.username} 
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <span className="text-gray-700">{user.username}</span>
-          </div>
+            {user.image_url ? (
+              <img
+                src={user.image_url}
+                alt={user.username}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-black" />
+            )}
+            <span className="text-green-800 font-medium">{user.username}</span>
+          </Link>
         ))}
       </div>
     </div>

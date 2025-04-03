@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { getBookmarkedRecipes, toggleBookmark } from "../utils/api";
+import { useUser } from "../contexts/UserContext";
 
-const SavedRecipes = ({ user }) => {
+const SavedRecipes = () => {
+  const { user } = useUser();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,9 +51,9 @@ const SavedRecipes = ({ user }) => {
   };
 
   return (
-    <div className="relative montserrat-font items-center justify-start min-h-screen w-screen">
-      <h1 className="text-3xl font-bold text-green-600 z-20 text-center mb-12 px-24 pt-24">
-        Your Saved Recipes
+    <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-white pl-24 pt-24"> 
+      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
+      Your Saved Recipes
       </h1>
 
       {loading && (

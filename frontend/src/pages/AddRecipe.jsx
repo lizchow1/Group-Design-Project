@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import AddRecipeCard from "../components/AddRecipeForm";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
-const AddRecipe = ({ user }) => {
+
+  const AddRecipe = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState(null);
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const handleSubmit = async ({ name, description, ingredients, minutes, tags, image, servings, instructions, tips }) => {
 

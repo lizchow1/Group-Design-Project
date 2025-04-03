@@ -12,10 +12,12 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 
 
-const RecipeDetailsPage = ({user}) => {
+const RecipeDetailsPage = () => {
+  const { user } = useUser();
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [recipes, setRecipes] = useState([]);

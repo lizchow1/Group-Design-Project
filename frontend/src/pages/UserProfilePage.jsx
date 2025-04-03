@@ -3,10 +3,16 @@ import { Typography, Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import RecipeCard from "../components/RecipeCard";
 import FriendsList from "../components/FriendsList";
-import { getUserRecipes, getBookmarkedRecipes, toggleBookmark, getFriends } from "../utils/api"; 
+import {
+  getUserRecipes,
+  getBookmarkedRecipes,
+  toggleBookmark,
+  getFriends,
+} from "../utils/api";
+import { useUser } from "../contexts/UserContext";
 
-const UserProfilePage = ({ user: initialUser }) => {  
-  const [user, setUser] = useState(initialUser);  
+const UserProfilePage = () => {
+  const { user } = useUser();
   const [recipes, setRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [loading, setLoading] = useState(true);
@@ -16,7 +22,7 @@ const UserProfilePage = ({ user: initialUser }) => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/signin");
+      setLoading(false); // stop loading spinner if no user
       return;
     }
 
@@ -30,7 +36,6 @@ const UserProfilePage = ({ user: initialUser }) => {
 
         const userFriends = await getFriends(user.username);
         setFriends(userFriends);
-
       } catch (err) {
         setError(err.message);
       } finally {
@@ -72,26 +77,52 @@ const UserProfilePage = ({ user: initialUser }) => {
     navigate(`/app/user-profile/${recipeID}`);
   };
 
+  if (!user) {
+    return (
+      <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
+            <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
+                Your Friends
+            </h1>
+        <p className="text-gray-500">No profile available.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
-      <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
-        User Profile
-      </h1>
+      <div className="flex items-center gap-4 mt-6 mb-12">
+        {user?.image_url ? (
+          <img
+            src={user.image_url}
+            alt="Profile"
+            className="w-35 h-35 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-35 h-35 rounded-full bg-black" />
+        )}
+
+        <h1 className="text-3xl font-bold text-green-600">User Profile</h1>
+      </div>
 
       <div className="flex flex-row gap-8 w-full max-w-7xl mt-16">
         <div className="w-1/3 p-6 bg-white rounded-lg shadow-md flex flex-col items-center">
-          <Typography variant="h5" gutterBottom align="center" className="text-green-800">
+          <Typography
+            variant="h5"
+            gutterBottom
+            align="center"
+            className="text-green-800"
+          >
             Your Friends
           </Typography>
 
           <Box sx={{ mt: 3, width: "100%" }}>
-          {loading ? (
-            <CircularProgress color="success" />
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
-            <FriendsList users={friends} />
-          )}
+            {loading ? (
+              <CircularProgress color="success" />
+            ) : error ? (
+              <p className="text-red-500">{error}</p>
+            ) : (
+              <FriendsList users={friends} />
+            )}
           </Box>
         </div>
 
@@ -113,23 +144,22 @@ const UserProfilePage = ({ user: initialUser }) => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {recipes.map((recipe) => (
-                <div 
-                key={recipe.id} 
-                className="transform transition-transform duration-300 hover:scale-102"
-              >
-                <RecipeCard
+                <div
                   key={recipe.id}
-                  image={recipe.image}
-                  video={recipe.video}
-                  name={recipe.name}
-                  username={recipe.username}
-                  tags={recipe.tags}
-                  isBookmarked={bookmarkedRecipes.has(recipe.id)} 
-                  onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-                  onFullDetailsClick={() => handleRecipeClick(recipe.id)}
-                  small
-                  
-                />
+                  className="transform transition-transform duration-300 hover:scale-102"
+                >
+                  <RecipeCard
+                    key={recipe.id}
+                    image={recipe.image}
+                    video={recipe.video}
+                    name={recipe.name}
+                    username={recipe.username}
+                    tags={recipe.tags}
+                    isBookmarked={bookmarkedRecipes.has(recipe.id)}
+                    onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+                    onFullDetailsClick={() => handleRecipeClick(recipe.id)}
+                    small
+                  />
                 </div>
               ))}
             </div>
