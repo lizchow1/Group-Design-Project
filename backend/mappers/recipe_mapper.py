@@ -153,3 +153,13 @@ class RecipeMapper:
         # Get all recipes created by the user
         recipes = Recipe.query.filter_by(username=username).all()
         return [recipe.to_dict() for recipe in recipes]
+    
+    @staticmethod
+    def searchRecipesByName(query):
+        query = query.lower()
+        recipes = Recipe.query.all()
+        return [
+            recipe.to_dict()
+            for recipe in recipes
+            if query in recipe.name.lower()
+        ]

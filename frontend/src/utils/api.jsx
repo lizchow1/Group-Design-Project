@@ -118,3 +118,8 @@ export const getFilteredRecipes = async (tags) => {
     const response = await fetch(`${BASE_URL}/recipes/filter?${query}`);
     return response.json();
 };
+
+export const getRecipesBySearch = async (query) => {
+    const response = await fetch(`${BASE_URL}/recipes/search?query=${encodeURIComponent(query)}`);
+    return response.json();
+};

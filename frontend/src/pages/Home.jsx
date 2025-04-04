@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import FlipRecipeCard from "../components/FlipRecipeCard";
-import { getRecipes, getBookmarkedRecipes, toggleBookmark, getFilteredRecipes } from "../utils/api";
+import { getRecipes, getBookmarkedRecipes, toggleBookmark, getFilteredRecipes, getRecipesBySearch } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import FilterButton from "../components/FilterButton";
+import SearchBar from "../components/SearchBar";
 
 const RECIPES_PER_LOAD = 5;
 
@@ -18,6 +19,7 @@ const Home = ({ user }) => {
   const loaderRef = useRef(null);
   const [checked, setChecked] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleFilter = () => {
     setFilterOpen((prev) => !prev);
@@ -57,15 +59,15 @@ const Home = ({ user }) => {
   }, [user]);
 
   useEffect(() => {
+    if (searchQuery.trim() !== "") return; 
+  
     const fetchFiltered = async () => {
+      if (checked.length === 0) return; 
+  
       setLoading(true);
+      setVisibleRecipes([]);
       try {
-        let data;
-        if (checked.length === 0) {
-          data = await getRecipes();
-        } else {
-          data = await getFilteredRecipes(checked);
-        }
+        const data = await getFilteredRecipes(checked);
         setAllRecipes(data);
         setVisibleRecipes(data.slice(0, RECIPES_PER_LOAD));
         setLoadedCount(RECIPES_PER_LOAD);
@@ -75,7 +77,7 @@ const Home = ({ user }) => {
         setLoading(false);
       }
     };
-
+  
     fetchFiltered();
   }, [checked]);
 
@@ -152,18 +154,40 @@ const Home = ({ user }) => {
     }
   };
 
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    setChecked([]); 
+    setLoading(true);
+    try {
+      const data =
+        query.trim() === ""
+          ? await getRecipes()
+          : await getRecipesBySearch(query);
+      setAllRecipes(data);
+      setVisibleRecipes(data.slice(0, RECIPES_PER_LOAD));
+      setLoadedCount(RECIPES_PER_LOAD);
+    } catch (err) {
+      setError("Search failed");
+    } finally {
+      setLoading(false);
+    }
+  };  
+
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 text-center">
         <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
           Let Me Cook
+        </h1>
+        <div className="flex justify-center items-center gap-4 z-20">
+          <SearchBar onSearch={handleSearch} />
           <FilterButton
             toggleFilter={toggleFilter}
             handleToggle={handleToggle}
             filterOpen={filterOpen}
             checked={checked}
           />
-        </h1>
+        </div>
       </div>
 
       {loading && visibleRecipes.length === 0 && !error && (
@@ -174,7 +198,9 @@ const Home = ({ user }) => {
 
       {!loading && visibleRecipes.length === 0 && !error && (
         <div className="text-gray-600 text-lg text-center mt-38">
-          No recipes available.
+          {checked.length > 0 || searchQuery.trim() !== ""
+            ? "No matching recipes found."
+            : "No recipes available."}
         </div>
       )}
 

@@ -124,15 +124,20 @@ class RecipeService:
     def get_recipes_by_tags(tags):
         all_recipes = Recipe.query.all()
         filtered_recipes = []
-        
+
         for recipe in all_recipes:
             if not recipe.tags:
                 continue
-            
+
             recipe_tags = set(tag.strip().lower() for tag in recipe.tags.split(","))
             search_tags = set(tag.strip().lower() for tag in tags)
-    
+
             if search_tags.issubset(recipe_tags):
                 filtered_recipes.append(recipe.to_dict())
-    
+
         return filtered_recipes
+    
+    @staticmethod
+    def search_recipes(query):
+        return RecipeMapper.searchRecipesByName(query)
+

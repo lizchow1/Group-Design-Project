@@ -111,10 +111,17 @@ def toggle_follow_user(username):
         return jsonify(result), 400
     return jsonify(result), 200
 
-
-
 # Get all recipes created by a user
 @recipe_bp.route("/recipes/user/<string:username>", methods=["GET"])
 def get_user_recipes(username):
     recipes = RecipeService.get_user_recipes(username)
     return jsonify(recipes), 200
+
+@recipe_bp.route("/recipes/search", methods=["GET"])
+def search_recipes():
+    query = request.args.get("query", "")
+    if not query:
+        return jsonify({"error": "Query parameter is required"}), 400
+
+    results = RecipeService.search_recipes(query)
+    return jsonify(results), 200
