@@ -62,6 +62,8 @@ const RecipeDetailsPage = () => {
         const recipeData = await getRecipeById(recipeId);
         setRecipe(recipeData);
 
+        console.log("recipedata", recipeData)
+
         const userRecipes = await getUserRecipes(user.username);
         setRecipes(userRecipes);
 
@@ -201,7 +203,13 @@ const RecipeDetailsPage = () => {
           <div className="w-1/2 pl-8">
             <p className="text-2xl md:text-3xl font-bold mb-[3.75rem]">Instructions</p>
             <div className="border-t border-gray-300 w-full"/>
-            <p className="text-base md:text-lg text-left mt-4">{recipe.instructions}</p>
+            {recipe.instructions.split("\n").map((step, index) => (
+              <div key={index} className="flex flex-col items-start">
+                <span className="text-base md:text-lg mt-4 mb-4">{step.trim()}</span>
+                <div className="border-t border-gray-300 w-full"></div>
+              </div>
+            ))}
+            
             {recipe.tips && (
           <div className="mt-8 text-xl text-left w-full flex flex-row">
             <p className="font-semibold  mb-2 mr-2">Tips!</p>
@@ -226,6 +234,28 @@ const RecipeDetailsPage = () => {
         </div>
         )}
 
+      <div className="text-2xl self-start items-start flex flex-col mt-12">
+        Rate this recipe
+        <Box sx={{ '& > legend': { mt: 2 } }}>
+          <Typography component="legend"/>
+          <div className="flex justify-center">
+            <Rating
+              name="simple-controlled"
+              value={value}
+              onChange={(event, newValue) => {
+                setValue(newValue);
+              }}
+            />
+          </div>
+        </Box>
+      </div>
+
+      <div className="w-1/2 text-2xl mt-10 self-start items-start">
+        <CommentSection
+        comments = {["Love this recipe", "Nice, but would add more lime"]}
+        />
+      </div>
+
 
       </div>
       
@@ -243,25 +273,7 @@ const RecipeDetailsPage = () => {
         </div>
       )}
       </div>
-      <div className="text-2xl flex flex-col items-center">
-        Rate this recipe
-        <Box sx={{ '& > legend': { mt: 2 } }}>
-          <Typography component="legend"/>
-          <div className="flex justify-center">
-            <Rating
-              name="simple-controlled"
-              value={value}
-              onChange={(event, newValue) => {
-                setValue(newValue);
-              }}
-            />
-          </div>
-        </Box>
-      </div>
-      <div className="text-2xl mt-10">
-        Comments
-        <CommentSection></CommentSection>
-      </div>
+
 
     </div>
   );
