@@ -9,7 +9,7 @@ import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
 
 const FilterButton = ({ toggleFilter, handleToggle, filterOpen, checked }) => {
     const filterRef = useRef(null);
-    const tags = ["italian", "asian", "indian", "vegan", "gluten free", "healthy", "comfort food"];
+    const tags = ["Italian", "Asian", "Indian", "Vegan", "Gluten free", "Healthy", "Comfort Food"];
     
     useEffect(() => {
         const handleClickOutside = (event) => {

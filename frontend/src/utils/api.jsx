@@ -112,3 +112,9 @@ export const deleteUserFromDB = async (firebase_uid) => {
     });
     return response.json();
 };
+
+export const getFilteredRecipes = async (tags) => {
+    const query = tags.map(tag => `tags=${encodeURIComponent(tag)}`).join("&");
+    const response = await fetch(`${BASE_URL}/recipes/filter?${query}`);
+    return response.json();
+};
