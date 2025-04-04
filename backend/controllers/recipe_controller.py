@@ -125,3 +125,17 @@ def search_recipes():
 
     results = RecipeService.search_recipes(query)
     return jsonify(results), 200
+
+@recipe_bp.route("/recipes/sort", methods=["GET"])
+def sort_recipes():
+    sort_by = request.args.get("by", "name") 
+    order = request.args.get("order", "asc")  
+
+    recipes = RecipeService.get_all_recipes()
+    
+    try:
+        reverse = order == "desc"
+        sorted_recipes = sorted(recipes, key=lambda x: x.get(sort_by, ""), reverse=reverse)
+        return jsonify(sorted_recipes), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
