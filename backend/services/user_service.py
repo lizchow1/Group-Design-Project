@@ -50,6 +50,7 @@ class UserService:
         firebase_token = data.get("firebaseToken")
         email = data.get("email")
         username = data.get("username")
+        image_url = data.get("image_url") 
 
         if not firebase_token or not email or not username:
             return {"error": "Missing required fields"}
@@ -70,8 +71,8 @@ class UserService:
         existing_user = UserMapper.getUserByFirebaseUID(firebase_uid)
         if existing_user:
             return {"error": "User already registered in the database"}
-
-        user = UserMapper.createUser(firebase_uid, email, username)
+ 
+        user = UserMapper.createUser(firebase_uid, email, username, image_url=image_url)
         return user
     
     @staticmethod
@@ -112,6 +113,7 @@ class UserService:
         firebase_token = data.get("firebaseToken")
         new_email = data.get("email")
         new_username = data.get("username")
+        image_url = data.get("image_url")
         
         if not firebase_token:
             return {"error": "Missing firebase token"}
@@ -128,7 +130,7 @@ class UserService:
             return {"error": "User not registered"}
         
         # update user profile
-        updated_user = UserMapper.updateUserProfile(firebase_uid, new_email, new_username)
+        updated_user = UserMapper.updateUserProfile(firebase_uid, new_email, new_username, image_url)
         if not updated_user:
             return {"error": "Failed to update user profile"}
         return updated_user
