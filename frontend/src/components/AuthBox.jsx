@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { registerUser, loginUser } from "../utils/api";
+import { registerUser, loginUser, getUserByFirebaseUID } from "../utils/api";
 import { auth } from "../utils/firebaseConfig.jsx";
-import { getUserByFirebaseUID } from "../utils/api"; 
 
 const AuthBox = ({ title, isSignUp }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(""); // NEW
   const [error, setError] = useState(null);
   const [imageUrl, setImageUrl] = useState(""); // For base64 image
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const AuthBox = ({ title, isSignUp }) => {
 
       let response;
       if (isSignUp) {
-        response = await registerUser(firebaseToken, email, email.split("@")[0], imageUrl);
+        response = await registerUser(firebaseToken, email, username, imageUrl);
       } else {
         response = await loginUser(firebaseToken);
       }
@@ -50,10 +50,13 @@ const AuthBox = ({ title, isSignUp }) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImageUrl(reader.result); // base64
+      setImageUrl(reader.result); 
     };
     if (file) reader.readAsDataURL(file);
   };
+
+  const isRegisterDisabled =
+    isSignUp && (!email || !password || !username || !imageUrl);
 
   return (
     <div className="bg-gray-300 text-black p-6 rounded-lg shadow-md w-96 text-center montserrat-font">
@@ -76,36 +79,54 @@ const AuthBox = ({ title, isSignUp }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-      {isSignUp && (
-        <div className="text-left">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-semibold">Profile Image</label>
-      
-            <label htmlFor="upload-image" className="ml-4">
-              <div className="cursor-pointer inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                Upload Image
-              </div>
-            </label>
-          </div>
-      
-          <input
-            type="file"
-            accept="image/*"
-            id="upload-image"
-            onChange={handleImageChange}
-            className="hidden"
-          />
 
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Preview"
-              className="mt-3 rounded-full w-24 h-24 object-cover mx-auto"
+        {isSignUp && (
+          <>
+            <input
+              type="text"
+              placeholder="Username"
+              className="w-full p-2 bg-gray-200 text-black rounded focus:outline-none focus:ring-2 focus:ring-gray-300"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
             />
-          )}
-        </div>
-      )}
-        <button type="submit" className="w-full bg-gray-600 hover:bg-gray-500 text-black py-2 rounded border">
+            <div className="text-left">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold">Profile Image</label>
+                <label htmlFor="upload-image" className="ml-4">
+                  <div className="cursor-pointer inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    Upload Image
+                  </div>
+                </label>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                id="upload-image"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+
+              {imageUrl && (
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="mt-3 rounded-full w-24 h-24 object-cover mx-auto"
+                />
+              )}
+            </div>
+          </>
+        )}
+
+        <button
+          type="submit"
+          disabled={isRegisterDisabled}
+          className={`w-full py-2 rounded border ${
+            isRegisterDisabled
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gray-600 hover:bg-gray-500 text-black"
+          }`}
+        >
           {title}
         </button>
       </form>

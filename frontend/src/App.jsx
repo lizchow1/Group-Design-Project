@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { auth } from "./utils/firebaseConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getUserByFirebaseUID } from "./utils/api";
+import { useUser } from "./contexts/UserContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SavedRecipes from "./pages/SavedRecipes";
@@ -11,10 +15,7 @@ import DishDetailsPage from "./pages/DishDetailsPage";
 import Settings from "./pages/Settings";
 import FriendsPage from "./pages/FriendsPage";
 import FriendProfilePage from "./pages/FriendsProfilePage";
-import { auth } from "./utils/firebaseConfig";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { getUserByFirebaseUID } from "./utils/api"; // Import the new API function
-import { useUser } from "./contexts/UserContext";
+import Register from "./pages/Register";
 
 const App = () => {
   const [firebaseUser] = useAuthState(auth);
@@ -74,6 +75,7 @@ const App = () => {
       ) : (
         <Routes>
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/sign-in" />} />
         </Routes>
       )}
