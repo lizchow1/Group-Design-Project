@@ -160,3 +160,36 @@ def rate_recipe(recipe_id):
         "message": "Rating saved successfully",
         "rating": result
     }), 201
+
+@recipe_bp.route("/recipes/search", methods=["GET"])
+def search_recipes():
+    query = request.args.get("query", "")
+    if not query:
+        return jsonify({"error": "Query parameter is required"}), 400
+
+    results = RecipeService.search_recipes(query)
+    return jsonify(results), 200
+
+@recipe_bp.route("/recipes/sort", methods=["GET"])
+def sort_recipes():
+    sort_by = request.args.get("by", "name") 
+    order = request.args.get("order", "asc")  
+
+    recipes = RecipeService.get_all_recipes()
+    
+    try:
+        reverse = order == "desc"
+        sorted_recipes = sorted(recipes, key=lambda x: x.get(sort_by, ""), reverse=reverse)
+        return jsonify(sorted_recipes), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@recipe_bp.route("/recipes/query", methods=["GET"])
+def query_recipes():
+    query = request.args.get("query", "")
+    tags = request.args.getlist("tags")
+    sort_by = request.args.get("sort", "")
+    order = request.args.get("order", "asc")
+
+    results = RecipeService.query_recipes(query, tags, sort_by, order)
+    return jsonify(results), 200

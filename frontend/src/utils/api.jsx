@@ -140,3 +140,26 @@ export const getFriends = async () => {
     ];
   };
   
+export const getFilteredRecipes = async (tags) => {
+    const query = tags.map(tag => `tags=${encodeURIComponent(tag)}`).join("&");
+    const response = await fetch(`${BASE_URL}/recipes/filter?${query}`);
+    return response.json();
+};
+
+export const getRecipesBySearch = async (query) => {
+    const response = await fetch(`${BASE_URL}/recipes/search?query=${encodeURIComponent(query)}`);
+    return response.json();
+};
+
+export const getSortedRecipes = async (sortBy, order = "asc") => {
+    const response = await fetch(`${BASE_URL}/recipes/sort?by=${sortBy}&order=${order}`);
+    return response.json();
+  };  
+
+  export const getCombinedRecipes = async ({ query = "", tags = [], sort = "", order = "asc" }) => {
+    const tagParams = tags.map(tag => `tags=${encodeURIComponent(tag)}`).join("&");
+    const fullQuery = `query=${encodeURIComponent(query)}&${tagParams}&sort=${sort}&order=${order}`;
+    const response = await fetch(`${BASE_URL}/recipes/query?${fullQuery}`);
+    return response.json();
+  };  
+  

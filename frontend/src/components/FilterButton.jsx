@@ -9,7 +9,7 @@ import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
 
 const FilterButton = ({ toggleFilter, handleToggle, filterOpen, checked }) => {
     const filterRef = useRef(null);
-    const tags = ["Italian", "Asian", "Indian", "Vegan", "Gluten free", "Healthy", "Comfort food"];
+    const tags = ["Italian", "Asian", "Indian", "Dessert", "Quick", "Gluten free", "Healthy", "Comfort Food"];
     
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -33,6 +33,7 @@ const FilterButton = ({ toggleFilter, handleToggle, filterOpen, checked }) => {
             <TuneOutlinedIcon
                 onClick={toggleFilter}
                 className="cursor-pointer"
+                style={{ color: "#22c55e" }}
             />
 
             {filterOpen && (

@@ -138,3 +138,53 @@ class RecipeService:
             return {"error": "Recipe not found"}, 404
         
         return RecipeMapper.addOrUpdateRating(recipe_id, username, rating_value)
+    @staticmethod
+    def get_recipes_by_tags(tags):
+        all_recipes = Recipe.query.all()
+        filtered_recipes = []
+
+        for recipe in all_recipes:
+            if not recipe.tags:
+                continue
+
+            recipe_tags = set(tag.strip().lower() for tag in recipe.tags.split(","))
+            search_tags = set(tag.strip().lower() for tag in tags)
+
+            if search_tags.issubset(recipe_tags):
+                filtered_recipes.append(recipe.to_dict())
+
+        return filtered_recipes
+    
+    @staticmethod
+    def search_recipes(query):
+        return RecipeMapper.searchRecipesByName(query)
+
+    @staticmethod
+    def query_recipes(query, tags, sort_by, order):
+        all_recipes = Recipe.query.all()
+        filtered = []
+
+        for recipe in all_recipes:
+            if query.strip():
+                q = query.lower()
+                if q not in recipe.name.lower() and q not in (recipe.description or "").lower():
+                    continue
+
+            if tags:
+                recipe_tags = set(tag.strip().lower() for tag in (recipe.tags or "").split(","))
+                if not set(tag.lower() for tag in tags).issubset(recipe_tags):
+                    continue
+
+            filtered.append(recipe)
+
+        if sort_by:
+            reverse = order == "desc"
+            if sort_by == "time":
+                try:
+                    filtered.sort(key=lambda r: int(r.minutes or 0), reverse=reverse)
+                except Exception:
+                    pass
+            elif sort_by == "name":
+                filtered.sort(key=lambda r: r.name.lower(), reverse=reverse)
+
+        return [r.to_dict() for r in filtered]

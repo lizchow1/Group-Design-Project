@@ -154,7 +154,7 @@ class RecipeMapper:
     def getUserRecipes(username):
         # Get all recipes created by the user
         recipes = Recipe.query.filter_by(username=username).all()
-        return [recipe.to_dict() for recipe in recipes]
+        return [recipe.to_dict() for recipe in recipes]    
     
     @staticmethod
     def addComment(recipe_id, username, comment_text):
@@ -176,3 +176,13 @@ class RecipeMapper:
             db.session.add(new_rating)
             db.session.commit()
             return new_rating.to_dict()
+
+    @staticmethod
+    def searchRecipesByName(query):
+        query = query.lower()
+        recipes = Recipe.query.all()
+        return [
+            recipe.to_dict()
+            for recipe in recipes
+            if query in recipe.name.lower()
+        ]
