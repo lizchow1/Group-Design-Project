@@ -101,7 +101,7 @@ const UserProfilePage = () => {
           <div className="w-35 h-35 rounded-full bg-black" />
         )}
 
-        <h1 className="text-3xl font-bold text-green-600">User Profile</h1>
+        <h1 className="text-3xl font-bold text-green-600">{user.username} Profile</h1>
       </div>
 
       <div className="flex flex-row gap-8 w-full max-w-7xl mt-16">
