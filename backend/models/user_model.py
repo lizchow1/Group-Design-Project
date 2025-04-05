@@ -13,6 +13,22 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     image_url = db.Column(db.String, nullable=True)
     
+    followers = db.relationship(
+        'Follow',
+        foreign_keys='Follow.followed_id',
+        backref=db.backref('followed', lazy='joined'),
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
+    
+    following = db.relationship(
+        'Follow',
+        foreign_keys='Follow.follower_id',
+        backref=db.backref('follower', lazy='joined'),
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
+    
     def __init__(self, firebase_uid, email, username):
         self.firebase_uid = firebase_uid
         self.email = email
@@ -25,5 +41,7 @@ class User(db.Model):
             "email": self.email,
             "username": self.username,
             "created_at": self.created_at.isoformat(),
-            "image_url": self.image_url
+            "image_url": self.image_url,
+            "followers_count": self.followers.count(),
+            "following_count": self.following.count()
         }
