@@ -183,3 +183,13 @@ def sort_recipes():
         return jsonify(sorted_recipes), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@recipe_bp.route("/recipes/query", methods=["GET"])
+def query_recipes():
+    query = request.args.get("query", "")
+    tags = request.args.getlist("tags")
+    sort_by = request.args.get("sort", "")
+    order = request.args.get("order", "asc")
+
+    results = RecipeService.query_recipes(query, tags, sort_by, order)
+    return jsonify(results), 200

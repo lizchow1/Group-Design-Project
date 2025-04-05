@@ -3,15 +3,15 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'; // MUI icon for sorting
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'; 
 
 const SortButton = ({ toggleSort, handleSortSelect, sortOpen, currentSort }) => {
     const sortRef = useRef(null);
     const options = [
         { label: "Sort By Name (Ascending)", value: "name-asc" },
         { label: "Sort By Name (Descending)", value: "name-desc" },
-        { label: "Sort By Cooking Time (Ascending)", value: "cooking_time-asc" },
-        { label: "Sort By Cooking Time (Descending)", value: "cooking_time-desc" }
+        { label: "Sort By Cooking Time (Ascending)", value: "time-asc" },
+        { label: "Sort By Cooking Time (Descending)", value: "time-desc" }
     ];
 
     useEffect(() => {
