@@ -35,7 +35,7 @@ class RecipeService:
             cooking_time = f"{total_minutes} mins" if total_minutes else "Unknown"
 
             tags = ", ".join(item.get("tags", []))
-            ingredients = ", ".join(item.get("ingredients", []))
+            ingredients = "\n".join(item.get("ingredients", []))
             instructions = "\n".join(item.get("instructions", []))
             cuisine = item.get("cuisine", "global")
             description = f"A delicious {cuisine.lower()} dish"
