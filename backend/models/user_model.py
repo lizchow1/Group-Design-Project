@@ -11,6 +11,7 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     username = db.Column(db.String(100), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    image_url = db.Column(db.String, nullable=True)
     
     def __init__(self, firebase_uid, email, username):
         self.firebase_uid = firebase_uid
@@ -23,5 +24,6 @@ class User(db.Model):
             "firebase_uid": self.firebase_uid,
             "email": self.email,
             "username": self.username,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
+            "image_url": self.image_url
         }

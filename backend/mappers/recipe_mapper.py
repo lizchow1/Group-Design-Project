@@ -3,6 +3,8 @@ from models.recipe_model import Recipe
 from datetime import datetime
 from sqlalchemy import text
 from models.bookmark_model import Bookmark
+from models.comment_model import Comment
+from models.rating_model import Rating
 
 class RecipeMapper:
 
@@ -152,8 +154,29 @@ class RecipeMapper:
     def getUserRecipes(username):
         # Get all recipes created by the user
         recipes = Recipe.query.filter_by(username=username).all()
-        return [recipe.to_dict() for recipe in recipes]
+        return [recipe.to_dict() for recipe in recipes]    
     
+    @staticmethod
+    def addComment(recipe_id, username, comment_text):
+        new_comment = Comment(recipe_id=recipe_id, username=username, comment_text=comment_text)
+        db.session.add(new_comment)
+        db.session.commit()
+        return new_comment.to_dict()
+
+    @staticmethod
+    def addOrUpdateRating(recipe_id, username, rating_value):
+        existing_rating = Rating.query.filter_by(recipe_id=recipe_id, username=username).first()
+        if existing_rating:
+            existing_rating.rating_value = rating_value
+            existing_rating.create_time = datetime.utcnow()
+            db.session.commit()
+            return existing_rating.to_dict()
+        else:
+            new_rating = Rating(recipe_id=recipe_id, username=username, rating_value=rating_value)
+            db.session.add(new_rating)
+            db.session.commit()
+            return new_rating.to_dict()
+
     @staticmethod
     def searchRecipesByName(query):
         query = query.lower()

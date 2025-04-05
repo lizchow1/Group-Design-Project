@@ -121,6 +121,24 @@ class RecipeService:
         return RecipeMapper.getUserRecipes(username)
 
     @staticmethod
+    def add_comment_to_recipe(recipe_id, username, comment_text):
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            return {"error": "Recipe not found"}, 404
+        
+        return RecipeMapper.addComment(recipe_id, username, comment_text)
+
+    @staticmethod
+    def rate_recipe(recipe_id, username, rating_value):
+        if rating_value < 1 or rating_value > 5:
+            return {"error": "Rating must be between 1 and 5"}, 400
+        
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            return {"error": "Recipe not found"}, 404
+        
+        return RecipeMapper.addOrUpdateRating(recipe_id, username, rating_value)
+    @staticmethod
     def get_recipes_by_tags(tags):
         all_recipes = Recipe.query.all()
         filtered_recipes = []

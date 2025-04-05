@@ -1,13 +1,19 @@
 import { useState } from "react";
-import { getAuth, deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
+import {
+  getAuth,
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import UserDetailsForm from "../components/UserDetailsForm";
 import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteUserFromDB } from "../utils/api";
 import Modal from "../components/Modal";
+import { useUser } from "../contexts/UserContext";
 
-const Settings = ({ user }) => {
-  const [userDetails, setUserDetails] = useState(user);
+const Settings = () => {
+  const { user, setUser } = useUser();
   const [error, setError] = useState(null);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -21,29 +27,29 @@ const Settings = ({ user }) => {
 
   const handleDeleteAccount = async () => {
     const auth = getAuth();
-  
+
     try {
       setLoadingDelete(true);
       setError(null);
-  
-      const user = auth.currentUser;
-      if (!user) throw new Error("No user is currently logged in.");
-  
-      const uid = user.uid;
-      const email = user.email;
-  
+
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error("No user is currently logged in.");
+
+      const uid = currentUser.uid;
+      const email = currentUser.email;
+
       if (!passwordInput) {
         setError("Password is required.");
         return;
       }
-  
+
       const credential = EmailAuthProvider.credential(email, passwordInput);
-      await reauthenticateWithCredential(user, credential);
+      await reauthenticateWithCredential(currentUser, credential);
 
       const response = await deleteUserFromDB(uid);
-  
+
       if (response?.message === "User deleted successfully") {
-        await deleteUser(user);
+        await deleteUser(currentUser);
         navigate("/sign-in");
       } else {
         setError("Backend deletion failed. Your account was not removed.");
@@ -65,7 +71,6 @@ const Settings = ({ user }) => {
       }
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen w-screen montserrat-font">
@@ -74,7 +79,7 @@ const Settings = ({ user }) => {
           Account Settings
         </h1>
 
-        <UserDetailsForm user={userDetails} setUser={setUserDetails} />
+        <UserDetailsForm user={user} setUser={setUser} />
 
         {error && <p className="text-red-600 text-center mt-4">{error}</p>}
 

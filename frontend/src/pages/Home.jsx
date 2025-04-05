@@ -5,10 +5,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import FilterButton from "../components/FilterButton";
 import SearchBar from "../components/SearchBar";
 import SortButton from "../components/SortButton";
+import { useUser } from "../contexts/UserContext";
 
 const RECIPES_PER_LOAD = 5;
 
-const Home = ({ user }) => {
+const Home = () => {
   const [allRecipes, setAllRecipes] = useState([]);
   const [visibleRecipes, setVisibleRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
@@ -20,6 +21,12 @@ const Home = ({ user }) => {
   const loaderRef = useRef(null);
   const [checked, setChecked] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [followedUsers, setFollowedUsers] = useState(new Set());
+  const { user } = useUser();
+  
+  const filteredRecipes = visibleRecipes.filter((recipe) =>
+    checked.length === 0 || checked.every((tag) => recipe.tags.includes(tag))
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
   const [currentSort, setCurrentSort] = useState("");
@@ -37,6 +44,18 @@ const Home = ({ user }) => {
         : [...prevChecked, tag]
     );
   };
+
+  const handleFollow = (username) => {
+    setFollowedUsers((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(username)) {
+        newSet.delete(username);
+      } else {
+        newSet.add(username);
+      }
+      return newSet;
+    });
+  };  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -202,7 +221,7 @@ const Home = ({ user }) => {
   return (
     <div className="relative montserrat-font flex flex-col items-center justify-start w-screen h-screen overflow-hidden">
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 text-center">
-        <h1 className="text-3xl font-bold mt-6 text-green-600 z-20 text-center mb-4">
+        <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
           Let Me Cook
         </h1>
         <div className="flex justify-center items-center gap-4 z-20">
@@ -247,22 +266,21 @@ const Home = ({ user }) => {
             data-index={index}
             className="recipe-card w-full h-screen flex items-center justify-center snap-center"
           >
-            <FlipRecipeCard
-              id={recipe.id}
-              image={recipe.image}
-              video={recipe.video}
-              name={recipe.name}
-              username={recipe.username}
-              tags={recipe.tags}
-              cooking_time={recipe.cooking_time}
-              ingredients={recipe.ingredients}
-              description={recipe.description}
-              isBookmarked={bookmarkedRecipes.has(recipe.id)}
-              onToggleBookmark={() => handleToggleBookmark(recipe.id)}
-              onFullDetailsClick={() =>
-                console.log(`Clicked for full details on ${recipe.name}`)
-              }
-            />
+          <FlipRecipeCard
+            id={recipe.id}
+            image={recipe.image}
+            video={recipe.video}
+            name={recipe.name}
+            username={recipe.username}
+            tags={recipe.tags}
+            cooking_time={recipe.cooking_time}
+            ingredients={recipe.ingredients}
+            description={recipe.description}
+            isBookmarked={bookmarkedRecipes.has(recipe.id)}
+            onToggleBookmark={() => handleToggleBookmark(recipe.id)}
+            onFollow={handleFollow}
+            isFollowing={followedUsers.has(recipe.username)}
+          />
           </div>
         ))}
 

@@ -46,13 +46,13 @@ export const deleteRecipeByID = async (recipeId) => {
     return response.json();
 };
 
-export const registerUser = async (firebaseToken, email, username) => {
+export const registerUser = async (firebaseToken, email, username, imageUrl) => {
     const response = await fetch(`${BASE_URL}/users/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ firebaseToken, email, username }),
+        body: JSON.stringify({ firebaseToken, email, username, image_url: imageUrl, }),
     });
     return response.json();
 };
@@ -95,16 +95,23 @@ export const getBookmarkedRecipes = async (username) => {
     return response.json();
   };
   
-  export const updateUserProfile = async (firebaseToken, email, username) => {
+  export const updateUserProfile = async (firebaseToken, email, username, imageUrl) => {
     const response = await fetch(`${BASE_URL}/users/profile`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ firebaseToken, email, username }),
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firebaseToken,
+        email,
+        username,
+        image_url: imageUrl,
+      }),
     });
+  
     return response.json();
-};
+  };
+  
 
 export const deleteUserFromDB = async (firebase_uid) => {
     const response = await fetch(`${BASE_URL}/users/firebase/${firebase_uid}`, {
@@ -113,6 +120,26 @@ export const deleteUserFromDB = async (firebase_uid) => {
     return response.json();
 };
 
+export const getFriends = async () => {
+    return [
+      {
+        id: 1,
+        username: "Alice Johnson",
+        image_url: "https://i.pravatar.cc/150?u=alice",
+      },
+      {
+        id: 2,
+        username: "Bob Smith",
+        image_url: "https://i.pravatar.cc/150?u=bob",
+      },
+      {
+        id: 3,
+        username: "Charlie Brown",
+        image_url: "https://i.pravatar.cc/150?u=charlie",
+      },
+    ];
+  };
+  
 export const getFilteredRecipes = async (tags) => {
     const query = tags.map(tag => `tags=${encodeURIComponent(tag)}`).join("&");
     const response = await fetch(`${BASE_URL}/recipes/filter?${query}`);

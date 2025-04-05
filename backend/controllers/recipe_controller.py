@@ -117,6 +117,50 @@ def get_user_recipes(username):
     recipes = RecipeService.get_user_recipes(username)
     return jsonify(recipes), 200
 
+@recipe_bp.route("/recipes/<int:recipe_id>/comments", methods=["POST"])
+def add_comment(recipe_id):
+    data = request.get_json()
+    username = data.get("username")
+    comment_text = data.get("comment_text")
+
+    if not username or not comment_text:
+        return jsonify({"error": "username and comment_text are required"}), 400
+    
+    result = RecipeService.add_comment_to_recipe(recipe_id, username, comment_text)
+
+    if isinstance(result, dict) and "error" in result:
+        return jsonify(result), result.get("status_code", 400)
+    
+    return jsonify({
+        "message": "Comment added successfully",
+        "comment": result
+    }), 201
+
+
+@recipe_bp.route("/recipes/<int:recipe_id>/rate", methods=["POST"])
+def rate_recipe(recipe_id):
+    data = request.get_json()
+    username = data.get("username")
+    rating_value = data.get("rating_value")
+
+    if not username or rating_value is None:
+        return jsonify({"error": "username and rating_value are required"}), 400
+    
+    try:
+        rating_value = int(rating_value)
+    except ValueError:
+        return jsonify({"error": "rating_value must be an integer"}), 400
+
+    result = RecipeService.rate_recipe(recipe_id, username, rating_value)
+
+    if isinstance(result, dict) and "error" in result:
+        return jsonify(result), 400
+    
+    return jsonify({
+        "message": "Rating saved successfully",
+        "rating": result
+    }), 201
+
 @recipe_bp.route("/recipes/search", methods=["GET"])
 def search_recipes():
     query = request.args.get("query", "")
