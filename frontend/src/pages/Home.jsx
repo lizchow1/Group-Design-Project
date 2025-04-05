@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import FlipRecipeCard from "../components/FlipRecipeCard";
-import { getRecipes, getBookmarkedRecipes, toggleBookmark, getFilteredRecipes, getRecipesBySearch, getSortedRecipes, getCombinedRecipes } from "../utils/api";
+import { getCombinedRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import FilterButton from "../components/FilterButton";
 import SearchBar from "../components/SearchBar";
 import SortButton from "../components/SortButton";
 import { useUser } from "../contexts/UserContext";
 
-const RECIPES_PER_LOAD = 5;
+const RECIPES_PER_LOAD = 25;
 
 const Home = () => {
   const [allRecipes, setAllRecipes] = useState([]);
   const [visibleRecipes, setVisibleRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loadedCount, setLoadedCount] = useState(RECIPES_PER_LOAD);
@@ -23,13 +23,54 @@ const Home = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [followedUsers, setFollowedUsers] = useState(new Set());
   const { user } = useUser();
-
+  const [hasScrolledToSaved, setHasScrolledToSaved] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
   const [currentSort, setCurrentSort] = useState("");
+  const [isLoadingIndex, setIsLoadingIndex] = useState(true);
+  const [initialized, setInitialized] = useState(false); 
 
   const toggleSort = () => setSortOpen((prev) => !prev);
   const toggleFilter = () => setFilterOpen((prev) => !prev);
+  const initialStateRef = useRef(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("lastViewState");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        initialStateRef.current = {
+          query: parsed.query || "",
+          tags: parsed.tags || [],
+          sort: parsed.sort || "",
+        };
+        if (!isNaN(parsed.index)) {
+          setCurrentIndex(parsed.index);
+          setSearchQuery(parsed.query || "");
+          setChecked(parsed.tags || []);
+          setCurrentSort(parsed.sort || "");
+        }
+      } catch (err) {
+        console.warn("Failed to parse stored view state", err);
+      }
+    } else {
+      setCurrentIndex(0);
+    }
+    setIsLoadingIndex(false);
+    setInitialized(true); 
+  }, []);
+
+  useEffect(() => {
+    if (currentIndex !== null) {
+      const state = {
+        index: currentIndex,
+        query: searchQuery,
+        tags: checked,
+        sort: currentSort
+      };
+      localStorage.setItem("lastViewState", JSON.stringify(state));
+    }
+  }, [currentIndex, searchQuery, checked, currentSort]);
 
   const handleToggle = (tag) => () => {
     setChecked((prevChecked) =>
@@ -62,8 +103,9 @@ const Home = () => {
         order: order,
       });
       setAllRecipes(data);
-      setVisibleRecipes(data.slice(0, RECIPES_PER_LOAD));
-      setLoadedCount(RECIPES_PER_LOAD);
+      const initialLoadCount = Math.max(RECIPES_PER_LOAD, currentIndex + 1);
+      setVisibleRecipes(data.slice(0, initialLoadCount));
+      setLoadedCount(initialLoadCount);
     } catch (err) {
       setError("Failed to load recipes");
     } finally {
@@ -89,23 +131,57 @@ const Home = () => {
   }, [user]);
 
   useEffect(() => {
-    updateVisibleRecipes();
-  }, [searchQuery, checked, currentSort]);
+    if (
+      currentIndex !== null &&
+      currentIndex < visibleRecipes.length &&
+      !hasScrolledToSaved &&
+      loadedCount >= currentIndex + 1
+    ) {
+      const cards = document.querySelectorAll(".recipe-card");
+      if (cards[currentIndex]) {
+        cards[currentIndex].scrollIntoView({ behavior: "auto" });
+        setHasScrolledToSaved(true);
+      }
+    }
+  }, [visibleRecipes, currentIndex, hasScrolledToSaved, loadedCount]);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    const storedState = initialStateRef.current;
+    if (
+      storedState &&
+      searchQuery === storedState.query &&
+      JSON.stringify(checked) === JSON.stringify(storedState.tags) &&
+      currentSort === storedState.sort
+    ) {
+      updateVisibleRecipes();
+    } else {
+      setHasScrolledToSaved(false);
+      setCurrentIndex(0);
+      updateVisibleRecipes();
+    }
+  }, [searchQuery, checked, currentSort, initialized]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries.find((e) => e.isIntersecting);
-        if (entry) {
-          setCurrentIndex(Number(entry.target.dataset.index));
+        let maxRatio = 0;
+        let maxIndex = null;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            maxIndex = Number(entry.target.dataset.index);
+          }
+        });
+        if (maxIndex !== null && maxRatio > 0.5) {
+          setCurrentIndex(maxIndex);
         }
       },
-      { threshold: 0.7 }
+      { threshold: [0, 0.25, 0.5, 0.75, 1.0] }
     );
-
     const elements = document.querySelectorAll(".recipe-card");
     elements.forEach((el) => observer.observe(el));
-
     return () => elements.forEach((el) => observer.unobserve(el));
   }, [visibleRecipes]);
 
@@ -118,9 +194,7 @@ const Home = () => {
       },
       { rootMargin: "200px" }
     );
-
     if (loaderRef.current) observer.observe(loaderRef.current);
-
     return () => {
       if (loaderRef.current) observer.unobserve(loaderRef.current);
     };
@@ -129,7 +203,6 @@ const Home = () => {
   const loadMoreRecipes = () => {
     if (visibleRecipes.length >= allRecipes.length) return;
     setLoading(true);
-
     setTimeout(() => {
       const newCount = loadedCount + RECIPES_PER_LOAD;
       setVisibleRecipes(allRecipes.slice(0, newCount));
@@ -143,7 +216,6 @@ const Home = () => {
       console.error("User not logged in");
       return;
     }
-
     try {
       const result = await toggleBookmark(recipeId, user.username);
       if (!result.error) {
