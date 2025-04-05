@@ -8,10 +8,10 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'; // MUI icon f
 const SortButton = ({ toggleSort, handleSortSelect, sortOpen, currentSort }) => {
     const sortRef = useRef(null);
     const options = [
-        { label: "Name ↑", value: "name-asc" },
-        { label: "Name ↓", value: "name-desc" },
-        { label: "Cooking Time ↑", value: "cooking_time-asc" },
-        { label: "Cooking Time ↓", value: "cooking_time-desc" }
+        { label: "Sort By Name (Ascending)", value: "name-asc" },
+        { label: "Sort By Name (Descending)", value: "name-desc" },
+        { label: "Sort By Cooking Time (Ascending)", value: "cooking_time-asc" },
+        { label: "Sort By Cooking Time (Descending)", value: "cooking_time-desc" }
     ];
 
     useEffect(() => {
@@ -42,9 +42,9 @@ const SortButton = ({ toggleSort, handleSortSelect, sortOpen, currentSort }) => 
                 <div
                     ref={sortRef}
                     className="absolute bg-white shadow-lg p-2 rounded-md"
-                    style={{ top: "40px", left: "0px", zIndex: 10 }}
+                    style={{ top: "40px", left: "0px", zIndex: 10, width: '350px' }}
                 >
-                    <List sx={{ width: '100%', maxWidth: 300 }}>
+                    <List sx={{ maxWidth: 350 }}>
                         {options.map(({ label, value }) => (
                             <ListItem key={value} disablePadding>
                                 <ListItemButton
