@@ -21,6 +21,7 @@ export const createRecipe = async (recipeData) => {
     return response.json();
 };
 
+
 export const deleteRecipe = async (recipeId) => {
     const response = await fetch(`${BASE_URL}/recipes/deleteAll`, {
         method: "DELETE",
@@ -45,6 +46,23 @@ export const deleteRecipeByID = async (recipeId) => {
     });
     return response.json();
 };
+
+export const createComment = async (recipeId, commentData) => {
+    const response = await fetch(`${BASE_URL}/recipes/${recipeId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(commentData),
+    });
+  
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Error submitting comment");
+    }
+  
+    return response.json();
+  };
 
 export const registerUser = async (firebaseToken, email, username, imageUrl) => {
     const response = await fetch(`${BASE_URL}/users/register`, {
@@ -162,4 +180,5 @@ export const getSortedRecipes = async (sortBy, order = "asc") => {
     const response = await fetch(`${BASE_URL}/recipes/query?${fullQuery}`);
     return response.json();
   };  
+
   

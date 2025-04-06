@@ -61,6 +61,7 @@ const RecipeDetailsPage = () => {
       try {
         const recipeData = await getRecipeById(recipeId);
         setRecipe(recipeData);
+        console.log("recipedata", recipeData)
 
         const userRecipes = await getUserRecipes(user.username);
         setRecipes(userRecipes);
@@ -232,7 +233,7 @@ const RecipeDetailsPage = () => {
         )}
 
       <div className="text-2xl self-start items-start flex flex-col mt-12">
-        Rate this recipe
+        Ratings
         <Box sx={{ '& > legend': { mt: 2 } }}>
           <Typography component="legend"/>
           <div className="flex justify-center">
@@ -250,7 +251,7 @@ const RecipeDetailsPage = () => {
       <div className="w-1/2 text-2xl mt-10 self-start items-start">
         <CommentSection
         // hardcoding, will send recipe.comments when backed is connected
-        comments = {["Love this recipe", "Nice, but would add more lime"]}
+        comments = {recipe.comments}
         />
       </div>
 
