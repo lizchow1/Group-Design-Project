@@ -7,18 +7,13 @@ import SearchBar from "../components/SearchBar";
 import SortButton from "../components/SortButton";
 import { useUser } from "../contexts/UserContext";
 
-const RECIPES_PER_LOAD = 25;
-
 const Home = () => {
   const [allRecipes, setAllRecipes] = useState([]);
-  const [visibleRecipes, setVisibleRecipes] = useState([]);
   const [bookmarkedRecipes, setBookmarkedRecipes] = useState(new Set());
   const [currentIndex, setCurrentIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [loadedCount, setLoadedCount] = useState(RECIPES_PER_LOAD);
   const scrollContainerRef = useRef(null);
-  const loaderRef = useRef(null);
   const [checked, setChecked] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [followedUsers, setFollowedUsers] = useState(new Set());
@@ -40,33 +35,30 @@ const Home = () => {
       try {
         const parsed = JSON.parse(stored);
         initialStateRef.current = {
-          query: parsed.query || "",
-          tags: parsed.tags || [],
-          sort: parsed.sort || "",
+          recipeId: parsed.recipeId || null,
+          query: "",
+          tags: [],
+          sort: "",
         };
-        if (!isNaN(parsed.index)) {
-          setCurrentIndex(parsed.index);
-          setSearchQuery(parsed.query || "");
-          setChecked(parsed.tags || []);
-          setCurrentSort(parsed.sort || "");
-        }
+        setSearchQuery("");
+        setChecked([]);
+        setCurrentSort("");
       } catch (err) {
         console.warn("Failed to parse stored view state", err);
       }
-    } else {
-      setCurrentIndex(0);
     }
     setIsLoadingIndex(false);
-    setInitialized(true); 
+    setInitialized(true);
   }, []);
 
   useEffect(() => {
-    if (currentIndex !== null) {
+    if (currentIndex !== null && currentIndex < allRecipes.length) {
+      const currentRecipe = allRecipes[currentIndex];
       const state = {
-        index: currentIndex,
+        recipeId: currentRecipe?.id || null,
         query: searchQuery,
         tags: checked,
-        sort: currentSort
+        sort: currentSort,
       };
       localStorage.setItem("lastViewState", JSON.stringify(state));
     }
@@ -92,20 +84,21 @@ const Home = () => {
     });
   };
 
-  const updateVisibleRecipes = async () => {
+  const updateVisibleRecipes = async ({ query, tags, sort }) => {
     setLoading(true);
     try {
-      const [field, order] = currentSort ? currentSort.split("-") : ["", "asc"];
-      const data = await getCombinedRecipes({
-        query: searchQuery,
-        tags: checked,
-        sort: field,
-        order: order,
-      });
+      const [field, order] = sort ? sort.split("-") : ["", "asc"];
+      const data = await getCombinedRecipes({ query, tags, sort: field, order });
+
       setAllRecipes(data);
-      const initialLoadCount = Math.max(RECIPES_PER_LOAD, currentIndex + 1);
-      setVisibleRecipes(data.slice(0, initialLoadCount));
-      setLoadedCount(initialLoadCount);
+
+      const storedState = initialStateRef.current;
+      if (storedState?.recipeId) {
+        const matchingIndex = data.findIndex((r) => r.id === storedState.recipeId);
+        setCurrentIndex(matchingIndex !== -1 ? matchingIndex : 0);
+      } else {
+        setCurrentIndex(0);
+      }
     } catch (err) {
       setError("Failed to load recipes");
     } finally {
@@ -116,12 +109,10 @@ const Home = () => {
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
-        let bookmarkedSet = new Set();
         if (user) {
           const bookmarkedData = await getBookmarkedRecipes(user.username);
-          bookmarkedSet = new Set(bookmarkedData.map((r) => r.id));
+          setBookmarkedRecipes(new Set(bookmarkedData.map((r) => r.id)));
         }
-        setBookmarkedRecipes(bookmarkedSet);
       } catch (err) {
         console.error("Failed to fetch bookmarks", err);
       }
@@ -133,9 +124,8 @@ const Home = () => {
   useEffect(() => {
     if (
       currentIndex !== null &&
-      currentIndex < visibleRecipes.length &&
-      !hasScrolledToSaved &&
-      loadedCount >= currentIndex + 1
+      currentIndex < allRecipes.length &&
+      !hasScrolledToSaved
     ) {
       const cards = document.querySelectorAll(".recipe-card");
       if (cards[currentIndex]) {
@@ -143,11 +133,10 @@ const Home = () => {
         setHasScrolledToSaved(true);
       }
     }
-  }, [visibleRecipes, currentIndex, hasScrolledToSaved, loadedCount]);
+  }, [allRecipes, currentIndex, hasScrolledToSaved]);
 
   useEffect(() => {
     if (!initialized) return;
-
     const storedState = initialStateRef.current;
     if (
       storedState &&
@@ -155,11 +144,10 @@ const Home = () => {
       JSON.stringify(checked) === JSON.stringify(storedState.tags) &&
       currentSort === storedState.sort
     ) {
-      updateVisibleRecipes();
+      updateVisibleRecipes({ query: "", tags: [], sort: "" });
     } else {
-      setHasScrolledToSaved(false);
       setCurrentIndex(0);
-      updateVisibleRecipes();
+      updateVisibleRecipes({ query: searchQuery, tags: checked, sort: currentSort });
     }
   }, [searchQuery, checked, currentSort, initialized]);
 
@@ -183,63 +171,25 @@ const Home = () => {
     const elements = document.querySelectorAll(".recipe-card");
     elements.forEach((el) => observer.observe(el));
     return () => elements.forEach((el) => observer.unobserve(el));
-  }, [visibleRecipes]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          loadMoreRecipes();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
-    };
-  }, [loading]);
-
-  const loadMoreRecipes = () => {
-    if (visibleRecipes.length >= allRecipes.length) return;
-    setLoading(true);
-    setTimeout(() => {
-      const newCount = loadedCount + RECIPES_PER_LOAD;
-      setVisibleRecipes(allRecipes.slice(0, newCount));
-      setLoadedCount(newCount);
-      setLoading(false);
-    }, 10);
-  };
+  }, [allRecipes]);
 
   const handleToggleBookmark = async (recipeId) => {
-    if (!user) {
-      console.error("User not logged in");
-      return;
-    }
+    if (!user) return console.error("User not logged in");
     try {
       const result = await toggleBookmark(recipeId, user.username);
       if (!result.error) {
         setBookmarkedRecipes((prevBookmarks) => {
-          const updatedBookmarks = new Set(prevBookmarks);
-          if (result.isBookmarked) {
-            updatedBookmarks.add(recipeId);
-          } else {
-            updatedBookmarks.delete(recipeId);
-          }
-          return updatedBookmarks;
+          const updated = new Set(prevBookmarks);
+          result.isBookmarked ? updated.add(recipeId) : updated.delete(recipeId);
+          return updated;
         });
-      } else {
-        console.error("Toggle bookmark error: ", result.error);
       }
     } catch (error) {
       console.error("Error toggling bookmark: ", error);
     }
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
-
+  const handleSearch = (query) => setSearchQuery(query);
   const handleSortSelect = (value) => {
     setCurrentSort(value);
     setSortOpen(false);
@@ -268,13 +218,13 @@ const Home = () => {
         </div>
       </div>
 
-      {loading && visibleRecipes.length === 0 && !error && (
+      {loading && allRecipes.length === 0 && !error && (
         <div className="flex items-center justify-center w-full h-screen">
           <CircularProgress />
         </div>
       )}
 
-      {!loading && visibleRecipes.length === 0 && !error && (
+      {!loading && allRecipes.length === 0 && !error && (
         <div className="text-gray-600 text-lg text-center mt-50">
           {checked.length > 0 || searchQuery.trim() !== ""
             ? "No matching recipes found."
@@ -284,10 +234,10 @@ const Home = () => {
 
       <div
         ref={scrollContainerRef}
-        className="w-screen h-screen overflow-y-auto snap-y snap-mandatory"
+        className="w-screen h-screen overflow-y-auto snap-y snap-mandatory pt-32"
         style={{ scrollSnapType: "y mandatory", scrollbarWidth: "none" }}
       >
-        {visibleRecipes.map((recipe, index) => (
+        {allRecipes.map((recipe, index) => (
           <div
             key={recipe.id}
             data-index={index}
@@ -310,12 +260,6 @@ const Home = () => {
             />
           </div>
         ))}
-
-        {visibleRecipes.length < allRecipes.length && (
-          <div ref={loaderRef} className="flex items-center justify-center h-24">
-            <CircularProgress />
-          </div>
-        )}
       </div>
     </div>
   );
