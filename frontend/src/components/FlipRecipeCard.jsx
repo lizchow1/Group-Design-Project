@@ -22,13 +22,10 @@ const FlipRecipeCard = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
   const normalizedIngredients = typeof ingredients === 'string'
-  ? (ingredients.includes('•')
-      ? ingredients.split('•').map(item => item.trim()).filter(Boolean)
-      : ingredients.split(',').map(item => item.trim()).filter(Boolean))
+  ? ingredients.split(/\n|•|,/).map(item => item.trim()).filter(Boolean)
   : Array.isArray(ingredients)
     ? ingredients
     : [];
-
 
   const handleRecipeClick = (recipeID) => {
     navigate(`/app/${recipeID}`);
