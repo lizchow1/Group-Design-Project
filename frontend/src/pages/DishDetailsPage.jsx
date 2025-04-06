@@ -107,7 +107,6 @@ const RecipeDetailsPage = () => {
     setAnchorEl(null);
   };
 
-
   return (
     
     <div className="pt-24 pb-40 montserrat-font flex flex-col items-center justify-center w-screen min-h-screen px-4">
