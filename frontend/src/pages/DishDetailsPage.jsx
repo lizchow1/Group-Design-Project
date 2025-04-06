@@ -14,7 +14,7 @@ import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import CommentSection from "../components/CommentSection";
+import ReviewSection from "../components/ReviewSection";
 import RatingComponent from "../components/RatingComponent";
 
 const RecipeDetailsPage = () => {
@@ -28,6 +28,7 @@ const RecipeDetailsPage = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const [isUpdated, setIsUpdated] = useState(false);
 
 
   const handleClick = (event) => {
@@ -50,13 +51,11 @@ const RecipeDetailsPage = () => {
 },
   };
 
-
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
         const recipeData = await getRecipeById(recipeId);
         setRecipe(recipeData);
-        console.log("recipedata", recipeData)
 
         const userRecipes = await getUserRecipes(user.username);
         setRecipes(userRecipes);
@@ -69,7 +68,13 @@ const RecipeDetailsPage = () => {
     };
 
     fetchRecipe();
-  }, [recipeId]);
+  }, [recipeId, isUpdated]);
+
+  useEffect(() => {
+    if (isUpdated) {
+      setIsUpdated(false);
+    }
+  }, [isUpdated]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -89,7 +94,6 @@ const RecipeDetailsPage = () => {
   const handleDelete = async () => {
     try {
       const response = await deleteRecipeByID(recipeId);
-      console.log("api response", response);
       navigate("/user-profile");
       
     } catch (error) {
@@ -229,8 +233,10 @@ const RecipeDetailsPage = () => {
         )}
 
         <div>
-        <CommentSection
+        <ReviewSection
         comments = {recipe.comments}
+        setIsUpdated={setIsUpdated}
+
         />
         </div>
 
