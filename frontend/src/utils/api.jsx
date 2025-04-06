@@ -64,6 +64,23 @@ export const createComment = async (recipeId, commentData) => {
     return response.json();
   };
 
+  export const createRating = async (recipeId, ratingData) => {
+    const response = await fetch(`${BASE_URL}/recipes/${recipeId}/rate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(ratingData),
+    });
+  
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Error submitting rating");
+    }
+  
+    return response.json();
+  };
+
 export const registerUser = async (firebaseToken, email, username, imageUrl) => {
     const response = await fetch(`${BASE_URL}/users/register`, {
         method: "POST",

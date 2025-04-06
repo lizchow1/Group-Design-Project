@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import { useUser } from "../contexts/UserContext";
 import { useParams } from "react-router-dom";
-import { createComment } from "../utils/api";
+import { createComment, createRating } from "../utils/api";
+import Box from '@mui/material/Box';
+import Rating from '@mui/material/Rating';
+import Typography from '@mui/material/Typography';
+
 
 
 const CommentSection = ({ comments }) => {
@@ -10,7 +14,9 @@ const CommentSection = ({ comments }) => {
   const [reviewText, setReviewText] = useState('');
   const { user } = useUser();
   const { recipeId } = useParams();
+  const [value, setValue] = React.useState(0);
 
+  const hasUserCommented = comments.some(comment => comment.username === user.username);
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
@@ -37,44 +43,60 @@ const CommentSection = ({ comments }) => {
         console.error("Error submitting comment:", error.message);
       }
     }
+
+    if (value > 0 && user.username.trim()) {
+      const ratingData = {
+        username: user.username,
+        rating_value: value,
+      };
+      try {
+        const result = await createRating(recipeId, ratingData);
+  
+        setReviewText('');
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error("Error submitting comment:", error.message);
+      }
+    }
+    
   };
 
   return (
     <div>
-      <p>Comments:</p>
 
-      <div className="mt-6">
-        <div className="border-t border-gray-300 w-full" />
-        
-        {comments.length > 0 ? (
-            comments.map((comment, index) => (
-              <div key={index} className="flex flex-col items-start">
-                <span className="md:text-base mt-4 mb-4">{comment.comment_text}</span>
-                <div className="border-t border-gray-300 w-full"></div>
-              </div>
-            ))
-          ) : (
-            <div>
-              <p className="text-base text-gray-500 mb-6">No comments yet.</p>
-              <div className="flex flex-row">
-                <RateReviewOutlinedIcon />
-                <p 
-                  className="text-base ml-4 text-blue-500 underline cursor-pointer"
-                  onClick={handleModalToggle}
-                >
-                  Write a review
-                </p>
-              </div>
-            </div>
-          )}
+      {!hasUserCommented && (
+        <div className="flex flex-row mt-4">
+          <RateReviewOutlinedIcon 
+          fontSize="large"
+          />
+          <p 
+            className="text-3xl ml-4 underline cursor-pointer"
+            onClick={handleModalToggle}
+          >
+            Write a review
+          </p>
+        </div>
+      )}
 
-      </div>
-
-      {/* Modal for writing a review */}
       {isModalOpen && (
         <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <h2 className="text-xl mb-4">Write a Review</h2>
+          <div className="self-start items-start ">
+              Rate recipe
+            <Box sx={{ '& > legend': { mt: 2 } }}>
+              <Typography component="legend"/>
+              <div className="">
+                <Rating
+                  name="simple-controlled"
+                  value={value}
+                  onChange={(event, newValue) => {
+                    setValue(newValue);
+                  }}
+                />
+              </div>
+            </Box>
+          </div>
+            <h2 className="text-xl mb-4">Leave a comment</h2>
             <textarea
               className="text-base w-full h-32 p-2 border border-gray-300 rounded-md"
               value={reviewText}
@@ -82,7 +104,7 @@ const CommentSection = ({ comments }) => {
               placeholder="Write your review here..."
             />
             <div className="flex justify-end mt-4">
-            {reviewText.trim() && (
+              {(reviewText.trim() || value > 0) && (
                 <div 
                   className="bg-green-600 text-white px-4 py-2 rounded-md cursor-pointer"
                   onClick={handleSubmitReview}

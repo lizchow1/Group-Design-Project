@@ -12,14 +12,10 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
-import Box from '@mui/material/Box';
-import Rating from '@mui/material/Rating';
-import Typography from '@mui/material/Typography';
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import CommentSection from "../components/CommentSection";
-
-
+import RatingComponent from "../components/RatingComponent";
 
 const RecipeDetailsPage = () => {
   const { user } = useUser();
@@ -32,7 +28,6 @@ const RecipeDetailsPage = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-  const [value, setValue] = React.useState(0);
 
 
   const handleClick = (event) => {
@@ -93,7 +88,7 @@ const RecipeDetailsPage = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await deleteRecipeByID(recipeId); // Call the delete function
+      const response = await deleteRecipeByID(recipeId);
       console.log("api response", response);
       navigate("/user-profile");
       
@@ -114,6 +109,9 @@ const RecipeDetailsPage = () => {
       <div className="w-full flex flex-col items-center">
         
       <h1 className="mt-6 top-6 text-green-600 text-7xl font-bold items-center">{recipe.name}</h1>
+      <RatingComponent
+      rating = {recipe.rating}
+      />
       <div className="flex items-center gap-2 text-xl mx-auto">
           <AccessTimeIcon className="text-gray-600" />
           <span> - {recipe.cooking_time} min</span>
@@ -215,8 +213,6 @@ const RecipeDetailsPage = () => {
           </div>
         )}
           </div>
-
-
         </div>
 
         {recipe.tags && recipe.tags.length > 0 && (
@@ -232,27 +228,30 @@ const RecipeDetailsPage = () => {
         </div>
         )}
 
-      <div className="text-2xl self-start items-start flex flex-col mt-12">
-        Ratings
-        <Box sx={{ '& > legend': { mt: 2 } }}>
-          <Typography component="legend"/>
-          <div className="flex justify-center">
-            <Rating
-              name="simple-controlled"
-              value={value}
-              onChange={(event, newValue) => {
-                setValue(newValue);
-              }}
-            />
-          </div>
-        </Box>
-      </div>
-
-      <div className="w-1/2 text-2xl mt-10 self-start items-start">
+        <div>
         <CommentSection
-        // hardcoding, will send recipe.comments when backed is connected
         comments = {recipe.comments}
         />
+        </div>
+
+      <div className="mt-6 self-start items-start flex flex-col w-full">
+      <p className="text-3xl font-bold mb-6">Comments:</p>
+        <div className="border-t border-gray-300 w-full" />
+        
+        {recipe.comments.length > 0 ? (
+          recipe.comments.map((comment, index) => (
+            <div key={index} className="flex flex-col items-start w-full">
+              <div className="flex flex-row md:text-base mt-4 mb-4">
+                <span className="mr-4">{comment.username} - </span>
+                <span className="italic">{comment.comment_text}</span>
+              </div>
+
+              <div className="border-t border-gray-300 w-full"></div>
+            </div>
+          ))
+          ) : (
+          <p className="text-base text-gray-500 mb-6 mt-4">No comments yet.</p>
+        )}
       </div>
 
 
