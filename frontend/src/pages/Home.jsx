@@ -22,34 +22,72 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOpen, setSortOpen] = useState(false);
   const [currentSort, setCurrentSort] = useState("");
-  const [isLoadingIndex, setIsLoadingIndex] = useState(true);
-  const [initialized, setInitialized] = useState(false); 
+  const [isInitializing, setIsInitializing] = useState(true);
+  const initialStateRef = useRef(null);
 
   const toggleSort = () => setSortOpen((prev) => !prev);
   const toggleFilter = () => setFilterOpen((prev) => !prev);
-  const initialStateRef = useRef(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("lastViewState");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        initialStateRef.current = {
-          recipeId: parsed.recipeId || null,
-          query: "",
-          tags: [],
-          sort: "",
-        };
-        setSearchQuery("");
-        setChecked([]);
-        setCurrentSort("");
-      } catch (err) {
-        console.warn("Failed to parse stored view state", err);
+    async function initialize() {
+      const stored = localStorage.getItem("lastViewState");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          initialStateRef.current = {
+            recipeId: parsed.recipeId || null,
+            query: parsed.query || "",
+            tags: parsed.tags || [],
+            sort: parsed.sort || "",
+          };
+          setSearchQuery(parsed.query || "");
+          setChecked(parsed.tags || []);
+          setCurrentSort(parsed.sort || "");
+        } catch (err) {
+          console.warn("Failed to parse stored view state", err);
+        }
       }
+      setLoading(true);
+      await updateVisibleRecipes({
+        query: initialStateRef.current?.query || "",
+        tags: initialStateRef.current?.tags || [],
+        sort: initialStateRef.current?.sort || "",
+      });
+
+      setIsInitializing(false);
     }
-    setIsLoadingIndex(false);
-    setInitialized(true);
+
+    initialize();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      const stored = localStorage.getItem("lastViewState");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          localStorage.setItem("lastViewState",
+            JSON.stringify({
+              recipeId: parsed.recipeId || null,
+              query: "",
+              tags: [],
+              sort: "",
+            })
+          );
+        } catch (err) {
+          console.warn("Failed to reset view state on unmount", err);
+        }
+      }
+    };
+  }, []);
+  
+
+  useEffect(() => {
+    if (!isInitializing) {
+      setLoading(true);
+      updateVisibleRecipes({ query: searchQuery, tags: checked, sort: currentSort });
+    }
+  }, [searchQuery, checked, currentSort]);
 
   useEffect(() => {
     if (currentIndex !== null && currentIndex < allRecipes.length) {
@@ -65,10 +103,8 @@ const Home = () => {
   }, [currentIndex, searchQuery, checked, currentSort]);
 
   const handleToggle = (tag) => () => {
-    setChecked((prevChecked) =>
-      prevChecked.includes(tag)
-        ? prevChecked.filter((t) => t !== tag)
-        : [...prevChecked, tag]
+    setChecked((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
 
@@ -85,25 +121,23 @@ const Home = () => {
   };
 
   const updateVisibleRecipes = async ({ query, tags, sort }) => {
-    setLoading(true);
     try {
-      const [field, order] = sort ? sort.split("-") : ["", "asc"];
-      const data = await getCombinedRecipes({ query, tags, sort: field, order });
+      setTimeout(async () => {
+        const [field, order] = sort ? sort.split("-") : ["", "asc"];
+        const data = await getCombinedRecipes({ query, tags, sort: field, order });
+        setAllRecipes(data);
 
-      setAllRecipes(data);
-
-      const storedState = initialStateRef.current;
-      if (storedState?.recipeId) {
-        const matchingIndex = data.findIndex((r) => r.id === storedState.recipeId);
-        setCurrentIndex(matchingIndex !== -1 ? matchingIndex : 0);
-      } else {
-        setCurrentIndex(0);
-      }
+        const storedState = initialStateRef.current;
+        if (storedState?.recipeId) {
+          const matchingIndex = data.findIndex((r) => r.id === storedState.recipeId);
+          setCurrentIndex(matchingIndex !== -1 ? matchingIndex : 0);
+        } else {
+          setCurrentIndex(0);
+        }
+      }, 1000); 
     } catch (err) {
       setError("Failed to load recipes");
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -136,22 +170,6 @@ const Home = () => {
   }, [allRecipes, currentIndex, hasScrolledToSaved]);
 
   useEffect(() => {
-    if (!initialized) return;
-    const storedState = initialStateRef.current;
-    if (
-      storedState &&
-      searchQuery === storedState.query &&
-      JSON.stringify(checked) === JSON.stringify(storedState.tags) &&
-      currentSort === storedState.sort
-    ) {
-      updateVisibleRecipes({ query: "", tags: [], sort: "" });
-    } else {
-      setCurrentIndex(0);
-      updateVisibleRecipes({ query: searchQuery, tags: checked, sort: currentSort });
-    }
-  }, [searchQuery, checked, currentSort, initialized]);
-
-  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         let maxRatio = 0;
@@ -168,6 +186,7 @@ const Home = () => {
       },
       { threshold: [0, 0.25, 0.5, 0.75, 1.0] }
     );
+
     const elements = document.querySelectorAll(".recipe-card");
     elements.forEach((el) => observer.observe(el));
     return () => elements.forEach((el) => observer.unobserve(el));
@@ -175,11 +194,12 @@ const Home = () => {
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) return console.error("User not logged in");
+
     try {
       const result = await toggleBookmark(recipeId, user.username);
       if (!result.error) {
-        setBookmarkedRecipes((prevBookmarks) => {
-          const updated = new Set(prevBookmarks);
+        setBookmarkedRecipes((prev) => {
+          const updated = new Set(prev);
           result.isBookmarked ? updated.add(recipeId) : updated.delete(recipeId);
           return updated;
         });
@@ -193,6 +213,8 @@ const Home = () => {
   const handleSortSelect = (value) => {
     setCurrentSort(value);
     setSortOpen(false);
+    setLoading(true);
+    updateVisibleRecipes({ query: searchQuery, tags: checked, sort: value });
   };
 
   return (
