@@ -1,6 +1,7 @@
 # services/user_service.py
 
 from mappers.user_mapper import UserMapper
+from mappers.follow_mapper import FollowMapper
 import os
 import firebase_admin
 from firebase_admin import auth as firebase_auth, credentials
@@ -146,4 +147,98 @@ class UserService:
             return {"message": "User deleted successfully"}
         else:
             return {"error": "Failed to delete user"}
+
+    @staticmethod
+    def follow_user(data):
+        follower_username = data.get("follower_username")
+        username_to_follow = data.get("username")
+        
+        if not follower_username or not username_to_follow:
+            return {"error": "Missing required fields"}
+        
+        # Get follower user
+        follower = UserMapper.getUserByUsername(follower_username)
+        if not follower:
+            return {"error": "Follower user not found"}
+        
+        # Get user to follow
+        user_to_follow = UserMapper.getUserByUsername(username_to_follow)
+        if not user_to_follow:
+            return {"error": "User to follow not found"}
+        
+        # Create follow relationship
+        result = FollowMapper.follow_user(follower["id"], user_to_follow["id"])
+        if result.get("error"):
+            return result
+        
+        return {
+            "message": f"Now following {username_to_follow}",
+            "follow": result
+        }
+    
+    @staticmethod
+    def unfollow_user(data):
+        follower_username = data.get("follower_username")
+        username_to_unfollow = data.get("username")
+        
+        if not follower_username or not username_to_unfollow:
+            return {"error": "Missing required fields"}
+        
+        # Get follower user
+        follower = UserMapper.getUserByUsername(follower_username)
+        if not follower:
+            return {"error": "Follower user not found"}
+        
+        # Get user to unfollow
+        user_to_unfollow = UserMapper.getUserByUsername(username_to_unfollow)
+        if not user_to_unfollow:
+            return {"error": "User to unfollow not found"}
+        
+        # Remove follow relationship
+        success = FollowMapper.unfollow_user(follower["id"], user_to_unfollow["id"])
+        if not success:
+            return {"error": "Not following this user"}
+        
+        return {"message": f"Successfully unfollowed {username_to_unfollow}"}
+    
+    @staticmethod
+    def get_followers(username, page=1, per_page=20):
+        user = UserMapper.getUserByUsername(username)
+        if not user:
+            return {"error": "User not found"}
+        
+        return FollowMapper.get_followers(user["id"], page, per_page)
+    
+    @staticmethod
+    def get_following(username, page=1, per_page=20):
+        user = UserMapper.getUserByUsername(username)
+        if not user:
+            return {"error": "User not found"}
+        
+        return FollowMapper.get_following(user["id"], page, per_page)
+    
+    @staticmethod
+    def check_follow_status(data):
+        follower_username = data.get("follower_username")
+        username_to_check = data.get("username")
+        
+        if not follower_username or not username_to_check:
+            return {"error": "Missing required fields"}
+        
+        # Get current user
+        current_user = UserMapper.getUserByUsername(follower_username)
+        if not current_user:
+            return {"error": "Follower user not found"}
+        
+        # Get user to check
+        user_to_check = UserMapper.getUserByUsername(username_to_check)
+        if not user_to_check:
+            return {"error": "User to check not found"}
+        
+        is_following = FollowMapper.is_following(current_user["id"], user_to_check["id"])
+        
+        return {
+            "is_following": is_following,
+            "username": username_to_check
+        }
 
