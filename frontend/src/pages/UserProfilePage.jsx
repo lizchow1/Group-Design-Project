@@ -81,7 +81,7 @@ const UserProfilePage = () => {
     return (
       <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
             <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
-                Your Friends
+              User Profile
             </h1>
         <p className="text-gray-500">No profile available.</p>
       </div>
