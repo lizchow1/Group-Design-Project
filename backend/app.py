@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from flask_migrate import Migrate
 from db import db, init_db
 from controllers.user_controller import user_bp
