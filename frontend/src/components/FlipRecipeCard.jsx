@@ -34,7 +34,7 @@ const FlipRecipeCard = ({
   return (
     <div 
       style={{ perspective: "1000px" }}
-      className="relative w-[500px] min-w-[400px] h-[450px] mx-auto cursor-pointer"
+      className="relative w-[500px] min-w-[400px] h-[475px] mx-auto cursor-pointer"
       onClick={() => setIsFlipped(!isFlipped)}
     >
       <div 

@@ -23,6 +23,7 @@ const App = () => {
 
   useEffect(() => {
     auth.signOut(); // Sign out user when app loads
+    localStorage.clear();
   }, []);
 
   useEffect(() => {
