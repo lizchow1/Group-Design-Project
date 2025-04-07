@@ -65,3 +65,53 @@ def delete_user(firebase_uid):
         return jsonify(result), 404
     return jsonify(result), 200
 
+# Follow a user
+@user_bp.route("/users/<string:username>/follow", methods=["POST"])
+def follow_user(username):
+    data = request.get_json() or {}
+    data["username"] = username 
+    result = UserService.follow_user(data)
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result), 201
+
+# Unfollow a user
+@user_bp.route("/users/<string:username>/unfollow", methods=["POST"])
+def unfollow_user(username):
+    data = request.get_json() or {}
+    data["username"] = username 
+    result = UserService.unfollow_user(data)
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result), 200
+
+# Get user followers
+@user_bp.route("/users/<string:username>/followers", methods=["GET"])
+def get_followers(username):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    result = UserService.get_followers(username, page, per_page)
+    if result.get("error"):
+        return jsonify(result), 404
+    return jsonify(result), 200
+
+# Get users that a user is following
+@user_bp.route("/users/<string:username>/following", methods=["GET"])
+def get_following(username):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    result = UserService.get_following(username, page, per_page)
+    if result.get("error"):
+        return jsonify(result), 404
+    return jsonify(result), 200
+
+# Check if current user is following another user
+@user_bp.route("/users/<string:username>/follow/check", methods=["POST"])
+def check_follow_status(username):
+    data = request.get_json() or {}
+    data["username"] = username
+    result = UserService.check_follow_status(data)
+    if result.get("error"):
+        return jsonify(result), 400
+    return jsonify(result), 200
+
