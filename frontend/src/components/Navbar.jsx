@@ -6,9 +6,9 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import GroupIcon from '@mui/icons-material/Group';
 import AssistantIcon from '@mui/icons-material/Assistant';
 import AddBoxIcon from '@mui/icons-material/AddBox';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ const Navbar = () => {
 
           <div>
           <Link to="/user-profile" className="group relative flex items-center">
-            <AccountCircleOutlinedIcon sx={{ fontSize: 40, color: '#6a7282'}}/>
+            <AccountCircleIcon sx={{ fontSize: 40, color: '#6a7282'}}/>
             <span className="ml-3.5 group-hover:inline-block group-hover:text-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity duration-400">Profile</span>
     
             </Link>
@@ -78,7 +78,7 @@ const Navbar = () => {
         <div className="mt-auto pb-4 mb-16 space-y-12">
         <div>
           <Link to="/settings" className="group relative flex items-center">
-            <SettingsOutlinedIcon sx={{ fontSize: 40, color: '#6a7282'}}/>
+            <SettingsIcon sx={{ fontSize: 40, color: '#6a7282'}}/>
             <span className="ml-3.5 group-hover:inline-block group-hover:text-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity duration-400">Settings</span>
             </Link>
           </div>
