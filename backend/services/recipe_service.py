@@ -165,7 +165,7 @@ class RecipeService:
         filtered = []
 
         for recipe in all_recipes:
-            if query.strip():
+            if query and query.strip():
                 q = query.lower()
                 if q not in recipe.name.lower() and q not in (recipe.description or "").lower():
                     continue
