@@ -154,26 +154,6 @@ export const deleteUserFromDB = async (firebase_uid) => {
     });
     return response.json();
 };
-
-export const getFriends = async () => {
-    return [
-      {
-        id: 1,
-        username: "Alice Johnson",
-        image_url: "https://i.pravatar.cc/150?u=alice",
-      },
-      {
-        id: 2,
-        username: "Bob Smith",
-        image_url: "https://i.pravatar.cc/150?u=bob",
-      },
-      {
-        id: 3,
-        username: "Charlie Brown",
-        image_url: "https://i.pravatar.cc/150?u=charlie",
-      },
-    ];
-  };
   
 export const getFilteredRecipes = async (tags) => {
     const query = tags.map(tag => `tags=${encodeURIComponent(tag)}`).join("&");
@@ -198,4 +178,45 @@ export const getSortedRecipes = async (sortBy, order = "asc") => {
     return response.json();
   };  
 
+export const followUser = async (targetUsername, followerUsername) => {
+    const response = await fetch(`${BASE_URL}/users/${targetUsername}/follow`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ follower_username: followerUsername }),
+    });
+    return response.json();
+  };
+  
+  export const unfollowUser = async (targetUsername, followerUsername) => {
+    const response = await fetch(`${BASE_URL}/users/${targetUsername}/unfollow`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ follower_username: followerUsername }),
+    });
+    return response.json();
+  };
+  
+  export const checkFollowStatus = async (targetUsername, followerUsername) => {
+    const response = await fetch(`${BASE_URL}/users/${targetUsername}/follow/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ follower_username: followerUsername }),
+    });
+    return response.json();
+  };
+  
+  export const getFollowers = async (username) => {
+    const response = await fetch(`${BASE_URL}/users/${username}/followers`);
+    return response.json();
+  };
+  
+  export const getFollowing = async (username) => {
+    const response = await fetch(`${BASE_URL}/users/${username}/following`);
+    return response.json();
+  };
+  
+  export const getUserByUsername = async (username) => {
+    const response = await fetch(`${BASE_URL}/users/username/${username}`);
+    return response.json();
+  };
   

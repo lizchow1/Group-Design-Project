@@ -17,6 +17,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      localStorage.clear();
       navigate("/sign-in"); 
     } catch (error) {
       console.error("Error signing out:", error);

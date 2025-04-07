@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { getBookmarkedRecipes, toggleBookmark } from "../utils/api";
 import { useUser } from "../contexts/UserContext";
+import { CircularProgress } from "@mui/material";
 
 const SavedRecipes = () => {
   const { user } = useUser();
@@ -57,7 +58,9 @@ const SavedRecipes = () => {
       </h1>
 
       {loading && (
-        <div className="text-center text-green-600 text-xl mt-10">Loading...</div>
+        <div className="flex justify-center items-center h-40">
+        <CircularProgress color="success" />
+      </div>
       )}
       {error && <div className="text-center text-red-500">{error}</div>}
 
