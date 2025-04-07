@@ -178,6 +178,7 @@ class UserService:
     
     @staticmethod
     def unfollow_user(data):
+        # service method to unflow a user
         follower_username = data.get("follower_username")
         username_to_unfollow = data.get("username")
         
