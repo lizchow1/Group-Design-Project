@@ -11,8 +11,13 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
+import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
+import Box from '@mui/material/Box';
+import Rating from '@mui/material/Rating';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import CommentSection from "../components/CommentSection";
 
 
 
@@ -27,6 +32,8 @@ const RecipeDetailsPage = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const [value, setValue] = React.useState(0);
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -100,7 +107,6 @@ const RecipeDetailsPage = () => {
     setAnchorEl(null);
   };
 
-
   return (
     
     <div className="pt-24 pb-40 montserrat-font flex flex-col items-center justify-center w-screen min-h-screen px-4">
@@ -151,7 +157,7 @@ const RecipeDetailsPage = () => {
       </Menu>
     </div>
     )}
-      <div className="w-[400px] md:w-[1000px]">
+      <div className="w-[400px] md:w-[1000px] items-center justify-center flex flex-col">
       <div className="w-[400px] h-[250px] md:w-[1000px] md:h-[400px] my-4 rounded-2xl flex items-center justify-center border border-gray-400 bg-gray-100">
       {recipe.image ? (
         recipe.image.startsWith("data:video") ? (
@@ -166,10 +172,15 @@ const RecipeDetailsPage = () => {
         <p className="text-gray-600 text-xl font-semibold">No image available</p>
       )}
     </div>
+    <span className="italic text-xl text-gray-500">{recipe.description}</span>
 
         <div className="flex flex-row w-full mt-5">
           <div className="w-1/2 pr-8">
             <p className="text-2xl md:text-3xl font-bold mb-4">Ingredients</p>
+            <div className="flex flex-row mb-4 text-lg">
+            <RestaurantOutlinedIcon/>
+            <p className="ml-2">- {recipe.servings} servings</p>
+            </div>
             {recipe.ingredients ? (
                 <div>
                   <div className="border-t border-gray-300 w-full"></div>
@@ -187,10 +198,24 @@ const RecipeDetailsPage = () => {
           </div>
 
           <div className="w-1/2 pl-8">
-            <p className="text-2xl md:text-3xl font-bold mb-4">Description</p>
+            <p className="text-2xl md:text-3xl font-bold mb-[3.75rem]">Instructions</p>
             <div className="border-t border-gray-300 w-full"/>
-            <p className="text-base md:text-lg text-left mt-4">{recipe.description}</p>
+            {recipe.instructions.split("\n").map((step, index) => (
+              <div key={index} className="flex flex-col items-start">
+                <span className="text-base md:text-lg mt-4 mb-4">{step.trim()}</span>
+                <div className="border-t border-gray-300 w-full"></div>
+              </div>
+            ))}
+            
+            {recipe.tips && (
+          <div className="mt-8 text-xl text-left w-full flex flex-row">
+            <p className="font-semibold  mb-2 mr-2">Tips!</p>
+            <p className=" text-gray-600">{recipe.tips}</p>
           </div>
+        )}
+          </div>
+
+
         </div>
 
         {recipe.tags && recipe.tags.length > 0 && (
@@ -206,7 +231,32 @@ const RecipeDetailsPage = () => {
         </div>
         )}
 
+      <div className="text-2xl self-start items-start flex flex-col mt-12">
+        Rate this recipe
+        <Box sx={{ '& > legend': { mt: 2 } }}>
+          <Typography component="legend"/>
+          <div className="flex justify-center">
+            <Rating
+              name="simple-controlled"
+              value={value}
+              onChange={(event, newValue) => {
+                setValue(newValue);
+              }}
+            />
+          </div>
+        </Box>
       </div>
+
+      <div className="w-1/2 text-2xl mt-10 self-start items-start">
+        <CommentSection
+        // hardcoding, will send recipe.comments when backed is connected
+        comments = {["Love this recipe", "Nice, but would add more lime"]}
+        />
+      </div>
+
+
+      </div>
+      
       {isEditOpen && (
         <div className="text-black flex items-center justify-center w-full h-screen fixed top-0 left-0 bg-white ">
           <div className="w-full max-w-4xl p-4 pt-24">
@@ -221,6 +271,8 @@ const RecipeDetailsPage = () => {
         </div>
       )}
       </div>
+
+
     </div>
   );
 };

@@ -22,13 +22,10 @@ const FlipRecipeCard = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const navigate = useNavigate();
   const normalizedIngredients = typeof ingredients === 'string'
-  ? (ingredients.includes('•')
-      ? ingredients.split('•').map(item => item.trim()).filter(Boolean)
-      : ingredients.split(',').map(item => item.trim()).filter(Boolean))
+  ? ingredients.split(/\n|•|,/).map(item => item.trim()).filter(Boolean)
   : Array.isArray(ingredients)
     ? ingredients
     : [];
-
 
   const handleRecipeClick = (recipeID) => {
     navigate(`/app/${recipeID}`);
@@ -89,7 +86,7 @@ const FlipRecipeCard = ({
               </button>
             </div>
               
-            <div className="flex flex-wrap gap-2 mt-1">
+            <div className="flex flex-wrap gap-2 mt-1 mb-10">
               {tags.slice(0, 3).map((tag, index) => (
                 <span key={index} className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
                   {tag}
@@ -97,7 +94,7 @@ const FlipRecipeCard = ({
               ))}
               {tags.length > 3 && (
                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-3 py-1 rounded-full">
-                  ...and more
+                  +
                 </span>
               )}
             </div>

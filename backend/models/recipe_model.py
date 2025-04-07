@@ -37,6 +37,15 @@ class Recipe(db.Model):
         self.tips = tips
 
     def to_dict(self):
+        # 计算平均评分
+        rating_values = [r.rating_value for r in self.ratings]  # 来自于 relationships
+        if len(rating_values) == 0:
+            average_rating = 0.0
+        else:
+            avg_raw = sum(rating_values) / len(rating_values)
+            # 将平均值四舍五入到 0.5 步长
+            average_rating = round(avg_raw * 2) / 2
+
         return {
             "id": self.id,
             "image": self.image,
@@ -52,6 +61,19 @@ class Recipe(db.Model):
             "minutes": self.minutes,
             "servings": self.servings,
             "instructions": self.instructions,
-            "tips": self.tips
+            "tips": self.tips,
+
+            "comments": [
+                {
+                    "id": c.id,
+                    "username": c.username,
+                    "comment_text": c.comment_text,
+                    "create_time": c.create_time.isoformat(),
+                }
+                for c in self.comments
+            ],
+
+            "rating": average_rating
         }
+
 

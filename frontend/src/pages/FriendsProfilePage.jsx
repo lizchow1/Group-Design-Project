@@ -25,18 +25,19 @@ const FriendProfilePage = () => {
 
     return (
         <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
-            {friend?.image_url ? (
-    <img
-      src={friend.image_url}
-      alt={`${friend.username} profile`}
-      className="w-20 h-20 rounded-full object-cover"
-    />
-  ) : (
-    <div className="w-20 h-20 rounded-full bg-black" />
-  )}
-            <h1 className="text-3xl font-bold mt-6 top-6 text-green-600 z-20 text-center mb-12">
-                {friend.username}'s Profile
-            </h1>
+            <div className="flex items-center gap-4 mt-6 mb-12">
+        {friend?.image_url ? (
+          <img
+            src={friend.image_url}
+            alt="Profile"
+            className="w-35 h-35 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-35 h-35 rounded-full bg-black" />
+        )}
+
+        <h1 className="text-3xl font-bold text-green-600">{friend.username} Profile</h1>
+      </div>
 
             <div className="flex flex-col items-center w-full max-w-7xl mt-16">
                 <h2 className="text-xl font-semibold text-green-800 mb-6">Recipes</h2>

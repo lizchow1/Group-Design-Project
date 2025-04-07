@@ -35,8 +35,8 @@ class RecipeService:
             cooking_time = f"{total_minutes} mins" if total_minutes else "Unknown"
 
             tags = ", ".join(item.get("tags", []))
-            ingredients = ", ".join(item.get("ingredients", []))
-            instructions = "\n".join(item.get("instructions", []))
+            ingredients = "\n".join(item.get("ingredients", []))
+            instructions = "\n".join([f"{idx+1}. {step}" for idx, step in enumerate(item.get("instructions", []))])
             cuisine = item.get("cuisine", "global")
             description = f"A delicious {cuisine.lower()} dish"
 
@@ -120,3 +120,71 @@ class RecipeService:
     def get_user_recipes(username):
         return RecipeMapper.getUserRecipes(username)
 
+    @staticmethod
+    def add_comment_to_recipe(recipe_id, username, comment_text):
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            return {"error": "Recipe not found"}, 404
+        
+        return RecipeMapper.addComment(recipe_id, username, comment_text)
+
+    @staticmethod
+    def rate_recipe(recipe_id, username, rating_value):
+        if rating_value < 1 or rating_value > 5:
+            return {"error": "Rating must be between 1 and 5"}, 400
+        
+        recipe = Recipe.query.get(recipe_id)
+        if not recipe:
+            return {"error": "Recipe not found"}, 404
+        
+        return RecipeMapper.addOrUpdateRating(recipe_id, username, rating_value)
+    @staticmethod
+    def get_recipes_by_tags(tags):
+        all_recipes = Recipe.query.all()
+        filtered_recipes = []
+
+        for recipe in all_recipes:
+            if not recipe.tags:
+                continue
+
+            recipe_tags = set(tag.strip().lower() for tag in recipe.tags.split(","))
+            search_tags = set(tag.strip().lower() for tag in tags)
+
+            if search_tags.issubset(recipe_tags):
+                filtered_recipes.append(recipe.to_dict())
+
+        return filtered_recipes
+    
+    @staticmethod
+    def search_recipes(query):
+        return RecipeMapper.searchRecipesByName(query)
+
+    @staticmethod
+    def query_recipes(query, tags, sort_by, order):
+        all_recipes = Recipe.query.all()
+        filtered = []
+
+        for recipe in all_recipes:
+            if query.strip():
+                q = query.lower()
+                if q not in recipe.name.lower() and q not in (recipe.description or "").lower():
+                    continue
+
+            if tags:
+                recipe_tags = set(tag.strip().lower() for tag in (recipe.tags or "").split(","))
+                if not set(tag.lower() for tag in tags).issubset(recipe_tags):
+                    continue
+
+            filtered.append(recipe)
+
+        if sort_by:
+            reverse = order == "desc"
+            if sort_by == "time":
+                try:
+                    filtered.sort(key=lambda r: int(r.minutes or 0), reverse=reverse)
+                except Exception:
+                    pass
+            elif sort_by == "name":
+                filtered.sort(key=lambda r: r.name.lower(), reverse=reverse)
+
+        return [r.to_dict() for r in filtered]
