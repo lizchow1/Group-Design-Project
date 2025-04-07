@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
@@ -11,342 +11,352 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-
-
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const AddRecipeCard = ({ handleSubmit, initialData }) => {  
-  const [name, setName] = React.useState(initialData?.name || '');
-  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min", "AI-Generated"]
-  const [minutes, setMinutes] = React.useState(initialData?.cooking_time || '');
-  const [servings, setServings] = React.useState(initialData?.servings || '')
-  const [ingredients, setIngredients] = React.useState(initialData?.ingredients || "");
-  const [instructions, setInstructions] = React.useState(initialData?.instructions || '');
-  const [description, setDescription] = React.useState(initialData?.description || '')
-  const [tips, setTips] = React.useState(initialData?.tips || '')
-  const [image, setImage] = React.useState(initialData?.image || '' );
-  const [tags, setTags] = React.useState(initialData?.tags || []);
+const AddRecipeCard = ({ handleSubmit, initialData }) => {
+  const [name, setName] = React.useState('');
+  const available_tags = ["Easy", "Indian", "Vegan", "Gluten free", "Comfort food", "Under 15 min", "AI-Generated"];
+  const [minutes, setMinutes] = React.useState('');
+  const [servings, setServings] = React.useState('');
+  const [ingredients, setIngredients] = React.useState("• ");
+  const [instructions, setInstructions] = React.useState("1. ");
+  const [description, setDescription] = React.useState('');
+  const [tips, setTips] = React.useState('');
+  const [image, setImage] = React.useState('');
+  const [tags, setTags] = React.useState([]);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const green = {
-        '& .MuiOutlinedInput-root': {
-          '&.Mui-focused fieldset': {
-            borderColor: 'green',
-          },
-        },
-        '& .MuiInputLabel-root': {
-    '&.Mui-focused': {
-      color: 'green',
+  const green = {
+    '& .MuiOutlinedInput-root': {
+      '&.Mui-focused fieldset': {
+        borderColor: 'green',
+      },
     },
-  },
-      };
+    '& .MuiInputLabel-root': {
+      '&.Mui-focused': {
+        color: 'green',
+      },
+    },
+  };
 
-    const handleMinutesChange = (event) => {
-      setMinutes(event.target.value);
-    };
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name || '');
+      setDescription(initialData.description || '');
+      setIngredients(initialData.ingredients || '• ');
+      setInstructions(initialData.instructions || '1. ');
+      setTags(initialData.tags || []);
+      setMinutes(initialData.cooking_time || '');
+      setServings(initialData.servings || '');
+      setTips(initialData.tips || '');
+      setImage(initialData.image || '');
+    }
+  }, [initialData]);
 
-    const handleServingsChange = (event) => {
-      setServings(event.target.value);
-    };
+  const handleMinutesChange = (event) => {
+    setMinutes(event.target.value);
+  };
 
-    const handleDescriptionChange = (event) => {
-      setDescription(event.target.value);
-    };
+  const handleServingsChange = (event) => {
+    setServings(event.target.value);
+  };
 
-    const handleNameChange = (event) => {
-      setName(event.target.value);
-    };
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
+  };
 
-    const handleTipsChange = (event) => {
-      setTips(event.target.value);
-    };
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
 
-    const handleTagsChange = (event, newValue) => {
-      setTags(newValue);
-    };
+  const handleTipsChange = (event) => {
+    setTips(event.target.value);
+  };
 
-    const handleIngredientsFocus = () => {
-      if (ingredients.trim() === "") {
-        setIngredients("• ");
+  const handleTagsChange = (event, newValue) => {
+    setTags(newValue);
+  };
+
+  const handleIngredientsFocus = () => {
+    if (ingredients.trim() === "") {
+      setIngredients("• ");
+    }
+  };
+
+  const handleInstructionsFocus = () => {
+    if (instructions.trim() === "") {
+      setInstructions("1. ");
+    }
+  };
+
+  const handleInstructionsChange = (event) => {
+    const newInstruction = event.target.value;
+    const lines = newInstruction.split("\n").map((line) => line.trimStart());
+
+    const formattedLines = lines.map((line, index) => {
+      const expectedPrefix = `${index + 1}. `;
+      if (!line.startsWith(expectedPrefix)) {
+        const cleanedLine = line.replace(/^\d+\.\s*/, "");
+        return `${expectedPrefix}${cleanedLine}`;
       }
-    };
+      return line;
+    });
 
-    const handleInstructionsFocus = () => {
-      if (instructions.trim() === "") {
-        setInstructions("1. ");
-      }
-    };
+    if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
+      setInstructions("1. ");
+    } else {
+      setInstructions(formattedLines.join("\n"));
+    }
+  };
 
-    const handleInstructionsChange = (event) => {
-      const newInstruction = event.target.value;
-      const lines = newInstruction.split("\n").map((line) => line.trimStart());
-    
-      const formattedLines = lines.map((line, index) => {
-        const expectedPrefix = `${index + 1}. `;
-        if (!line.startsWith(expectedPrefix)) {
-          const cleanedLine = line.replace(/^\d+\.\s*/, "");
-          return `${expectedPrefix}${cleanedLine}`;
-        }
-        return line;
-      });
-    
-      if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
-        setInstructions("1. ");
-      } else {
-        setInstructions(formattedLines.join("\n"));
-      }
-    };
+  const handleInstructionsKeyDown = (event) => {
+    const cursorPosition = event.target.selectionStart;
+    const lines = instructions.split("\n");
 
-    const handleInstructionsKeyDown = (event) => {
-      const cursorPosition = event.target.selectionStart;
-      const lines = instructions.split("\n");
-    
-      let total = 0;
-      let currentLineIndex = 0;
-      for (let i = 0; i < lines.length; i++) {
-        total += lines[i].length + 1;
-        if (cursorPosition <= total) {
-          currentLineIndex = i;
-          break;
-        }
+    let total = 0;
+    let currentLineIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      total += lines[i].length + 1;
+      if (cursorPosition <= total) {
+        currentLineIndex = i;
+        break;
       }
-    
-      const lineStartPos = total - (lines[currentLineIndex].length + 1);
-      const cursorOffsetInLine = cursorPosition - lineStartPos;
-    
-      const numberPrefixLength = `${currentLineIndex + 1}. `.length;
-      if ((event.key === "ArrowLeft" || event.key === "ArrowUp") && cursorOffsetInLine <= numberPrefixLength) {
+    }
+
+    const lineStartPos = total - (lines[currentLineIndex].length + 1);
+    const cursorOffsetInLine = cursorPosition - lineStartPos;
+
+    const numberPrefixLength = `${currentLineIndex + 1}. `.length;
+    if ((event.key === "ArrowLeft" || event.key === "ArrowUp") && cursorOffsetInLine <= numberPrefixLength) {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      const currentLine = lines[currentLineIndex];
+      const contentAfterNumber = currentLine.replace(/^\d+\.\s*/, "").trim();
+
+      if (contentAfterNumber.length === 0) {
+        return;
+      }
+
+      const newLineNumber = lines.length + 1;
+      setInstructions((prevInstructions) => prevInstructions + `\n${newLineNumber}. `);
+    }
+
+    if (event.key === "Backspace") {
+      if (lines.length === 1 && lines[0] === "1. ") {
         event.preventDefault();
         return;
       }
-    
-      if (event.key === "Enter") {
+
+      if (lines[lines.length - 1] === `${lines.length}. `) {
         event.preventDefault();
-    
-        const currentLine = lines[currentLineIndex];
-        const contentAfterNumber = currentLine.replace(/^\d+\.\s*/, "").trim();
-    
-        if (contentAfterNumber.length === 0) {
-          return;
-        }
-    
-        const newLineNumber = lines.length + 1;
-        setInstructions((prevInstructions) => prevInstructions + `\n${newLineNumber}. `);
+        setInstructions(lines.slice(0, -1).join("\n"));
       }
-    
-      if (event.key === "Backspace") {
-        if (lines.length === 1 && lines[0] === "1. ") {
-          event.preventDefault();
-          return;
-        }
-    
-        if (lines[lines.length - 1] === `${lines.length}. `) {
-          event.preventDefault();
-          setInstructions(lines.slice(0, -1).join("\n"));
-        }
+    }
+  };
+
+  const handleIngredientsChange = (event) => {
+    const newIngredient = event.target.value;
+    const lines = newIngredient.split("\n").map((line) => line.trimStart());
+
+    const formattedLines = lines.map((line, index) => {
+      if (line.startsWith("•") && !line.startsWith("• ")) {
+        return "• ";
       }
-    };
+      return line;
+    });
 
-    const handleIngredientsChange = (event) => {
-      console.log("event", event.target.id)
-      const newIngredient = event.target.value;
-      const lines = newIngredient.split("\n").map((line) => line.trimStart());
+    if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
+      setIngredients("• ");
+    } else {
+      setIngredients(formattedLines.join("\n"));
+    }
+  };
 
-      const formattedLines = lines.map((line, index) => {
-          if (line.startsWith("•") && !line.startsWith("• ")) {
-            return "• "; 
-          }
-          return line;
-      });
+  const handleIngredientsKeyDown = (event) => {
+    const cursorPosition = event.target.selectionStart;
+    const lines = ingredients.split("\n");
 
-      if (formattedLines.length === 0 || (formattedLines.length === 1 && formattedLines[0] === "")) {
-        setIngredients("• ");
-      } else {
-        setIngredients(formattedLines.join("\n"));
+    let total = 0;
+    let currentLineIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+      total += lines[i].length + 1;
+      if (cursorPosition <= total) {
+        currentLineIndex = i;
+        break;
       }
-    };
+    }
 
-    const handleIngredientsKeyDown = (event) => {
-      const cursorPosition = event.target.selectionStart;
+    const lineStartPos = total - (lines[currentLineIndex].length + 1);
+    const cursorOffsetInLine = cursorPosition - lineStartPos;
+
+    if ((event.key === "ArrowLeft" || event.key === "ArrowUp") && cursorOffsetInLine <= 2 && lines[currentLineIndex].startsWith("• ")) {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+
       const lines = ingredients.split("\n");
-    
-      let total = 0;
-      let currentLineIndex = 0;
-      for (let i = 0; i < lines.length; i++) {
-        total += lines[i].length + 1;
-        if (cursorPosition <= total) {
-          currentLineIndex = i;
-          break;
-        }
+      const lastLine = lines[lines.length - 1].trim();
+
+      if (lastLine.length > 1) {
+        setIngredients((prevIngredient) => prevIngredient + "\n• ");
       }
-    
-      const lineStartPos = total - (lines[currentLineIndex].length + 1);
-      const cursorOffsetInLine = cursorPosition - lineStartPos;
-    
-      if ((event.key === "ArrowLeft" || event.key === "ArrowUp") && cursorOffsetInLine <= 2 && lines[currentLineIndex].startsWith("• ")) {
+    }
+
+    if (event.key === "Backspace") {
+      const lines = ingredients.split("\n");
+
+      if (lines.length === 1 && lines[0] === "• ") {
         event.preventDefault();
         return;
       }
 
-      if (event.key === "Enter") {
+      if (lines[lines.length - 1] === "• ") {
         event.preventDefault();
-
-        const lines = ingredients.split("\n");
-        const lastLine = lines[lines.length - 1].trim();
-
-        if (lastLine.length > 1) {
-          setIngredients((prevIngredient) => prevIngredient + "\n• ");
-        }
+        setIngredients(lines.slice(0, -1).join("\n"));
       }
+    }
+  };
 
-      if (event.key === "Backspace") {
-        const lines = ingredients.split("\n");
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        if (lines.length === 1 && lines[0] === "• ") {
-          event.preventDefault();
-          return;
-        }
-
-        if (lines[lines.length - 1] === "• ") {
-          event.preventDefault();
-          setIngredients(lines.slice(0, -1).join("\n"));
-        }
-      }
-      };
-
-    const handleFileChange = (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-    
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-          setImage(reader.result); 
-      };
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setImage(reader.result);
     };
-    
-    
-    const handleSubmitForm = () => {
-      if (!isFormValid || isSubmitting) return;      
-      
-      handleSubmit({
-        name,
-        instructions,
-        ingredients,
-        minutes,
-        tags,
-        image,
-        description,
-        tips,
-        servings,
+  };
 
-      });
-    
-    };
-  
-    const isFormValid = name.trim() !== '' && instructions.trim() !== '' && minutes !== '';
+  const handleSubmitForm = () => {
+    if (!isFormValid || isSubmitting) return;
+    setIsSubmitting(true);
+    handleSubmit({
+      name,
+      instructions,
+      ingredients,
+      minutes,
+      tags,
+      image,
+      description,
+      tips,
+      servings,
+    }).finally(() => {
+      setIsSubmitting(false);
+    });
+  };
 
-    return (
-      <div className="flex flex-col items-center justify-center w-full">
-        <div className="flex flex-row">
-          <div className="flex flex-col">
-            <div>
-              <Box
-                component="form"
-                sx={{ '& .MuiTextField-root': { m: 1, width: '23ch' } }}
-                noValidate
-                autoComplete="off"
-              >
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Name"
-                  value={name}
-                  onChange={handleNameChange}
-                  sx={green}
-                />
-              </Box>
-            </div>
+  const isFormValid = name.trim() !== '' && instructions.trim() !== '' && minutes !== '';
 
-            <div className="flex flex-row">
+  return (
+    <div className="flex flex-col items-center justify-center w-full">
+      <div className="flex flex-row">
+        <div className="flex flex-col">
+          <div>
+            <Box
+              component="form"
+              sx={{ '& .MuiTextField-root': { m: 1, width: '23ch' } }}
+              noValidate
+              autoComplete="off"
+            >
+              <TextField
+                required
+                id="outlined-required"
+                label="Name"
+                value={name}
+                onChange={handleNameChange}
+                sx={green}
+              />
+            </Box>
+          </div>
+
+          <div className="flex flex-row">
             <div className="mt-6">
               <FormControl required sx={{ m: 1, minWidth: 170, ...green }}>
                 <InputLabel id="demo-simple-select-required-label">Cooking time</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-required-label"
-                    id="demo-simple-select-required"
-                    value={minutes}
-                    label="Cooking time*"
-                    onChange={handleMinutesChange}
-                  >
-                      <MenuItem value={15}>15 min</MenuItem>
-                      <MenuItem value={30}>30 min</MenuItem>
-                      <MenuItem value={45}>45 min</MenuItem>
-                      <MenuItem value={60}>60 min</MenuItem>
-                      <MenuItem value={90}>90 min or more</MenuItem>
-                  </Select>
+                <Select
+                  labelId="demo-simple-select-required-label"
+                  id="demo-simple-select-required"
+                  value={minutes}
+                  label="Cooking time*"
+                  onChange={handleMinutesChange}
+                >
+                  <MenuItem value={15}>15 min</MenuItem>
+                  <MenuItem value={30}>30 min</MenuItem>
+                  <MenuItem value={45}>45 min</MenuItem>
+                  <MenuItem value={60}>60 min</MenuItem>
+                  <MenuItem value={90}>90 min or more</MenuItem>
+                </Select>
               </FormControl>
             </div>
 
             <div className="mt-6">
               <FormControl required sx={{ m: 1, minWidth: 170, ...green }}>
                 <InputLabel id="demo-simple-select-required-label">Servings</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-required-label"
-                    id="demo-simple-select-required"
-                    value={servings}
-                    label="Servings*"
-                    onChange={handleServingsChange}
-                  >
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                      <MenuItem value={3}>3</MenuItem>
-                      <MenuItem value={4}>4</MenuItem>
-                      <MenuItem value={6}>6 or more</MenuItem>
-                  </Select>
+                <Select
+                  labelId="demo-simple-select-required-label"
+                  id="demo-simple-select-required"
+                  value={servings}
+                  label="Servings*"
+                  onChange={handleServingsChange}
+                >
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={2}>2</MenuItem>
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={4}>4</MenuItem>
+                  <MenuItem value={6}>6 or more</MenuItem>
+                </Select>
               </FormControl>
             </div>
-            </div>
+          </div>
 
-            <div className="flex flex-row ml-2 mt-6">
+          <div className="flex flex-row ml-2 mt-6">
+            <Box>
+              <TextField
+                required
+                label="Ingredients"
+                id="IngredientInput"
+                multiline
+                rows={6}
+                variant="outlined"
+                value={ingredients}
+                onChange={handleIngredientsChange}
+                onKeyDown={handleIngredientsKeyDown}
+                onFocus={handleIngredientsFocus}
+                sx={green}
+              />
+            </Box>
+
+            <div className="ml-6">
               <Box>
                 <TextField
+                  sx={green}
                   required
-                  label="Ingredients"
-                  id="IngredientInput"
+                  id="InstructionsInput"
+                  label="Instructions"
+                  value={instructions}
+                  onChange={handleInstructionsChange}
+                  onKeyDown={handleInstructionsKeyDown}
+                  onFocus={handleInstructionsFocus}
                   multiline
                   rows={6}
-                  variant="outlined" 
-                  value={ingredients}
-                  onChange={handleIngredientsChange}
-                  onKeyDown={handleIngredientsKeyDown}
-                  onFocus={handleIngredientsFocus}
-                  sx={green }
+                  variant="outlined"
                 />
               </Box>
-              
-              <div className="ml-6">
-                <Box>
-                  <TextField
-                        sx={green}
-                        required
-                        id="InstructionsInput"
-                        label="Instructions" 
-                        value={instructions}
-                        onChange={handleInstructionsChange}
-                        onKeyDown={handleInstructionsKeyDown}
-                        onFocus={handleInstructionsFocus}
-                        multiline
-                        rows={6}
-                        variant="outlined" 
-                      />
-                </Box>
-              </div>
             </div>
+          </div>
 
-            <div className="mt-6 flex flex-row">
-              <div>
+          <div className="mt-6 flex flex-row">
+            <div>
               <Box
                 component="form"
                 sx={{ '& .MuiTextField-root': { m: 1, width: '23ch' } }}
@@ -360,9 +370,9 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                   sx={green}
                 />
               </Box>
-              </div>
+            </div>
 
-              <div>
+            <div>
               <Box
                 component="form"
                 sx={{ '& .MuiTextField-root': { m: 1, width: '23ch' } }}
@@ -376,51 +386,51 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                   sx={green}
                 />
               </Box>
-              </div>
-            </div>
-    
-            <div className="mt-6 ml-2">
-              <Autocomplete
-                multiple
-                id="checkboxes-tags-demo"
-                options={available_tags}
-                sx={green}
-                disableCloseOnSelect
-                getOptionLabel={(option) => option}
-                onChange={handleTagsChange}
-                value={tags}
-                renderOption={(props, option, { selected }) => {
-                  const { key, ...optionProps } = props;
-                  return (
-                    <li key={key} {...optionProps}>
-                      <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                      />
-                      {option}
-                    </li>
-                  );
-                }}
-                style={{ width: 500 }}
-                renderInput={(params) => (
-                  <TextField 
-                  {...params} 
-                  label="Tags"
-                   />
-                )}
-              />
             </div>
           </div>
 
-          <div 
-              className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
-            <div className="font-bold text-gray-500">Add an image or video</div>
+          <div className="mt-6 ml-2">
+            <Autocomplete
+              multiple
+              id="checkboxes-tags-demo"
+              options={available_tags}
+              sx={green}
+              disableCloseOnSelect
+              getOptionLabel={(option) => option}
+              onChange={handleTagsChange}
+              value={tags}
+              renderOption={(props, option, { selected }) => {
+                const { key, ...optionProps } = props;
+                return (
+                  <li key={key} {...optionProps}>
+                    <Checkbox
+                      icon={icon}
+                      checkedIcon={checkedIcon}
+                      style={{ marginRight: 8 }}
+                      checked={selected}
+                    />
+                    {option}
+                  </li>
+                );
+              }}
+              style={{ width: 500 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tags"
+                />
+              )}
+            />
+          </div>
+        </div>
 
-            {image && image !== "" ? (
-              <div className="relative">
-              <div 
+        <div
+          className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
+          <div className="font-bold text-gray-500">Add an image or video</div>
+
+          {image && image !== "" ? (
+            <div className="relative">
+              <div
                 className="absolute top-0 right-0 m-2 cursor-pointer text-gray-300 z-10"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -429,7 +439,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               >
                 <CancelIcon />
               </div>
-    
+
               {image.startsWith("data:video") ? (
                 <video controls className="w-[200px] h-[200px] object-cover rounded-2xl">
                   <source src={image} type="video/mp4" />
@@ -439,40 +449,39 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
                 <img src={image} className="w-[200px] h-[200px] object-cover rounded-2xl" alt="Dish" />
               )}
             </div>
-              ) : (
-                <input type="file" className="mt-0" />
-              )}
+          ) : (
+            <input type="file" className="mt-0" />
+          )}
 
-              
-            <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800 cursor-pointer"
+
+          <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800 cursor-pointer"
             onClick={() => document.getElementById("fileInput").click()}
-            >
-              
-              <input 
-                type="file" 
-                id="fileInput" 
-                className="hidden" 
-                onChange={handleFileChange} 
-                accept="image/*, video/*"
+          >
+
+            <input
+              type="file"
+              id="fileInput"
+              className="hidden"
+              onChange={handleFileChange}
+              accept="image/*, video/*"
             />
-              Browse Files
-            </div>
-            
+            Browse Files
           </div>
+
         </div>
-
-        <div
-          className={`font-bold text-xl p-2 mt-10 mb-8 rounded-[5px] w-fit items-center ${
-            isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : ' text-white cursor-not-allowed'
-          }`}
-          onClick={isFormValid && !isSubmitting ? handleSubmitForm : null}
-        >
-          Upload recipe
       </div>
 
+      <div
+        className={`font-bold text-xl p-2 mt-10 mb-8 rounded-[5px] w-fit items-center ${
+          isFormValid ? 'bg-green-700 text-white hover:bg-green-800 cursor-pointer' : ' text-white cursor-not-allowed'
+        }`}
+        onClick={isFormValid && !isSubmitting ? handleSubmitForm : null}
+      >
+        Upload recipe
       </div>
 
-      );
+    </div>
+  );
 };
 
 export default AddRecipeCard;
