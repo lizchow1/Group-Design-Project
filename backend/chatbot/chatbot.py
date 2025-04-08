@@ -5,7 +5,7 @@ from langchain_ollama import OllamaLLM
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Enable CORS to allow frontend requests
 
 # Define chatbot logic
 PROMPT_TEMPLATE = """
