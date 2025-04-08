@@ -21,6 +21,7 @@ const UseThisRecipeButton = ({ messages }) => {
     const parsedRecipe = parseRecipeText(lastBotMessage.text);
 
     if (parsedRecipe) {
+      localStorage.setItem('isAIGenerated', 'true');
       localStorage.setItem('selectedRecipe', JSON.stringify(parsedRecipe));
       console.log("Parsed recipe stored in localStorage:", parsedRecipe);
       navigate("/add-recipe");
