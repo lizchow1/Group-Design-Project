@@ -105,6 +105,7 @@ const RecipeDetailsPage = () => {
   const handleEditClick = () => {
     setIsEditOpen(true);
     setAnchorEl(null);
+    navigate(`/edit-recipe/${recipeId}`);
   };
 
   return (
