@@ -182,7 +182,7 @@ const Home = () => {
         } else {
           setCurrentIndex(0);
         }
-      }, 1500); 
+      }, 1000); 
     } catch (err) {
       setError("Failed to load recipes");
     } 
@@ -218,6 +218,7 @@ const Home = () => {
   }, [allRecipes, currentIndex, hasScrolledToSaved]);
 
   useEffect(() => {
+    if (!hasScrolledToSaved) return;
     const observer = new IntersectionObserver(
       (entries) => {
         let maxRatio = 0;
@@ -228,17 +229,16 @@ const Home = () => {
             maxIndex = Number(entry.target.dataset.index);
           }
         });
-        if (maxIndex !== null && maxRatio > 0.5) {
+        if (maxIndex !== null && maxRatio > 0.5 && maxIndex !== currentIndex) {
           setCurrentIndex(maxIndex);
         }
       },
       { threshold: [0, 0.25, 0.5, 0.75, 1.0] }
     );
-
     const elements = document.querySelectorAll(".recipe-card");
     elements.forEach((el) => observer.observe(el));
     return () => elements.forEach((el) => observer.unobserve(el));
-  }, [allRecipes]);
+  }, [allRecipes, hasScrolledToSaved, currentIndex]);
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) return console.error("User not logged in");
