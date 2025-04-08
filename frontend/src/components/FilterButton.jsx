@@ -42,7 +42,7 @@ const FilterButton = ({ toggleFilter, handleToggle, filterOpen, checked }) => {
                     className="absolute bg-white shadow-lg p-2 rounded-md"
                     style={{ top: "40px", left: "0px", zIndex: 10 }}
                 >
-                    <List sx={{ width: '100%', maxWidth: 360, maxHeight: 120, overflowY: 'scroll' }}>
+                    <List sx={{ width: '100%', maxWidth: 360 }}>
                         {tags.map((tag) => {
                             const labelId = `checkbox-list-label-${tag}`;
                             return (

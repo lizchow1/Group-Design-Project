@@ -68,6 +68,7 @@ const App = () => {
               <Route path="/settings" element={<Settings />} />
               <Route path="/friends" element={<FriendsPage />} />
               <Route path="/friends/:friendId" element={<FriendProfilePage />} />
+              <Route path="/edit-recipe/:recipeId" element={<AddRecipe />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

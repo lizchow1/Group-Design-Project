@@ -12,14 +12,10 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
-import Box from '@mui/material/Box';
-import Rating from '@mui/material/Rating';
-import Typography from '@mui/material/Typography';
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import CommentSection from "../components/CommentSection";
-
-
+import ReviewSection from "../components/ReviewSection";
+import RatingComponent from "../components/RatingComponent";
 
 const RecipeDetailsPage = () => {
   const { user } = useUser();
@@ -32,7 +28,7 @@ const RecipeDetailsPage = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-  const [value, setValue] = React.useState(0);
+  const [isUpdated, setIsUpdated] = useState(false);
 
 
   const handleClick = (event) => {
@@ -55,7 +51,6 @@ const RecipeDetailsPage = () => {
 },
   };
 
-
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
@@ -73,7 +68,13 @@ const RecipeDetailsPage = () => {
     };
 
     fetchRecipe();
-  }, [recipeId]);
+  }, [recipeId, isUpdated]);
+
+  useEffect(() => {
+    if (isUpdated) {
+      setIsUpdated(false);
+    }
+  }, [isUpdated]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -92,8 +93,7 @@ const RecipeDetailsPage = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await deleteRecipeByID(recipeId); // Call the delete function
-      console.log("api response", response);
+      const response = await deleteRecipeByID(recipeId);
       navigate("/user-profile");
       
     } catch (error) {
@@ -105,6 +105,7 @@ const RecipeDetailsPage = () => {
   const handleEditClick = () => {
     setIsEditOpen(true);
     setAnchorEl(null);
+    navigate(`/edit-recipe/${recipeId}`);
   };
 
 
@@ -114,6 +115,9 @@ const RecipeDetailsPage = () => {
       <div className="w-full flex flex-col items-center">
         
       <h1 className="mt-6 top-6 text-green-600 text-7xl font-bold items-center">{recipe.name}</h1>
+      <RatingComponent
+      rating = {recipe.rating}
+      />
       <div className="flex items-center gap-2 text-xl mx-auto">
           <AccessTimeIcon className="text-gray-600" />
           <span> - {recipe.cooking_time} min</span>
@@ -215,8 +219,6 @@ const RecipeDetailsPage = () => {
           </div>
         )}
           </div>
-
-
         </div>
 
         {recipe.tags && recipe.tags.length > 0 && (
@@ -232,27 +234,33 @@ const RecipeDetailsPage = () => {
         </div>
         )}
 
-      <div className="text-2xl self-start items-start flex flex-col mt-12">
-        Rate this recipe
-        <Box sx={{ '& > legend': { mt: 2 } }}>
-          <Typography component="legend"/>
-          <div className="flex justify-center">
-            <Rating
-              name="simple-controlled"
-              value={value}
-              onChange={(event, newValue) => {
-                setValue(newValue);
-              }}
+        <div>
+          {recipes.some((r) => r.id !== recipe.id) && (
+            <ReviewSection
+              comments={recipe.comments}
+              setIsUpdated={setIsUpdated}
             />
-          </div>
-        </Box>
-      </div>
+          )}
+        </div>
 
-      <div className="w-1/2 text-2xl mt-10 self-start items-start">
-        <CommentSection
-        // hardcoding, will send recipe.comments when backed is connected
-        comments = {["Love this recipe", "Nice, but would add more lime"]}
-        />
+      <div className="mt-6 self-start items-start flex flex-col w-full">
+      <p className="text-3xl font-bold mb-6">Comments:</p>
+        <div className="border-t border-gray-300 w-full" />
+        
+        {recipe.comments.length > 0 ? (
+          recipe.comments.map((comment, index) => (
+            <div key={index} className="flex flex-col items-start w-full">
+              <div className="flex flex-row md:text-base mt-4 mb-4">
+                <span className="mr-4">{comment.username} - </span>
+                <span className="italic">{comment.comment_text}</span>
+              </div>
+
+              <div className="border-t border-gray-300 w-full"></div>
+            </div>
+          ))
+          ) : (
+          <p className="text-base text-gray-500 mb-6 mt-4">No comments yet.</p>
+        )}
       </div>
 
 
