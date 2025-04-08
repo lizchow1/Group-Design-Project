@@ -47,30 +47,28 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
     if (storedRecipe) {
       const parsedData = JSON.parse(storedRecipe);
       setName(parsedData.title || '');
-      setDescription(parsedData.description || '');
+      setDescription(parsedData.description || "a tasty meal");
       setIngredients(parsedData.ingredients || '• ');
-      setInstructions(String(parsedData.instructions || '1. ')); // Ensure it's a string
-      setMinutes(parsedData.cooking_time || '');
-      setServings(parsedData.servings || '');
+      setInstructions(String(parsedData.instructions || '1. '));
+      setMinutes(parsedData.cooking_time || '30');
+      setServings(parsedData.servings || '4');
       setTips(parsedData.tips || '');
       setImage(parsedData.image || '');
 
-      // Automatically add the "AI-Generated" tag if the flag is set
       if (isAIGenerated === 'true' && !tags.includes("AI-Generated")) {
         setTags(prevTags => [...prevTags, "AI-Generated"]);
       }
 
-      // Clean up localStorage after use
       localStorage.removeItem('selectedRecipe');
       localStorage.removeItem('isAIGenerated');
     } else if (initialData) {
       setName(initialData.name || '');
-      setDescription(initialData.description || '');
+      setDescription(initialData.description || "a tasty meal");
       setIngredients(initialData.ingredients || '• ');
-      setInstructions(String(initialData.instructions || '1. ')); // Ensure it's a string
+      setInstructions(String(initialData.instructions || '1. '));
       setTags(initialData.tags || []);
-      setMinutes(initialData.cooking_time || '');
-      setServings(initialData.servings || '');
+      setMinutes(initialData.cooking_time || '30');
+      setServings(initialData.servings || '4');
       setTips(initialData.tips || '');
       setImage(initialData.image || '');
     }
