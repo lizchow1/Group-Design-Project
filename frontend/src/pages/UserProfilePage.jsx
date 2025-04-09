@@ -3,12 +3,7 @@ import { Typography, Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import RecipeCard from "../components/RecipeCard";
 import FriendsList from "../components/FriendsList";
-import {
-  getUserRecipes,
-  getBookmarkedRecipes,
-  toggleBookmark,
-  getFriends,
-} from "../utils/api";
+import { getUserRecipes, getBookmarkedRecipes, toggleBookmark, getFollowing, unfollowUser } from "../utils/api";
 import { useUser } from "../contexts/UserContext";
 
 const UserProfilePage = () => {
@@ -34,8 +29,8 @@ const UserProfilePage = () => {
         const bookmarkedData = await getBookmarkedRecipes(user.username);
         setBookmarkedRecipes(new Set(bookmarkedData.map((r) => r.id)));
 
-        const userFriends = await getFriends(user.username);
-        setFriends(userFriends);
+        const followingData = await getFollowing(user.username);
+        setFriends(followingData.following || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -77,6 +72,19 @@ const UserProfilePage = () => {
     navigate(`/app/user-profile/${recipeID}`);
   };
 
+  const handleUnfollow = async (targetUsername) => {
+    try {
+      const result = await unfollowUser(targetUsername, user.username);
+      if (!result.error) {
+        setFriends((prev) => prev.filter((f) => f.username !== targetUsername));
+      } else {
+        console.error("Failed to unfollow:", result.error);
+      }
+    } catch (error) {
+      console.error("Unfollow error:", error);
+    }
+  };  
+
   if (!user) {
     return (
       <div className="relative montserrat-font flex flex-col items-center justify-start min-h-screen w-screen text-green-800 pl-24 pt-24">
@@ -116,12 +124,14 @@ const UserProfilePage = () => {
           </Typography>
 
           <Box sx={{ mt: 3, width: "100%" }}>
-            {loading ? (
-              <CircularProgress color="success" />
+          {loading ? (
+              <div className="flex justify-center items-center h-40">
+                <CircularProgress color="success" />
+              </div>
             ) : error ? (
               <p className="text-red-500">{error}</p>
             ) : (
-              <FriendsList users={friends} />
+              <FriendsList users={friends} onUnfollow={handleUnfollow} />
             )}
           </Box>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import FlipRecipeCard from "../components/FlipRecipeCard";
-import { getCombinedRecipes, getBookmarkedRecipes, toggleBookmark } from "../utils/api";
+import { getCombinedRecipes, getBookmarkedRecipes, toggleBookmark, followUser, unfollowUser, checkFollowStatus } from "../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import FilterButton from "../components/FilterButton";
 import SearchBar from "../components/SearchBar";
@@ -24,6 +24,7 @@ const Home = () => {
   const [currentSort, setCurrentSort] = useState("");
   const [isInitializing, setIsInitializing] = useState(true);
   const initialStateRef = useRef(null);
+  const [followStatusMap, setFollowStatusMap] = useState(new Map());
 
   const toggleSort = () => setSortOpen((prev) => !prev);
   const toggleFilter = () => setFilterOpen((prev) => !prev);
@@ -52,7 +53,7 @@ const Home = () => {
         query: initialStateRef.current?.query || "",
         tags: initialStateRef.current?.tags || [],
         sort: initialStateRef.current?.sort || "",
-      });
+      });   
 
       setIsInitializing(false);
     }
@@ -108,25 +109,54 @@ const Home = () => {
     );
   };
 
-  const handleFollow = (username) => {
-    setFollowedUsers((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(username)) {
-        newSet.delete(username);
+  const handleFollow = async (targetUsername) => {
+    if (!user) return console.error("User not logged in");
+  
+    try {
+      const isCurrentlyFollowing = followStatusMap.get(targetUsername);
+  
+      if (isCurrentlyFollowing) {
+        const result = await unfollowUser(targetUsername, user.username);
+        if (!result.error) {
+          setFollowStatusMap((prev) => new Map(prev).set(targetUsername, false));
+        }
       } else {
-        newSet.add(username);
+        const result = await followUser(targetUsername, user.username);
+        if (!result.error) {
+          setFollowStatusMap((prev) => new Map(prev).set(targetUsername, true));
+        }
       }
-      return newSet;
-    });
-  };
+    } catch (err) {
+      console.error("Follow/unfollow error:", err);
+    }
+  };  
 
   const updateVisibleRecipes = async ({ query, tags, sort }) => {
     try {
-      setTimeout(async () => {
-        const [field, order] = sort ? sort.split("-") : ["", "asc"];
-        const data = await getCombinedRecipes({ query, tags, sort: field, order });
+      const [field, order] = sort ? sort.split("-") : ["", "asc"];
+      const data = await getCombinedRecipes({ query, tags, sort: field, order });
+  
+      if (user) {
+        const newStatusMap = new Map();
+        await Promise.all(
+          data.map(async (recipe) => {
+            if (recipe.username === user.username) {
+              newStatusMap.set(recipe.username, false);
+              return;
+            }
+            try {
+              const result = await checkFollowStatus(recipe.username, user.username);
+              newStatusMap.set(recipe.username, result?.is_following ?? false);
+            } catch (err) {
+              console.warn(`Failed follow status check for ${recipe.username}`);
+              newStatusMap.set(recipe.username, false);
+            }
+          })
+        );
+        setFollowStatusMap(newStatusMap);
+      }
+      setTimeout(() => {
         setAllRecipes(data);
-
         const storedState = initialStateRef.current;
         if (storedState?.recipeId) {
           const matchingIndex = data.findIndex((r) => r.id === storedState.recipeId);
@@ -134,11 +164,14 @@ const Home = () => {
         } else {
           setCurrentIndex(0);
         }
-      }, 1000); 
+        setLoading(false);
+      }, 300); 
     } catch (err) {
       setError("Failed to load recipes");
-    } 
+      setLoading(false);
+    }
   };
+  
 
   useEffect(() => {
     const fetchBookmarks = async () => {
@@ -170,6 +203,7 @@ const Home = () => {
   }, [allRecipes, currentIndex, hasScrolledToSaved]);
 
   useEffect(() => {
+    if (!hasScrolledToSaved) return;
     const observer = new IntersectionObserver(
       (entries) => {
         let maxRatio = 0;
@@ -180,17 +214,16 @@ const Home = () => {
             maxIndex = Number(entry.target.dataset.index);
           }
         });
-        if (maxIndex !== null && maxRatio > 0.5) {
+        if (maxIndex !== null && maxRatio > 0.5 && maxIndex !== currentIndex) {
           setCurrentIndex(maxIndex);
         }
       },
       { threshold: [0, 0.25, 0.5, 0.75, 1.0] }
     );
-
     const elements = document.querySelectorAll(".recipe-card");
     elements.forEach((el) => observer.observe(el));
     return () => elements.forEach((el) => observer.unobserve(el));
-  }, [allRecipes]);
+  }, [allRecipes, hasScrolledToSaved, currentIndex]);
 
   const handleToggleBookmark = async (recipeId) => {
     if (!user) return console.error("User not logged in");
@@ -242,7 +275,7 @@ const Home = () => {
 
       {loading && allRecipes.length === 0 && !error && (
         <div className="flex items-center justify-center w-full h-screen">
-          <CircularProgress />
+          <CircularProgress color="success"/>
         </div>
       )}
 
@@ -278,7 +311,8 @@ const Home = () => {
               isBookmarked={bookmarkedRecipes.has(recipe.id)}
               onToggleBookmark={() => handleToggleBookmark(recipe.id)}
               onFollow={handleFollow}
-              isFollowing={followedUsers.has(recipe.username)}
+              isFollowing={followStatusMap.get(recipe.username)}
+              isOwnRecipe={user?.username === recipe.username}
             />
           </div>
         ))}
