@@ -37,23 +37,7 @@ A deployed, live version is available at <https://group-design-project-79e91.web
    npx tailwindcss init -p
    ```
 
-4. Firebase Frontend Setup:
-    - Go to [Firebase Console](https://console.firebase.google.com/)
-    - Click `Settings` > `General` > `Your apps`
-    - Add the following to the file firebaseConfig.jsx in file `frontend/src/utils/firebaseConfig.jsx`:
-       ```javascript
-       const firebaseConfig = {
-         apiKey: "API-KEY",
-         authDomain: "AUTH-DOMAIN",
-         projectId: "PROJECT-ID",
-         storageBucket: "STORAGE-BUCKET",
-         messagingSenderId: "MESSAGING-SENDER-ID",
-         appId: "APP-ID",
-         measurementId: "MEASUREMENT-ID"
-       };
-        ```
-
-5. Run the application in development mode:
+4. Run the application in development mode:
    ```sh
    npm run dev
    ```
@@ -76,7 +60,7 @@ A deployed, live version is available at <https://group-design-project-79e91.web
             ```
         2. Add the following line at the end of the file:
            ```sh
-           export FIREBASE_CREDENTIALS="/Users/yecheng/Desktop/GroupDesign/firebase_credentials.json"
+           export FIREBASE_CREDENTIALS="/path/to/credentials/firebase_credentials.json"
            ```
         3. Save and exit, then apply the changes:
            ```sh
