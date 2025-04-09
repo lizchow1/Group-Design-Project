@@ -3,6 +3,8 @@
 ## Overview
 Let Me Cook is an application to help users discover, share, and personalise recipes. The app acts as a collaborative space for a range of users, offering an easy-to-use interface to create and explore recipes, providing a way for users to enhance their culinary skills and promote healthy eating.
 
+A deployed, live version is available at <https://group-design-project-79e91.web.app/> **NOTE:** The chatbot feature does not work on the deployed version due to the high cost of hosting Ollama. Follow the steps below to run it locally instead.
+
 ### Features:
 - Browsing with infinite scroll
 - Sign in and register with Firebase authentication
