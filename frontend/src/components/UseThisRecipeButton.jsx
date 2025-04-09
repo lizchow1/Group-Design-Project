@@ -51,8 +51,11 @@ const UseThisRecipeButton = ({ messages }) => {
     // 2. Servings
     const servingsRegex = /Servings:\s*(.*)/i;
     const servingsMatch = text.match(servingsRegex);
-    const parsedServings = servingsMatch ? parseInt(servingsMatch[1].trim()) : NaN;
-    recipe.servings = !isNaN(parsedServings) ? parsedServings : 1;
+    let parsedServings = servingsMatch ? parseInt(servingsMatch[1].trim()) : NaN;
+    if (!isNaN(parsedServings) && parsedServings > 6) {
+      parsedServings = 6;
+    }
+    recipe.servings = !isNaN(parsedServings) ? parsedServings : 4;
   
     // 3. Ingredients
     const ingredientsRegex = /Ingredients:\s*([\s\S]*?)(?:\n{2,}|Instructions:|\*\*)/i;

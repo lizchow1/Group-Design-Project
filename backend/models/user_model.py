@@ -29,10 +29,11 @@ class User(db.Model):
         cascade='all, delete-orphan'
     )
     
-    def __init__(self, firebase_uid, email, username):
+    def __init__(self, firebase_uid, email, username, image_url=None):
         self.firebase_uid = firebase_uid
         self.email = email
         self.username = username
+        self.image_url = image_url
         
     def to_dict(self):
         return {

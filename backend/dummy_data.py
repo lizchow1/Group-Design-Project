@@ -10,10 +10,25 @@ import random
 
 def insert_dummy_data():
     users = [
-        User(firebase_uid="uid_123", email="alice@example.com", username="alice"),
-        User(firebase_uid="uid_456", email="bob@example.com", username="bob"),
-        User(firebase_uid="uid_789", email="carol@example.com", username="carol")
-    ]
+    User(
+        firebase_uid="uid_123",
+        email="alice@example.com",
+        username="alice",
+        image_url="https://randomuser.me/api/portraits/women/68.jpg"
+    ),
+    User(
+        firebase_uid="uid_456",
+        email="bob@example.com",
+        username="bob",
+        image_url="https://randomuser.me/api/portraits/men/75.jpg"
+    ),
+    User(
+        firebase_uid="uid_789",
+        email="carol@example.com",
+        username="carol",
+        image_url="https://randomuser.me/api/portraits/women/65.jpg"
+    )
+]
     db.session.add_all(users)
     db.session.commit()
 
