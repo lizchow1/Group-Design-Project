@@ -27,14 +27,9 @@ A deployed, live version is available at <https://group-design-project-79e91.web
    npm install
    ```
    
-2. Install additional dependencies:
+2. (Optional) Install additional dependencies:
    ```sh
    npm install react-router-dom tailwindcss postcss autoprefixer
-   ```
-
-3. (Optional) Initialise Tailwind CSS:
-   ```sh
-   npx tailwindcss init -p
    ```
 
 4. Run the application in development mode:
