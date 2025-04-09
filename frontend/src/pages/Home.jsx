@@ -133,30 +133,30 @@ const Home = () => {
 
   const updateVisibleRecipes = async ({ query, tags, sort }) => {
     try {
-      setTimeout(async () => {
-        const [field, order] = sort ? sort.split("-") : ["", "asc"];
-        const data = await getCombinedRecipes({ query, tags, sort: field, order });
+      const [field, order] = sort ? sort.split("-") : ["", "asc"];
+      const data = await getCombinedRecipes({ query, tags, sort: field, order });
+  
+      if (user) {
+        const newStatusMap = new Map();
+        await Promise.all(
+          data.map(async (recipe) => {
+            if (recipe.username === user.username) {
+              newStatusMap.set(recipe.username, false);
+              return;
+            }
+            try {
+              const result = await checkFollowStatus(recipe.username, user.username);
+              newStatusMap.set(recipe.username, result?.is_following ?? false);
+            } catch (err) {
+              console.warn(`Failed follow status check for ${recipe.username}`);
+              newStatusMap.set(recipe.username, false);
+            }
+          })
+        );
+        setFollowStatusMap(newStatusMap);
+      }
+      setTimeout(() => {
         setAllRecipes(data);
-        if (user) {
-          const newStatusMap = new Map();
-          await Promise.all(
-            data.map(async (recipe) => {
-              if (recipe.username === user.username) {
-                newStatusMap.set(recipe.username, false);
-                return;
-              }
-              try {
-                const result = await checkFollowStatus(recipe.username, user.username);
-                newStatusMap.set(recipe.username, result?.is_following ?? false);
-              } catch (err) {
-                console.warn(`Failed follow status check for ${recipe.username}`);
-                newStatusMap.set(recipe.username, false);
-              }
-            })
-          );
-          setFollowStatusMap(newStatusMap);
-        }
-
         const storedState = initialStateRef.current;
         if (storedState?.recipeId) {
           const matchingIndex = data.findIndex((r) => r.id === storedState.recipeId);
@@ -164,11 +164,14 @@ const Home = () => {
         } else {
           setCurrentIndex(0);
         }
-      }, 1000); 
+        setLoading(false);
+      }, 300); 
     } catch (err) {
       setError("Failed to load recipes");
-    } 
+      setLoading(false);
+    }
   };
+  
 
   useEffect(() => {
     const fetchBookmarks = async () => {
