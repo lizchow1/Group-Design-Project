@@ -23,7 +23,6 @@ const UseThisRecipeButton = ({ messages }) => {
     if (parsedRecipe) {
       localStorage.setItem('isAIGenerated', 'true');
       localStorage.setItem('selectedRecipe', JSON.stringify(parsedRecipe));
-      console.log("Parsed recipe stored in localStorage:", parsedRecipe);
       navigate("/add-recipe");
     } else {
       console.warn("Failed to parse recipe!");
@@ -31,33 +30,43 @@ const UseThisRecipeButton = ({ messages }) => {
   };
 
   const parseRecipeText = (text) => {
-    const recipe = {};
-
-    // 1. Title: Look for the second line after the greeting (or a line after colon)
+    const recipe = {
+      title: "Untitled",
+      servings: '',
+      cooking_time: "Unknown",
+      minutes: '',
+      ingredients: [],
+      instructions: [],
+      tips: "",
+      description: "",
+      tags: [],
+      image: ""
+    };
+  
+    // 1. Title
     const titleRegex = /\*\*(.*?)\*\*|<b>(.*?)<\/b>|<strong>(.*?)<\/strong>|recipe for you:\s*(.*)/i;
     const titleMatch = text.match(titleRegex);
     recipe.title = titleMatch ? (titleMatch[1] || titleMatch[2] || titleMatch[3] || titleMatch[4] || '').trim() : '';
-
-
-
-    // 2. Servings: Look for "Servings: X" after title
+  
+    // 2. Servings
     const servingsRegex = /Servings:\s*(.*)/i;
     const servingsMatch = text.match(servingsRegex);
-    recipe.servings = servingsMatch ? servingsMatch[1].trim() : '';
-
-    // 3. Ingredients section
-    const ingredientsRegex = /Ingredients:\s*([\s\S]*?)Instructions:/i;
+    const parsedServings = servingsMatch ? parseInt(servingsMatch[1].trim()) : NaN;
+    recipe.servings = !isNaN(parsedServings) ? parsedServings : 1;
+  
+    // 3. Ingredients
+    const ingredientsRegex = /Ingredients:\s*([\s\S]*?)(?:\n{2,}|Instructions:|\*\*)/i;
     const ingredientsMatch = text.match(ingredientsRegex);
     recipe.ingredients = ingredientsMatch
       ? ingredientsMatch[1]
           .trim()
           .split('\n')
-          .map(item => item.trim())
+          .map(item => item.replace(/^[-*]\s*/, '').trim())
           .filter(item => item !== '')
       : [];
-
-    // 4. Instructions section
-    const instructionsRegex = /Instructions:\s*([\s\S]*?)(Tips:|$)/i;
+  
+    // 4. Instructions
+    const instructionsRegex = /Instructions:\s*([\s\S]*?)(?:\n{2,}|\*\*|Tips:)/i;
     const instructionsMatch = text.match(instructionsRegex);
     recipe.instructions = instructionsMatch
       ? instructionsMatch[1]
@@ -66,18 +75,53 @@ const UseThisRecipeButton = ({ messages }) => {
           .map(item => item.replace(/^\d+\.\s*/, '').trim())
           .filter(item => item !== '')
       : [];
-
-    // 5. Tips section
+  
+    // 5. Tips
     const tipsRegex = /Tips:\s*([\s\S]*)/i;
     const tipsMatch = text.match(tipsRegex);
     recipe.tips = tipsMatch
       ? tipsMatch[1]
           .trim()
           .split('\n')
-          .map(item => item.replace(/^- /, '').trim())
-          .filter(item => item !== '')
+          .map(item => item.trim())
+          .filter(item => /^[-*]/.test(item)) // only tip lines
+          .map(item => item.replace(/^[-*]\s*/, '').trim())
       : [];
+  
+    // 6. Time (and valid minutes mapping)
+    const timeRegex = /Time:\s*(.*)/i;
+    const timeMatch = text.match(timeRegex);
+    let totalMinutes = 0;
+  
+    if (timeMatch) {
+      const timeStr = timeMatch[1].toLowerCase();
+      const hourMatch = timeStr.match(/(\d+)\s*hour/);
+      const minMatch = timeStr.match(/(\d+)\s*min/);
+  
+      if (hourMatch) totalMinutes += parseInt(hourMatch[1]) * 60;
+      if (minMatch) totalMinutes += parseInt(minMatch[1]);
+    }
+  
+    // Allowed values for dropdown
+    const allowedMinutes = [15, 30, 45, 60, 90];
+    recipe.minutes = allowedMinutes.reduce((prev, curr) =>
+      Math.abs(curr - totalMinutes) < Math.abs(prev - totalMinutes) ? curr : prev
+    );
+    recipe.cooking_time = recipe.minutes.toString();
+  
+    // 7. Default description
+    recipe.ingredients = recipe.ingredients.length
+    ? recipe.ingredients.map(i => `• ${i}`).join('\n')
+    : '• ';
 
+    recipe.instructions = recipe.instructions.length
+    ? recipe.instructions.map((step, idx) => `${idx + 1}. ${step}`).join('\n')
+    : '1. ';
+
+    recipe.tips = recipe.tips.length ? recipe.tips[0] : '';
+
+    recipe.description = `AI-generated recipe for ${recipe.title || "a tasty dish"}`;
+  
     return recipe;
   };
 

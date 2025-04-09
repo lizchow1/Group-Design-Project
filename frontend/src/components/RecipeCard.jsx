@@ -1,8 +1,10 @@
 import React from "react";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import fallbackImage from "../utils/image.jpeg";
 
 const RecipeCard = ({ image, name, username, tags, small, isBookmarked, onToggleBookmark, onFullDetailsClick }) => {
+  const validImage = image && image.trim() !== "" ? image : fallbackImage;
   return (
     <div className={`relative bg-white rounded-2xl shadow-lg border border-gray-200 ${small ? "w-[400px] min-w-[350px]" : "w-[500px] min-w-[400px]"} mx-auto bg-gray-100`}>
       <div className="relative overflow-hidden rounded-t-2xl">
@@ -15,7 +17,7 @@ const RecipeCard = ({ image, name, username, tags, small, isBookmarked, onToggle
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img src={image} alt={name} className="w-full h-[300px] object-cover cursor-pointer" onClick={onFullDetailsClick}/>
+          <img src={validImage} alt={name} className="w-full h-[300px] object-cover cursor-pointer" onClick={onFullDetailsClick}/>
         )}
       </div>
 

@@ -447,8 +447,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
         <div
           className="montserrat-font p-6 border border-gray-300 rounded-[5px] w-[400px] ml-10 flex items-center justify-center flex-col">
           <div className="font-bold text-gray-500">Add an image or video</div>
-
-          {image && image !== "" ? (
+            {image ? (
             <div className="relative">
               <div
                 className="absolute top-0 right-0 m-2 cursor-pointer text-gray-300 z-10"
@@ -459,7 +458,7 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
               >
                 <CancelIcon />
               </div>
-
+              
               {image.startsWith("data:video") ? (
                 <video controls className="w-[200px] h-[200px] object-cover rounded-2xl">
                   <source src={image} type="video/mp4" />
@@ -472,8 +471,6 @@ const AddRecipeCard = ({ handleSubmit, initialData }) => {
           ) : (
             <input type="file" className="mt-0" />
           )}
-
-
           <div className="bg-green-700 text-white p-2 mt-4 rounded-[5px] hover:bg-green-800 cursor-pointer"
             onClick={() => document.getElementById("fileInput").click()}
           >

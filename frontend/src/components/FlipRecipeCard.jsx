@@ -3,6 +3,7 @@ import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlin
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from "react-router-dom";
+import fallbackImage from "../utils/image.jpeg";
 
 const FlipRecipeCard = ({ 
   id,
@@ -34,6 +35,8 @@ const FlipRecipeCard = ({
     navigate(`/app/${recipeID}`);
   };
 
+  const validImage = image && image.trim() !== "" ? image : fallbackImage;
+
   return (
     <div 
       style={{ perspective: "1000px" }}
@@ -62,7 +65,7 @@ const FlipRecipeCard = ({
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img src={image} alt={name} className="w-full h-[300px] object-cover cursor-pointer" />
+          <img src={validImage} alt={name} className="w-full h-[300px] object-cover cursor-pointer" />
         )}
           </div>
 
