@@ -234,12 +234,9 @@ const RecipeDetailsPage = () => {
         )}
 
         <div>
-          {recipes.some((r) => r.id !== recipe.id) && (
-            <ReviewSection
-              comments={recipe.comments}
-              setIsUpdated={setIsUpdated}
-            />
-          )}
+        {recipe.username !== user.username && (
+          <ReviewSection comments={recipe.comments} setIsUpdated={setIsUpdated} />
+        )}
         </div>
 
       <div className="mt-6 self-start items-start flex flex-col w-full">

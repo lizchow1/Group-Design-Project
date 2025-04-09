@@ -81,24 +81,6 @@ const Home = () => {
       }
     };
   }, []);
-
-  useEffect(() => {
-    const fetchFollows = async () => {
-      if (user) {
-        try {
-          const followingData = await getFollowing(user.username);
-          if (followingData && followingData.following) {
-            setFollowedUsers(new Set(followingData.following.map((u) => u.username)));
-          }
-        } catch (err) {
-          console.error("Failed to fetch followed users:", err);
-        }
-      } else {
-        setFollowedUsers(new Set()); 
-      }
-    };
-    fetchFollows();
-  }, [user]);  
   
 
   useEffect(() => {
