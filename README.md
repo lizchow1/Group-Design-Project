@@ -7,9 +7,14 @@ Let Me Cook is an application to help users discover, share, and personalise rec
 - Browsing with infinite scroll
 - Sign in and register with Firebase authentication
 - "Gordon RamsAI" chatbot for recipe generation
-- Upload recipes
+- Upload recipes (with option to upload AI generated recipes)
 - View saved recipes
 - Edit user profiles
+- Comments and rating system
+- Ability to follow friends profiles and recipes
+- Sort recipes by tags, dietary preferences etc.
+- Search for recipes
+- Delete user account
 
 ## Step by Step
 
