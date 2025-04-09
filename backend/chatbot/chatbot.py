@@ -5,7 +5,7 @@ from langchain_ollama import OllamaLLM
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS to allow frontend requests
+CORS(app)
 
 # Define chatbot logic
 PROMPT_TEMPLATE = """
@@ -16,6 +16,7 @@ vegetarian' or 'a cozy winter drink'). You must always provide a complete recipe
 You must ALWAYS include the following fields in your response:
 - The recipe title, prefixed with `Title: `, and in BOLD FONT (e.g., `Title: Mango Iced Tea`).
 - The number of servings, prefixed with `Servings: `.
+- The total time it takes to make the recipe, prefixed with `Time: `.
 - A full list of ingredients, prefixed with `Ingredients: `.
 - Step-by-step instructions, prefixed with `Instructions: `.
 - Any relevant tips, prefixed with `Tips: `.
@@ -24,7 +25,9 @@ Return the recipe in the following plain text format EXACTLY. Do not include any
 
 **Title:** [Recipe Name]
 
-**Servings:** [Number of Servings]
+**Servings:** [For how many people the recipe can make e.g. 6 servings]
+
+**Time:** [The Total Amount of Time Recipe Takes to Make e.g. 1 hour]
 
 **Ingredients:**
 - ingredient 1
@@ -42,12 +45,11 @@ Return the recipe in the following plain text format EXACTLY. Do not include any
 
 ---
 
-You MUST specify the recipe title with "**Title:** " and the number of servings with "**Servings:** ".
+You MUST specify the recipe title with "**Title:** ", the number of servings with "**Servings:** " and the time the 
+recipe takes to make with "**Time:**".
 
 Answer the question based on the following context: {question}
 """
-
-
 
 # Load model and setup chatbot chain
 model = OllamaLLM(model="llama3.2")

@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import ReviewSection from "../components/ReviewSection";
 import RatingComponent from "../components/RatingComponent";
+import fallbackImage from "../utils/image.jpeg";
 
 const RecipeDetailsPage = () => {
   const { user } = useUser();
@@ -79,6 +80,8 @@ const RecipeDetailsPage = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (!recipe) return <p>Recipe not found</p>;
+  const validImage =
+  recipe.image && recipe.image.trim() !== "" ? recipe.image : fallbackImage;
 
   const handleUpdate = async (updatedData) => {
     try {
@@ -107,6 +110,7 @@ const RecipeDetailsPage = () => {
     setAnchorEl(null);
     navigate(`/edit-recipe/${recipeId}`);
   };
+
 
   return (
     
@@ -163,17 +167,13 @@ const RecipeDetailsPage = () => {
     )}
       <div className="w-[400px] md:w-[1000px] items-center justify-center flex flex-col">
       <div className="w-[400px] h-[250px] md:w-[1000px] md:h-[400px] my-4 rounded-2xl flex items-center justify-center border border-gray-400 bg-gray-100">
-      {recipe.image ? (
-        recipe.image.startsWith("data:video") ? (
-          <video controls className="w-full h-full object-cover rounded-2xl">
-            <source src={recipe.image} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <img src={recipe.image} className="w-full h-full object-cover rounded-2xl" alt="Dish" />
-        )
+        {recipe.image && recipe.image.startsWith("data:video") ? (
+        <video controls className="w-full h-full object-cover rounded-2xl">
+          <source src={recipe.image} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       ) : (
-        <p className="text-gray-600 text-xl font-semibold">No image available</p>
+        <img src={validImage} className="w-full h-full object-cover rounded-2xl" alt="Dish" />
       )}
     </div>
     <span className="italic text-xl text-gray-500">{recipe.description}</span>

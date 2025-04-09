@@ -36,7 +36,7 @@ class RecipeService:
 
             tags = ", ".join(item.get("tags", []))
             ingredients = "\n".join(item.get("ingredients", []))
-            instructions = "\n".join([f"{idx+1}. {step}" for idx, step in enumerate(item.get("instructions", []))])
+            instructions = "\n".join(item.get("instructions", []))
             cuisine = item.get("cuisine", "global")
             description = f"A delicious {cuisine.lower()} dish"
 
